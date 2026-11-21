@@ -23,6 +23,7 @@
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { background: var(--bg); }
 body {
   margin: 0; background: var(--bg); color: var(--ink);
@@ -53,7 +54,27 @@ code, .mono { font-family: var(--font-mono); font-size: .92em; }
 .nav a:hover { color: var(--ink); background: var(--surface); }
 .nav a.on { color: var(--accent-ink); background: var(--accent); }
 .count { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 99px; background: var(--gold); color: var(--geek); font-size: 12px; font-weight: 800; display: inline-grid; place-items: center; }
-.tools { display: flex; gap: 6px; }
+.tools { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+a.chip-btn { text-decoration: none; }
+.hello { font-weight: 700; font-size: 14px; padding: 0 4px; }
+
+/* Log in, sign up */
+.auth-wrap { display: grid; grid-template-columns: minmax(0, 440px) minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 800px) { .auth-wrap { grid-template-columns: minmax(0, 1fr); } }
+.auth-card h1 { font-size: 26px; margin-bottom: 4px; }
+.auth-card > p { margin-bottom: 14px; }
+.pw { position: relative; display: block; }
+.pw input { padding-right: 46px; }
+.pw-toggle { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: none; border: 0; font-size: 16px; padding: 4px 6px; border-radius: 6px; }
+.pw-toggle:hover { background: var(--surface-2); }
+.check { display: flex; gap: 8px; align-items: center; font-weight: 600; font-size: 14px; cursor: pointer; }
+.check input { width: 16px; height: 16px; accent-color: var(--sakura); }
+.auth-links { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 14px; }
+.test-users h2 { font-size: 17px; }
+.test-users table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 8px; }
+.test-users td { padding: 7px 10px 7px 0; border-bottom: 1px solid var(--line); vertical-align: top; overflow-wrap: anywhere; }
+.test-users tr:last-child td { border-bottom: 0; }
+.test-users button { background: none; border: 0; padding: 0; color: var(--cyan); font-family: var(--font-mono); font-size: 13px; text-decoration: underline dotted; text-align: left; }
 .chip-btn { background: var(--surface); border: 1px solid var(--line); border-radius: 99px; padding: 5px 11px; font-size: 13px; font-weight: 700; color: var(--muted); }
 .chip-btn:hover { color: var(--ink); border-color: var(--lavender); }
 
@@ -76,7 +97,7 @@ main { padding-top: 20px; }
 .btn.block { width: 100%; }
 .btn[aria-busy="true"]::after { content: ""; width: 14px; height: 14px; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; animation: spin .7s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
-input[type=text], input[type=email], input[type=number], input[type=search], select, textarea {
+input[type=text], input[type=email], input[type=password], input[type=number], input[type=search], select, textarea {
   background: var(--code-bg); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; width: 100%; color: var(--ink);
 }
 input:focus, select:focus, textarea:focus { border-color: var(--lavender-hi); outline: none; }
@@ -220,7 +241,18 @@ table.list tr:last-child td { border-bottom: 0; }
 .toast.error { background: var(--fail-soft); color: #FFD2D2; border-color: var(--fail); }
 footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; display: flex; flex-wrap: wrap; gap: 6px 18px; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+/* Big screens: the whole page grows with the window, so it keeps its proportions (same rule as the academy) */
+body { zoom: var(--ui-scale, 1); }
 </style>
+<script>
+/* Designed at 1366 px wide. Wider windows (big monitors, or zoomed out) scale up to 2×; below 1366 px nothing changes. */
+(function () {
+  const BASE = 1366, MAX = 2;
+  const fit = () => document.documentElement.style.setProperty('--ui-scale', Math.min(MAX, Math.max(1, window.innerWidth / BASE)).toFixed(3));
+  fit();
+  window.addEventListener('resize', fit);
+})();
+</script>
 </head>
 <body>
 <header class="top">
@@ -236,6 +268,7 @@ footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line);
       <a href="#/admin" data-nav="admin" data-test="nav-admin"><span data-i18n="navAdmin"></span></a>
     </nav>
     <div class="tools">
+      <span class="tools" id="auth-nav"></span>
       <button class="chip-btn" type="button" id="lang-btn" data-test="lang-toggle"></button>
     </div>
   </div>
@@ -262,14 +295,17 @@ footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line);
       ?bugs=all           turns on the seeded bugs for QA practice (see BUG_LIST)
    ===================================================================== */
 const params = new URLSearchParams(location.search);
-const BUG_LIST = ['last-unit', 'qty-zero', 'coupon-expiry', 'free-shipping', 'rounding', 'stock-on-create', 'price-snapshot', 'cancel-paid', 'double-pay', 'no-address'];
+const BUG_LIST = ['last-unit', 'qty-zero', 'coupon-expiry', 'free-shipping', 'rounding', 'stock-on-create', 'price-snapshot', 'cancel-paid', 'double-pay', 'no-address',
+  'login-enum', 'no-lockout', 'weak-password', 'email-case', 'orders-idor', 'admin-open'];
 const bugParam = (params.get('bugs') || '').split(',').map(s => s.trim()).filter(Boolean);
 const BUGS = new Set(bugParam.includes('all') ? BUG_LIST : bugParam.filter(b => BUG_LIST.includes(b)));
 const bug = k => BUGS.has(k);
 function isoDate(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
 const TODAY = /^\d{4}-\d{2}-\d{2}$/.test(params.get('today') || '') ? params.get('today') : isoDate(new Date());
 const LATENCY = params.has('latency') ? Math.max(0, Math.min(5000, Number(params.get('latency')) || 0)) : 400;
+const SESSION_SECONDS = params.has('session') ? Math.max(5, Number(params.get('session')) || 1800) : 1800; // ?session=30 makes sessions expire after 30 s idle
 const STORE_KEY = 'bruxa-maria-shop-v1' + (BUGS.size ? '-training' : '');
+const SESSION_KEY = 'bruxa-maria-session-v1' + (BUGS.size ? '-training' : '');
 const LANG_KEY = 'geekie-jackie-lang'; // shared with the academy
 
 /* =====================================================================
@@ -313,6 +349,13 @@ const TEST_CARDS = [
 const DECLINED_CARD = '4000000000000002';
 const SLOW_CARD = '4000000000000077';
 const LIFECYCLE = ['Pending', 'Paid', 'Shipped', 'Delivered'];
+// Made-up accounts only (BR-CUS-02). New sign-ups are added to the shop state.
+const SEED_USERS = [
+  { id: 'cus-001', name: 'Jane Doe', email: 'jane@example.com', password: 'Witch123!', role: 'customer', note: ['Customer', 'Cliente'] },
+  { id: 'cus-002', name: 'John Roe', email: 'locked@example.com', password: 'Witch123!', role: 'customer', note: ['Locked account', 'Conta bloqueada'] },
+  { id: 'adm-001', name: 'Bruxa Maria', email: 'maria@example.com', password: 'Bruxa123!', role: 'admin', note: ['Admin: opens the back office', 'Admin: abre o Painel da Bruxa'] },
+];
+const MAX_LOGIN_ATTEMPTS = 3;
 
 /* =====================================================================
    3. Texts (EN / PT). Product data, SKUs, statuses and error codes stay in English.
@@ -392,6 +435,30 @@ const TXT = {
   e_INVALID_PRICE: ['The price must be greater than 0.', 'O preço precisa ser maior que 0.'],
   e_INVALID_STOCK: ['Stock must be a whole number, 0 or more (digital products have no stock).', 'O estoque precisa ser um número inteiro, 0 ou mais (produtos digitais não têm estoque).'],
   e_NOT_FOUND: ['Not found.', 'Não encontrado.'], e_INTERNAL_ERROR: ['Something went wrong.', 'Algo deu errado.'],
+  // Accounts
+  login: ['Log in', 'Entrar'], logout: ['Log out', 'Sair'], hello: ['Hi, {name}', 'Olá, {name}'],
+  loginTitle: ['Log in', 'Entrar'], loginSub: ['Log in to check out and follow your orders.', 'Entre para finalizar compras e acompanhar seus pedidos.'],
+  password: ['Password', 'Senha'], confirmPassword: ['Confirm password', 'Confirme a senha'], rememberMe: ['Remember me', 'Lembrar de mim'],
+  showPassword: ['Show password', 'Mostrar senha'], hidePassword: ['Hide password', 'Ocultar senha'],
+  forgotLink: ['Forgot your password?', 'Esqueceu a senha?'], registerLink: ['New here? Create an account', 'Primeira vez? Crie uma conta'], haveAccount: ['Already have an account? Log in', 'Já tem conta? Entre'],
+  testUsers: ['Test users (click to fill)', 'Usuários de teste (clique para preencher)'],
+  registerTitle: ['Create an account', 'Criar conta'], registerSub: ['Use made-up data only, like Jane Doe and jane@example.com.', 'Use só dados inventados, como Jane Doe e jane@example.com.'],
+  passwordRule: ['At least 8 characters, with letters and numbers.', 'Pelo menos 8 caracteres, com letras e números.'], createAccount: ['Create account', 'Criar conta'],
+  welcome: ['Welcome, {name}!', 'Boas-vindas, {name}!'], accountCreated: ['Account created. Welcome, {name}!', 'Conta criada. Boas-vindas, {name}!'],
+  loggedOut: ['You logged out.', 'Você saiu da sua conta.'], loginNeeded: ['Log in to continue.', 'Entre para continuar.'],
+  forgotTitle: ['Reset your password', 'Recuperar senha'], forgotSub: ['Type your email and we send a link to create a new password.', 'Digite seu e-mail e enviamos um link para criar uma senha nova.'], sendLink: ['Send link', 'Enviar link'],
+  forgotSent: ['If this email has an account, a reset link is on its way. (Mock shop: no email is really sent.)', 'Se este e-mail tiver conta, um link de recuperação está a caminho. (Loja de mentira: nenhum e-mail é enviado de verdade.)'],
+  backToLogin: ['← Back to log in', '← Voltar para o login'],
+  forbidden: ['Only Bruxa Maria can open the back office.', 'Só a Bruxa Maria pode abrir o Painel.'],
+  adminUsers: ['Customers', 'Clientes'], colRole: ['Role', 'Papel'], colAccount: ['Account', 'Conta'], active: ['Active', 'Ativa'], lockedSt: ['Locked', 'Bloqueada'], failedLogins: ['Wrong passwords', 'Senhas erradas'],
+  unlock: ['Unlock', 'Desbloquear'], unlocked: ['{email} unlocked', '{email} desbloqueada'],
+  errMISMATCH: ['The passwords don’t match.', 'As senhas não são iguais.'], errWEAK: ['At least 8 characters, with letters and numbers.', 'Pelo menos 8 caracteres, com letras e números.'], errTAKEN: ['This email already has an account.', 'Este e-mail já tem uma conta.'],
+  e_INVALID_CREDENTIALS: ['Email or password is wrong.', 'E-mail ou senha incorretos.'],
+  e_ACCOUNT_LOCKED: ['This account is locked after too many wrong passwords. Ask the shop to unlock it.', 'Esta conta está bloqueada por excesso de senhas erradas. Peça para a loja desbloquear.'],
+  e_USER_NOT_FOUND: ['There is no account with this email.', 'Não existe conta com este e-mail.'], e_WRONG_PASSWORD: ['Wrong password.', 'Senha errada.'],
+  e_EMAIL_TAKEN: ['This email already has an account.', 'Este e-mail já tem uma conta.'],
+  e_UNAUTHORIZED: ['Log in to continue.', 'Entre para continuar.'], e_SESSION_EXPIRED: ['Your session expired. Log in again.', 'Sua sessão expirou. Entre de novo.'],
+  e_FORBIDDEN: ['You don’t have permission for this.', 'Você não tem permissão para isso.'],
 };
 function t(key, vars) {
   let s = TXT[key] ? pick(TXT[key]) : key;
@@ -412,7 +479,7 @@ function errorText(body) {
 /* =====================================================================
    4. Shop state (saved in this browser)
    ===================================================================== */
-function freshState() { return { stock: {}, price: {}, cart: [], coupon: '', orders: [], customers: {}, seq: 1001, custSeq: 1 }; }
+function freshState() { return { stock: {}, price: {}, cart: [], coupon: '', orders: [], seq: 1001, users: [], userSeq: 3, attempts: {}, locked: { 'cus-002': true }, sessions: {} }; }
 function loadState() {
   try { const raw = localStorage.getItem(STORE_KEY); if (raw) return Object.assign(freshState(), JSON.parse(raw)); } catch (e) {}
   return freshState();
@@ -462,6 +529,29 @@ function computeTotals(items, coupon) {
   const shipping = !physical ? 0 : (base >= FREE_SHIPPING_FROM ? 0 : SHIPPING_FEE);
   return { subtotal, discount, total, shipping, amountDue: r(total + shipping) };
 }
+// BR-AUTH-*: accounts and sessions
+const allUsers = () => SEED_USERS.concat(S.users);
+const publicUser = u => ({ id: u.id, name: u.name, email: u.email, role: u.role });
+const findUserByEmail = email => { const e = String(email || '').trim().toLowerCase(); return allUsers().find(u => u.email.toLowerCase() === e); };
+const passwordOk = p => bug('weak-password') ? p.length > 0 : p.length >= 8 && /[A-Za-z]/.test(p) && /\d/.test(p); // BR-AUTH-04
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+function newSession(u) {
+  const token = 'tok_' + Math.random().toString(36).slice(2, 12) + Date.now().toString(36);
+  S.sessions[token] = { userId: u.id, expiresAt: Date.now() + SESSION_SECONDS * 1000 };
+  return { token, user: publicUser(u), expiresIn: SESSION_SECONDS };
+}
+function authContext(token) {
+  if (!token) return { user: null, token: null, reason: 'UNAUTHORIZED' };
+  const s = S.sessions[token];
+  if (!s) return { user: null, token, reason: 'UNAUTHORIZED' };
+  if (Date.now() > s.expiresAt) { delete S.sessions[token]; return { user: null, token, reason: 'SESSION_EXPIRED' }; } // BR-AUTH-05
+  s.expiresAt = Date.now() + SESSION_SECONDS * 1000; // idle timeout: every call keeps the session alive
+  return { user: allUsers().find(u => u.id === s.userId) || null, token, reason: 'UNAUTHORIZED' };
+}
+const needUser = ctx => ctx.user ? null : fail(401, ctx.reason);
+const needAdmin = ctx => needUser(ctx) || (ctx.user.role === 'admin' || bug('admin-open') ? null : fail(403, 'FORBIDDEN')); // BR-AUTH-07
+const canSee = (ctx, o) => !!o && (ctx.user.role === 'admin' || o.customerId === ctx.user.id || bug('orders-idor')); // BR-AUTH-06
+
 function changeStock(items, sign) {
   items.forEach(i => {
     const p = product(i.sku);
@@ -499,7 +589,8 @@ const ROUTES = [
     const p = product(decodeURIComponent(m[1]));
     return p ? ok(apiProduct(p)) : fail(404, 'PRODUCT_NOT_FOUND', { sku: decodeURIComponent(m[1]) });
   }],
-  ['PATCH', /^\/api\/products\/([^/]+)$/, (m, body) => {
+  ['PATCH', /^\/api\/products\/([^/]+)$/, (m, body, q, ctx) => {
+    const deny = needAdmin(ctx); if (deny) return deny;
     const sku = decodeURIComponent(m[1]); const p = product(sku);
     if (!p) return fail(404, 'PRODUCT_NOT_FOUND', { sku });
     body = body || {};
@@ -516,11 +607,17 @@ const ROUTES = [
     const c = evaluateCoupon(decodeURIComponent(m[1]));
     return !c || c.reason === 'NOT_FOUND' ? fail(404, 'COUPON_NOT_FOUND', { code: c ? c.code : '' }) : ok(c);
   }],
-  ['GET', /^\/api\/orders$/, () => ok(S.orders.slice().reverse().map(serializeOrder))],
-  ['GET', /^\/api\/orders\/([^/]+)$/, m => {
-    const o = findOrder(m[1]); return o ? ok(serializeOrder(o)) : fail(404, 'NOT_FOUND');
+  ['GET', /^\/api\/orders$/, (m, body, q, ctx) => {
+    const all = q.get('all') === '1';
+    const deny = all ? needAdmin(ctx) : needUser(ctx); if (deny) return deny;
+    return ok(S.orders.filter(o => all || o.customerId === ctx.user.id).slice().reverse().map(serializeOrder));
   }],
-  ['POST', /^\/api\/orders$/, (m, body) => {
+  ['GET', /^\/api\/orders\/([^/]+)$/, (m, body, q, ctx) => {
+    const deny = needUser(ctx); if (deny) return deny;
+    const o = findOrder(m[1]); return canSee(ctx, o) ? ok(serializeOrder(o)) : fail(404, 'NOT_FOUND'); // someone else's order looks like it doesn't exist
+  }],
+  ['POST', /^\/api\/orders$/, (m, body, q, ctx) => {
+    const deny = needUser(ctx); if (deny) return deny;
     body = body || {};
     const raw = Array.isArray(body.items) ? body.items : [];
     if (!raw.length) return fail(400, 'EMPTY_ORDER'); // BR-ORD-01
@@ -545,11 +642,9 @@ const ROUTES = [
     for (const i of merged) { const p = product(i.sku); if (!canSell(p, i.quantity)) return fail(409, 'OUT_OF_STOCK', { sku: i.sku, available: p.stock }); } // BR-ORD-03
     const coupon = evaluateCoupon(body.couponCode); // BR-CPN-03: one coupon per order
     const couponField = coupon ? { code: coupon.code, percent: coupon.percent, valid: coupon.valid } : null;
-    const key = email.toLowerCase();
-    if (!S.customers[key]) S.customers[key] = 'cus-' + String(S.custSeq++).padStart(3, '0');
     const now = new Date().toISOString();
     const order = Object.assign({
-      id: 'ord-' + S.seq++, customerId: S.customers[key], customer: { name, email },
+      id: 'ord-' + S.seq++, customerId: ctx.user.id, customer: { name, email },
       shippingAddress: hasPhysical ? (address || null) : null,
       items: merged, coupon: couponField, status: 'Pending', createdAt: now,
     }, computeTotals(merged, couponField), { history: [{ status: 'Pending', at: now }], payments: [] });
@@ -557,9 +652,10 @@ const ROUTES = [
     S.orders.push(order);
     return ok(serializeOrder(order), 201); // BR-ORD-02
   }],
-  ['POST', /^\/api\/orders\/([^/]+)\/pay$/, async (m, body) => {
+  ['POST', /^\/api\/orders\/([^/]+)\/pay$/, async (m, body, q, ctx) => {
+    const deny = needUser(ctx); if (deny) return deny;
     const o = findOrder(m[1]);
-    if (!o) return fail(404, 'NOT_FOUND');
+    if (!canSee(ctx, o)) return fail(404, 'NOT_FOUND');
     if (o.status !== 'Pending' && !(bug('double-pay') && o.status === 'Paid')) {
       return o.status === 'Paid' ? fail(409, 'ALREADY_PAID') : fail(409, 'INVALID_TRANSITION', { from: o.status, to: 'Paid' }); // BR-PAY-01
     }
@@ -579,60 +675,144 @@ const ROUTES = [
     setStatus(o, 'Paid');
     return ok(serializeOrder(o));
   }],
-  ['POST', /^\/api\/orders\/([^/]+)\/cancel$/, m => {
+  ['POST', /^\/api\/orders\/([^/]+)\/cancel$/, (m, body, q, ctx) => {
+    const deny = needUser(ctx); if (deny) return deny;
     const o = findOrder(m[1]);
-    if (!o) return fail(404, 'NOT_FOUND');
+    if (!canSee(ctx, o)) return fail(404, 'NOT_FOUND');
     if (o.status === 'Paid' && !bug('cancel-paid')) return fail(409, 'ORDER_ALREADY_PAID'); // BR-PAY-03
     if (o.status !== 'Pending' && o.status !== 'Paid') return fail(409, 'INVALID_TRANSITION', { from: o.status, to: 'Cancelled' });
     // With the stock-on-create bug the stock taken at creation never comes back here.
     setStatus(o, 'Cancelled');
     return ok(serializeOrder(o));
   }],
-  ['POST', /^\/api\/orders\/([^/]+)\/refund$/, m => {
+  ['POST', /^\/api\/orders\/([^/]+)\/refund$/, (m, body, q, ctx) => {
+    const deny = needUser(ctx); if (deny) return deny;
     const o = findOrder(m[1]);
-    if (!o) return fail(404, 'NOT_FOUND');
+    if (!canSee(ctx, o)) return fail(404, 'NOT_FOUND');
     if (o.status !== 'Paid') return fail(409, 'INVALID_TRANSITION', { from: o.status, to: 'Refunded' });
     changeStock(o.items, +1);
     setStatus(o, 'Refunded');
     return ok(serializeOrder(o));
   }],
-  ['POST', /^\/api\/orders\/([^/]+)\/ship$/, m => {
+  ['POST', /^\/api\/orders\/([^/]+)\/ship$/, (m, body, q, ctx) => {
+    const deny = needAdmin(ctx); if (deny) return deny;
     const o = findOrder(m[1]);
     if (!o) return fail(404, 'NOT_FOUND');
     if (o.status !== 'Paid') return fail(409, 'INVALID_TRANSITION', { from: o.status, to: 'Shipped' });
     setStatus(o, 'Shipped'); return ok(serializeOrder(o));
   }],
-  ['POST', /^\/api\/orders\/([^/]+)\/deliver$/, m => {
+  ['POST', /^\/api\/orders\/([^/]+)\/deliver$/, (m, body, q, ctx) => {
+    const deny = needAdmin(ctx); if (deny) return deny;
     const o = findOrder(m[1]);
     if (!o) return fail(404, 'NOT_FOUND');
     if (o.status !== 'Shipped') return fail(409, 'INVALID_TRANSITION', { from: o.status, to: 'Delivered' });
     setStatus(o, 'Delivered'); return ok(serializeOrder(o));
   }],
   ['POST', /^\/api\/reset$/, () => { S = freshState(); return ok({ reset: true }); }],
+
+  /* Accounts (BR-AUTH-*) */
+  ['POST', /^\/api\/auth\/login$/, (m, body) => {
+    body = body || {};
+    const email = String(body.email || '').trim(), password = String(body.password || '');
+    const details = [];
+    if (!email) details.push({ field: 'email', code: 'REQUIRED' });
+    if (!password) details.push({ field: 'password', code: 'REQUIRED' });
+    if (details.length) return fail(400, 'VALIDATION_ERROR', { details });
+    const u = findUserByEmail(email);
+    // BR-AUTH-01: the same answer whether the email exists or not
+    if (!u) return bug('login-enum') ? fail(404, 'USER_NOT_FOUND') : fail(401, 'INVALID_CREDENTIALS');
+    if (S.locked[u.id]) return fail(423, 'ACCOUNT_LOCKED');
+    if (u.password !== password) {
+      S.attempts[u.id] = (S.attempts[u.id] || 0) + 1;
+      if (!bug('no-lockout') && S.attempts[u.id] >= MAX_LOGIN_ATTEMPTS) { S.locked[u.id] = true; return fail(423, 'ACCOUNT_LOCKED'); } // BR-AUTH-02
+      return bug('login-enum') ? fail(401, 'WRONG_PASSWORD') : fail(401, 'INVALID_CREDENTIALS');
+    }
+    S.attempts[u.id] = 0;
+    return ok(newSession(u));
+  }],
+  ['POST', /^\/api\/auth\/logout$/, (m, body, q, ctx) => { if (ctx.token) delete S.sessions[ctx.token]; return ok(null, 204); }],
+  ['GET', /^\/api\/auth\/me$/, (m, body, q, ctx) => needUser(ctx) || ok(publicUser(ctx.user))],
+  ['POST', /^\/api\/auth\/register$/, (m, body) => {
+    body = body || {};
+    const name = String(body.name || '').trim(), email = String(body.email || '').trim(), password = String(body.password || '');
+    const details = [];
+    if (!name) details.push({ field: 'name', code: 'REQUIRED' });
+    if (!email) details.push({ field: 'email', code: 'REQUIRED' });
+    else if (!EMAIL_RE.test(email)) details.push({ field: 'email', code: 'INVALID' });
+    if (!password) details.push({ field: 'password', code: 'REQUIRED' });
+    else if (!passwordOk(password)) details.push({ field: 'password', code: 'WEAK' });
+    if (details.length) return fail(400, 'VALIDATION_ERROR', { details });
+    const taken = allUsers().some(u => bug('email-case') ? u.email === email : u.email.toLowerCase() === email.toLowerCase()); // BR-AUTH-03
+    if (taken) return fail(409, 'EMAIL_TAKEN');
+    const u = { id: 'cus-' + String(S.userSeq++).padStart(3, '0'), name, email, password, role: 'customer' };
+    S.users.push(u);
+    return ok(newSession(u), 201);
+  }],
+  ['POST', /^\/api\/auth\/forgot-password$/, (m, body) => {
+    const email = String((body && body.email) || '').trim();
+    if (!EMAIL_RE.test(email)) return fail(400, 'VALIDATION_ERROR', { details: [{ field: 'email', code: email ? 'INVALID' : 'REQUIRED' }] });
+    if (bug('login-enum') && !findUserByEmail(email)) return fail(404, 'USER_NOT_FOUND');
+    return ok({ message: 'If this email has an account, a reset link was sent.' }, 202);
+  }],
+  ['GET', /^\/api\/users$/, (m, body, q, ctx) => needAdmin(ctx) ||
+    ok(allUsers().map(u => Object.assign(publicUser(u), { locked: !!S.locked[u.id], failedLogins: S.attempts[u.id] || 0 })))],
+  ['POST', /^\/api\/users\/([^/]+)\/unlock$/, (m, body, q, ctx) => {
+    const deny = needAdmin(ctx); if (deny) return deny;
+    const u = allUsers().find(x => x.id === m[1]);
+    if (!u) return fail(404, 'NOT_FOUND');
+    S.locked[u.id] = false; S.attempts[u.id] = 0;
+    return ok(Object.assign(publicUser(u), { locked: false, failedLogins: 0 }));
+  }],
 ];
 
 const API_LOG = [];
 let apiSeq = 0;
-async function call(method, url, body) {
+// opts.token: send this token instead of the logged-in one (null = no Authorization header)
+async function call(method, url, body, opts) {
   const started = performance.now();
   const [path, query] = url.split('?');
+  const token = opts && 'token' in opts ? opts.token : getToken();
+  const headers = token ? { Authorization: 'Bearer ' + token } : {};
   await wait(LATENCY);
   let res = null;
   try {
     const route = ROUTES.find(r => r[0] === method && r[1].test(path));
-    res = route ? await route[2](path.match(route[1]), clone(body), new URLSearchParams(query || '')) : fail(404, 'NOT_FOUND', { path });
+    res = route ? await route[2](path.match(route[1]), clone(body), new URLSearchParams(query || ''), authContext(token)) : fail(404, 'NOT_FOUND', { path });
   } catch (e) { res = fail(500, 'INTERNAL_ERROR', { message: String(e && e.message || e) }); }
   save();
   const out = { status: res.status, ok: res.status < 400, body: clone(res.body) };
-  API_LOG.unshift({ n: ++apiSeq, method, url, status: res.status, ms: Math.round(performance.now() - started), req: clone(body), res: clone(res.body) });
+  API_LOG.unshift({ n: ++apiSeq, method, url, headers, status: res.status, ms: Math.round(performance.now() - started), req: clone(body), res: clone(res.body) });
   if (API_LOG.length > 60) API_LOG.pop();
   renderApiLog();
   return out;
 }
+/* Session kept by the browser: sessionStorage normally, localStorage with "Remember me" (BR-AUTH-05) */
+function getToken() { try { return sessionStorage.getItem(SESSION_KEY) || localStorage.getItem(SESSION_KEY) || null; } catch (e) { return null; } }
+function setToken(token, remember) {
+  try {
+    sessionStorage.removeItem(SESSION_KEY); localStorage.removeItem(SESSION_KEY);
+    if (token) (remember ? localStorage : sessionStorage).setItem(SESSION_KEY, token);
+  } catch (e) {}
+}
+function me() {
+  const s = S.sessions[getToken()];
+  if (!s || Date.now() > s.expiresAt) return null;
+  return allUsers().find(u => u.id === s.userId) || null;
+}
+
 window.shopApi = {
   get: url => call('GET', url), post: (url, body) => call('POST', url, body), patch: (url, body) => call('PATCH', url, body),
-  reset: () => call('POST', '/api/reset').then(r => { route(); return r; }),
+  // Send any request with a token of your choice, e.g. shopApi.request('GET', '/api/orders', null, 'tok_fake')
+  request: (method, url, body, token) => call(method, url, body, { token: token === undefined ? null : token }),
+  login: async (email, password, remember) => {
+    const r = await call('POST', '/api/auth/login', { email, password, remember: !!remember }, { token: null });
+    if (r.ok) { setToken(r.body.token, !!remember); route(); }
+    return r;
+  },
+  logout: async () => { const r = await call('POST', '/api/auth/logout'); setToken(null); route(); return r; },
+  reset: () => call('POST', '/api/reset').then(r => { setToken(null); route(); return r; }),
   coupons: COUPONS.map(c => c.code), testCards: TEST_CARDS.map(c => c[0]), today: TODAY,
+  users: SEED_USERS.map(u => ({ email: u.email, password: u.password, role: u.role })),
 };
 
 /* =====================================================================
@@ -643,7 +823,53 @@ const view = $('view');
 let flash = null; // { kind, text } shown once on the next render
 let catalogUI = { q: '', cat: 'All', sort: 'featured' };
 let checkoutDraft = { name: '', email: '', address: '', card: '' };
+let authDraft = { name: '', email: '', remember: false }; // passwords are never kept between renders
 let fieldErrors = {};
+
+// A labelled form field with its error. data-test="<id>-input" and "<id>-error".
+function field(id, label, type, value, extra, hint) {
+  const e = fieldErrors[id];
+  const inv = e ? ' aria-invalid="true"' : '';
+  let input;
+  if (type === 'textarea') input = '<textarea id="f-' + id + '" name="' + id + '" rows="3" data-test="' + id + '-input"' + inv + '>' + esc(value) + '</textarea>';
+  else if (type === 'password') input = '<span class="pw"><input type="password" id="f-' + id + '" name="' + id + '" data-test="' + id + '-input"' + inv + (extra || '') + '>' +
+    '<button type="button" class="pw-toggle" data-action="toggle-password" data-for="f-' + id + '" data-test="' + id + '-toggle" aria-pressed="false" aria-label="' + esc(t('showPassword')) + '">👁</button></span>';
+  else input = '<input type="' + type + '" id="f-' + id + '" name="' + id + '" value="' + esc(value) + '" data-test="' + id + '-input"' + inv + (extra || '') + '>';
+  return '<label class="field"><span>' + esc(label) + '</span>' + input + (hint ? '<span class="hint">' + esc(hint) + '</span>' : '') +
+    (e ? '<span class="field-error" data-test="' + id + '-error">' + esc(t('err' + e)) + '</span>' : '') + '</label>';
+}
+
+function viewLogin(next) {
+  const nextQ = next ? '?next=' + encodeURIComponent(next) : '';
+  const users = '<table>' + SEED_USERS.map(u => '<tr><td><button type="button" data-action="fill-user" data-email="' + u.email + '" data-password="' + esc(u.password) + '" data-test="fill-user">' + u.email + '</button></td>' +
+    '<td class="mono">' + esc(u.password) + '</td><td>' + esc(pick(u.note)) + '</td></tr>').join('') + '</table>';
+  return flashHtml() + '<div class="auth-wrap"><section class="card auth-card"><h1>' + esc(t('loginTitle')) + '</h1><p class="muted">' + esc(t('loginSub')) + '</p>' +
+    '<form class="form-grid" data-form="login" data-next="' + esc(next || '') + '" data-test="login-form" novalidate>' +
+    field('email', t('email'), 'email', authDraft.email, ' autocomplete="username" placeholder="jane@example.com"') +
+    field('password', t('password'), 'password', '', ' autocomplete="current-password"') +
+    '<label class="check"><input type="checkbox" name="remember" data-test="remember-me"' + (authDraft.remember ? ' checked' : '') + '> ' + esc(t('rememberMe')) + '</label>' +
+    '<button class="btn" type="submit" data-test="login-button">' + esc(t('login')) + '</button>' +
+    '<div class="auth-links"><a href="#/forgot" data-test="forgot-link">' + esc(t('forgotLink')) + '</a><a href="#/register' + nextQ + '" data-test="register-link">' + esc(t('registerLink')) + '</a></div></form></section>' +
+    '<aside class="card test-users" data-test="test-users"><h2>' + esc(t('testUsers')) + '</h2>' + users + '</aside></div>';
+}
+function viewRegister(next) {
+  const nextQ = next ? '?next=' + encodeURIComponent(next) : '';
+  return flashHtml() + '<div class="auth-wrap"><section class="card auth-card"><h1>' + esc(t('registerTitle')) + '</h1><p class="muted">' + esc(t('registerSub')) + '</p>' +
+    '<form class="form-grid" data-form="register" data-next="' + esc(next || '') + '" data-test="register-form" novalidate>' +
+    field('name', t('name'), 'text', authDraft.name, ' autocomplete="off" placeholder="Jane Doe"') +
+    field('email', t('email'), 'email', authDraft.email, ' autocomplete="off" placeholder="jane@example.com"') +
+    field('password', t('password'), 'password', '', ' autocomplete="new-password"', t('passwordRule')) +
+    field('confirm', t('confirmPassword'), 'password', '', ' autocomplete="new-password"') +
+    '<button class="btn" type="submit" data-test="register-button">' + esc(t('createAccount')) + '</button>' +
+    '<div class="auth-links"><a href="#/login' + nextQ + '" data-test="login-link">' + esc(t('haveAccount')) + '</a></div></form></section></div>';
+}
+function viewForgot() {
+  return flashHtml() + '<div class="auth-wrap"><section class="card auth-card"><h1>' + esc(t('forgotTitle')) + '</h1><p class="muted">' + esc(t('forgotSub')) + '</p>' +
+    '<form class="form-grid" data-form="forgot" data-test="forgot-form" novalidate>' + field('email', t('email'), 'email', authDraft.email, ' autocomplete="off" placeholder="jane@example.com"') +
+    '<button class="btn" type="submit" data-test="send-link-button">' + esc(t('sendLink')) + '</button>' +
+    '<div class="auth-links"><a href="#/login" data-test="login-link">' + esc(t('backToLogin')) + '</a></div></form></section></div>';
+}
+const viewForbidden = () => '<div class="empty card" data-test="forbidden"><span class="big">🚫</span><h1>403</h1><p style="margin-top:8px">' + esc(t('forbidden')) + '</p><p style="margin-top:14px"><a href="#/">' + esc(t('backToShop')) + '</a></p></div>';
 
 function cartLines() {
   return S.cart.map(l => { const p = product(l.sku); return p ? { p, qty: l.qty } : null; }).filter(Boolean);
@@ -661,7 +887,7 @@ function stockPill(p) {
   return '<span class="pill stock-in" data-test="stock-status" data-stock="' + p.stock + '">' + esc(t('inStock')) + '</span>';
 }
 const priceTag = (v, test) => '<span class="price" data-test="' + (test || 'product-price') + '" data-value="' + v + '">' + money(v) + '</span>';
-const flashHtml = () => { if (!flash) return ''; const f = flash; flash = null; return '<div class="alert ' + f.kind + '" role="' + (f.kind === 'error' ? 'alert' : 'status') + '" data-test="' + (f.kind === 'error' ? 'error-message' : 'success-message') + '">' + esc(f.text) + '</div>'; };
+const flashHtml = () => { if (!flash) return ''; const f = flash; flash = null; return '<div class="alert ' + f.kind + '" role="' + (f.kind === 'error' ? 'alert' : 'status') + '" data-test="' + f.kind + '-message">' + esc(f.text) + '</div>'; };
 
 function addToCart(sku, qty) {
   const line = S.cart.find(l => l.sku === sku);
@@ -776,14 +1002,10 @@ function viewCheckout() {
   if (!lines.length) { location.hash = '#/cart'; return ''; }
   const tot = cartTotals();
   const hasPhysical = lines.some(l => l.p.type === 'physical');
+  const u = me();
+  if (u && !checkoutDraft.name && !checkoutDraft.email) { checkoutDraft.name = u.name; checkoutDraft.email = u.email; }
   const d = checkoutDraft;
-  const fld = (id, label, type, value, extra) => {
-    const e = fieldErrors[id];
-    return '<label class="field"><span>' + esc(label) + '</span>' +
-      (type === 'textarea' ? '<textarea id="f-' + id + '" name="' + id + '" rows="3" data-test="' + id + '-input"' + (e ? ' aria-invalid="true"' : '') + '>' + esc(value) + '</textarea>'
-        : '<input type="' + type + '" id="f-' + id + '" name="' + id + '" value="' + esc(value) + '" data-test="' + id + '-input"' + (e ? ' aria-invalid="true"' : '') + (extra || '') + '>') +
-      (e ? '<span class="field-error" data-test="' + id + '-error">' + esc(t('err' + e)) + '</span>' : '') + '</label>';
-  };
+  const fld = field;
   return flashHtml() + '<div class="page-head"><h1>' + esc(t('checkoutTitle')) + '</h1></div><div class="two-col">' +
     '<form class="form-grid" data-form="checkout" data-test="checkout-form" novalidate>' +
     '<fieldset><legend>' + esc(t('customer')) + '</legend><p class="hint">' + esc(t('fakeData')) + '</p><div class="row2">' +
@@ -852,6 +1074,13 @@ function viewOrders() {
   return flashHtml() + '<div class="page-head"><h1>' + esc(t('ordersTitle')) + '</h1></div>' +
     (ordersCache.length ? '<div class="card">' + ordersTable(ordersCache, false) + '</div>' : '<div class="empty card" data-test="orders-empty"><span class="big">🧾</span>' + esc(t('ordersEmpty')) + '</div>');
 }
+function usersTable(users) {
+  return '<div class="table-scroll"><table class="list" data-test="admin-users"><thead><tr><th>ID</th><th>' + esc(t('name')) + '</th><th>' + esc(t('email')) + '</th><th>' + esc(t('colRole')) + '</th><th>' + esc(t('colAccount')) + '</th><th>' + esc(t('failedLogins')) + '</th><th></th></tr></thead><tbody>' +
+    users.map(u => '<tr data-test="admin-user-row" data-id="' + u.id + '" data-email="' + esc(u.email) + '"><td class="mono">' + u.id + '</td><td>' + esc(u.name) + '</td><td>' + esc(u.email) + '</td><td>' + u.role + '</td>' +
+      '<td><span class="pill ' + (u.locked ? 'stock-out' : 'stock-in') + '" data-test="account-status" data-locked="' + u.locked + '">' + esc(u.locked ? t('lockedSt') : t('active')) + '</span></td><td>' + u.failedLogins + '</td>' +
+      '<td>' + (u.locked ? '<button class="btn small ghost" type="button" data-action="unlock" data-id="' + u.id + '" data-email="' + esc(u.email) + '" data-test="unlock-user">' + esc(t('unlock')) + '</button>' : '') + '</td></tr>').join('') + '</tbody></table></div>';
+}
+let usersCache = [];
 function viewAdmin() {
   const rows = PRODUCTS.map(b => product(b.sku)).map(p => '<tr data-test="admin-product-row" data-sku="' + p.sku + '"><td class="mono">' + p.sku + '</td><td>' + esc(p.name) + '</td>' +
     '<td><input type="number" step="0.01" value="' + p.price + '" data-test="admin-price" aria-label="Price ' + p.sku + '"></td>' +
@@ -859,29 +1088,66 @@ function viewAdmin() {
     '<td><button class="btn small ghost" type="button" data-action="save-product" data-sku="' + p.sku + '" data-test="admin-save">' + esc(t('save')) + '</button></td></tr>').join('');
   return flashHtml() + '<div class="page-head"><div><h1>' + esc(t('adminTitle')) + '</h1><p>' + esc(t('adminSub')) + '</p></div></div><div class="admin-grid">' +
     '<section class="card"><h2 style="font-size:19px;margin-bottom:10px">' + esc(t('adminOrders')) + '</h2>' + (ordersCache.length ? ordersTable(ordersCache, true) : '<p class="muted">' + esc(t('ordersEmpty')) + '</p>') + '</section>' +
+    '<section class="card"><h2 style="font-size:19px;margin-bottom:10px">' + esc(t('adminUsers')) + '</h2>' + usersTable(usersCache) + '</section>' +
     '<section class="card"><h2 style="font-size:19px;margin-bottom:10px">' + esc(t('adminProducts')) + '</h2><div class="table-scroll"><table class="list" data-test="admin-products"><thead><tr><th>SKU</th><th>' + esc(t('productCol')) + '</th><th>€</th><th>' + esc(t('stock')) + '</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div></section>' +
     '<section class="card" style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between"><div><h2 style="font-size:19px">' + esc(t('resetTitle')) + '</h2><p class="muted">' + esc(t('resetSub')) + '</p></div>' +
     '<button class="btn danger" type="button" data-action="reset" data-test="reset-shop">' + esc(t('reset')) + '</button></section></div>';
 }
 
+const PROTECTED = ['checkout', 'orders', 'admin']; // BR-AUTH-06 / BR-AUTH-07
+let lastPage = null;
+function sendToLogin(path) {
+  flash = { kind: 'info', text: getToken() ? t('e_SESSION_EXPIRED') : t('loginNeeded') };
+  setToken(null);
+  location.hash = '#/login?next=' + encodeURIComponent(path);
+}
+function authFailed(r, path) { if (r.status === 401) { sendToLogin(path); return true; } return false; }
+function updateNav(page, user) {
+  document.querySelectorAll('[data-nav]').forEach(a => a.classList.toggle('on', a.dataset.nav === page || (page === 'product' && a.dataset.nav === 'catalog') || (page === 'checkout' && a.dataset.nav === 'cart')));
+  document.querySelector('[data-nav=admin]').hidden = !(user && user.role === 'admin');
+  $('auth-nav').innerHTML = user
+    ? '<span class="hello" data-test="user-greeting">' + esc(t('hello', { name: user.name.split(' ')[0] })) + '</span><button class="chip-btn" type="button" data-action="logout" data-test="logout-button">' + esc(t('logout')) + '</button>'
+    : '<a class="chip-btn" href="#/login" data-test="nav-login">' + esc(t('login')) + '</a>';
+}
+
 async function route() {
   const hash = location.hash.replace(/^#/, '') || '/';
-  const parts = hash.split('/').filter(Boolean);
+  const [hashPath, hashQuery] = hash.split('?');
+  const next = new URLSearchParams(hashQuery || '').get('next');
+  const parts = hashPath.split('/').filter(Boolean);
   const page = parts[0] || 'catalog';
-  document.querySelectorAll('[data-nav]').forEach(a => a.classList.toggle('on', a.dataset.nav === page || (page === 'product' && a.dataset.nav === 'catalog') || (page === 'checkout' && a.dataset.nav === 'cart')));
-  if (page !== 'checkout') fieldErrors = {};
+  if (page !== lastPage) { fieldErrors = {}; lastPage = page; }
+  const user = me();
+  if (PROTECTED.includes(page) && !user) { sendToLogin(hashPath); return; }
+  if ((page === 'login' || page === 'register') && user) { location.hash = '#' + (next || '/'); return; }
+  updateNav(page, user);
   let html;
   if (page === 'product') html = viewProduct(decodeURIComponent(parts[1] || ''));
   else if (page === 'cart') html = viewCart();
   else if (page === 'checkout') html = viewCheckout();
+  else if (page === 'login') html = viewLogin(next);
+  else if (page === 'register') html = viewRegister(next);
+  else if (page === 'forgot') html = viewForgot();
   else if (page === 'orders' && parts[1]) {
     const r = await call('GET', '/api/orders/' + encodeURIComponent(parts[1]));
+    if (authFailed(r, hashPath)) return;
     if (r.ok) orderCache[r.body.id] = r.body; else delete orderCache[parts[1]];
     html = viewOrder(parts[1]);
-  } else if (page === 'orders' || page === 'admin') {
+  } else if (page === 'orders') {
     const r = await call('GET', '/api/orders');
+    if (authFailed(r, hashPath)) return;
     ordersCache = r.ok ? r.body : [];
-    html = page === 'orders' ? viewOrders() : viewAdmin();
+    html = viewOrders();
+  } else if (page === 'admin') {
+    if (user.role !== 'admin' && !bug('admin-open')) html = viewForbidden();
+    else {
+      const r = await call('GET', '/api/orders?all=1');
+      if (authFailed(r, hashPath)) return;
+      const ru = await call('GET', '/api/users');
+      ordersCache = r.ok ? r.body : [];
+      usersCache = ru.ok ? ru.body : [];
+      html = viewAdmin();
+    }
   } else html = viewCatalog();
   if (location.hash.replace(/^#/, '') !== hash && location.hash) return; // navigated away while loading
   view.innerHTML = html;
@@ -929,6 +1195,7 @@ document.addEventListener('click', async e => {
   } else if (a === 'order') {
     busy(el, true);
     const r = await call('POST', '/api/orders/' + el.dataset.id + '/' + el.dataset.op);
+    if (authFailed(r, location.hash.replace(/^#/, '').split('?')[0])) return;
     if (r.ok) flash = { kind: 'success', text: el.dataset.op === 'cancel' ? t('cancelled') : el.dataset.op === 'refund' ? t('refunded') : statusLabel(r.body.status) + ' ✓' };
     else flash = { kind: 'error', text: errorText(r.body) };
     route();
@@ -945,8 +1212,31 @@ document.addEventListener('click', async e => {
     if (!confirm(t('resetConfirm'))) return;
     busy(el, true);
     await call('POST', '/api/reset');
+    setToken(null);
     checkoutDraft = { name: '', email: '', address: '', card: '' }; orderCache = {};
-    flash = { kind: 'success', text: t('resetDone' ) };
+    flash = { kind: 'success', text: t('resetDone') };
+    if (location.hash === '#/') route(); else location.hash = '#/';
+  } else if (a === 'fill-user') {
+    const f = $('f-email'), p = $('f-password');
+    if (f) { f.value = el.dataset.email; authDraft.email = el.dataset.email; }
+    if (p) p.value = el.dataset.password;
+  } else if (a === 'toggle-password') {
+    const input = $(el.dataset.for); if (!input) return;
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    el.setAttribute('aria-pressed', String(show));
+    el.setAttribute('aria-label', t(show ? 'hidePassword' : 'showPassword'));
+    el.textContent = show ? '🙈' : '👁';
+  } else if (a === 'logout') {
+    await call('POST', '/api/auth/logout');
+    setToken(null);
+    checkoutDraft = { name: '', email: '', address: '', card: '' };
+    flash = { kind: 'success', text: t('loggedOut') };
+    if (location.hash === '#/' || !location.hash) route(); else location.hash = '#/';
+  } else if (a === 'unlock') {
+    busy(el, true);
+    const r = await call('POST', '/api/users/' + el.dataset.id + '/unlock');
+    flash = r.ok ? { kind: 'success', text: t('unlocked', { email: el.dataset.email }) } : { kind: 'error', text: errorText(r.body) };
     route();
   }
 });
@@ -960,6 +1250,10 @@ document.addEventListener('input', e => {
   if (e.target.closest('[data-form=checkout]')) {
     const map = { name: 'name', email: 'email', address: 'address', card: 'card' };
     if (map[e.target.name]) checkoutDraft[map[e.target.name]] = e.target.value;
+  }
+  if (e.target.closest('[data-form=login], [data-form=register], [data-form=forgot]')) {
+    if (e.target.name === 'name' || e.target.name === 'email') authDraft[e.target.name] = e.target.value;
+    if (e.target.name === 'remember') authDraft.remember = e.target.checked;
   }
 });
 document.addEventListener('change', e => {
@@ -999,6 +1293,7 @@ document.addEventListener('submit', async e => {
       flash = { kind: 'error', text: t('e_VALIDATION_ERROR') }; busy(btn, false); route(); return;
     }
     const created = await call('POST', '/api/orders', body);
+    if (authFailed(created, '/checkout')) return;
     if (!created.ok) {
       if (created.body.error === 'VALIDATION_ERROR') created.body.details.forEach(d => { fieldErrors[d.field === 'shippingAddress' ? 'address' : d.field] = d.code; });
       flash = { kind: 'error', text: errorText(created.body) };
@@ -1010,9 +1305,57 @@ document.addEventListener('submit', async e => {
     checkoutDraft.card = '';
     flash = paid.ok ? { kind: 'success', text: t('placed') } : { kind: 'error', text: paid.body.error === 'PAYMENT_FAILED' ? t('placedUnpaid', { id: order.id }) : errorText(paid.body) };
     location.hash = '#/orders/' + order.id;
+  } else if (kind === 'login') {
+    const email = $('f-email').value.trim(), password = $('f-password').value;
+    authDraft.email = email; authDraft.remember = form.querySelector('[name=remember]').checked;
+    fieldErrors = {};
+    if (!email) fieldErrors.email = 'REQUIRED';
+    if (!password) fieldErrors.password = 'REQUIRED';
+    if (fieldErrors.email || fieldErrors.password) { route(); return; }
+    busy(btn, true);
+    const r = await call('POST', '/api/auth/login', { email, password, remember: authDraft.remember }, { token: null });
+    if (r.ok) {
+      setToken(r.body.token, authDraft.remember);
+      authDraft = { name: '', email: '', remember: false };
+      flash = { kind: 'success', text: t('welcome', { name: r.body.user.name }) };
+      location.hash = '#' + (form.dataset.next || '/');
+    } else {
+      flash = { kind: 'error', text: errorText(r.body) };
+      route(); // the password field comes back empty
+    }
+  } else if (kind === 'register') {
+    const password = $('f-password').value, confirmPw = $('f-confirm').value;
+    fieldErrors = {};
+    if (password !== confirmPw) { // checked in the browser only: the API never sees the confirmation
+      fieldErrors.confirm = 'MISMATCH'; flash = { kind: 'error', text: t('e_VALIDATION_ERROR') }; route(); return;
+    }
+    busy(btn, true);
+    const r = await call('POST', '/api/auth/register', { name: authDraft.name, email: authDraft.email, password }, { token: null });
+    if (r.ok) {
+      setToken(r.body.token, false);
+      authDraft = { name: '', email: '', remember: false };
+      flash = { kind: 'success', text: t('accountCreated', { name: r.body.user.name }) };
+      location.hash = '#' + (form.dataset.next || '/');
+      return;
+    }
+    if (r.body.error === 'VALIDATION_ERROR') r.body.details.forEach(d => { fieldErrors[d.field] = d.code; });
+    if (r.body.error === 'EMAIL_TAKEN') fieldErrors.email = 'TAKEN';
+    flash = { kind: 'error', text: errorText(r.body) };
+    route();
+  } else if (kind === 'forgot') {
+    fieldErrors = {};
+    busy(btn, true);
+    const r = await call('POST', '/api/auth/forgot-password', { email: authDraft.email }, { token: null });
+    if (r.ok) flash = { kind: 'info', text: t('forgotSent') };
+    else {
+      if (r.body.error === 'VALIDATION_ERROR') r.body.details.forEach(d => { fieldErrors[d.field] = d.code; });
+      flash = { kind: 'error', text: errorText(r.body) };
+    }
+    route();
   } else if (kind === 'pay') {
     busy(btn, true);
     const r = await call('POST', '/api/orders/' + form.dataset.id + '/pay', { cardNumber: $('pay-card').value });
+    if (authFailed(r, '/orders/' + form.dataset.id)) return;
     flash = r.ok ? { kind: 'success', text: t('paid') } : { kind: 'error', text: errorText(r.body) };
     route();
   }
@@ -1026,7 +1369,7 @@ function renderApiLog() {
   list.innerHTML = API_LOG.length ? API_LOG.map(x =>
     '<details class="api-entry" data-test="api-entry" data-method="' + x.method + '" data-status="' + x.status + '"><summary><span class="m m-' + x.method + '">' + x.method + '</span><span class="path">' + esc(x.url) + '</span>' +
     '<span class="' + (x.status < 400 ? 'code-ok' : 'code-bad') + '">' + x.status + '</span><span class="muted">' + x.ms + 'ms</span></summary>' +
-    '<pre>' + (x.req !== undefined ? '<span>// ' + esc(t('request')) + '</span>\n' + esc(JSON.stringify(x.req, null, 2)) + '\n' : '') + '<span>// ' + esc(t('response')) + ' ' + x.status + '</span>\n' + esc(JSON.stringify(x.res, null, 2)) + '</pre></details>').join('')
+    '<pre>' + (x.headers && x.headers.Authorization ? '<span>Authorization: ' + esc(x.headers.Authorization) + '</span>\n' : '') + (x.req !== undefined ? '<span>// ' + esc(t('request')) + '</span>\n' + esc(JSON.stringify(x.req, null, 2)) + '\n' : '') + '<span>// ' + esc(t('response')) + ' ' + x.status + '</span>\n' + esc(JSON.stringify(x.res, null, 2)) + '</pre></details>').join('')
     : '<p class="muted" style="padding:12px;font-size:13px">' + esc(t('apiEmpty')) + '</p>';
 }
 $('api-toggle').addEventListener('click', () => {
@@ -1052,7 +1395,7 @@ $('lang-btn').addEventListener('click', () => {
   applyStatic(); route();
 });
 // Another tab of the shop changed the data: reload it here too.
-window.addEventListener('storage', e => { if (e.key === STORE_KEY) { S = loadState(); route(); } });
+window.addEventListener('storage', e => { if (e.key === STORE_KEY || e.key === SESSION_KEY) { S = loadState(); route(); } });
 window.addEventListener('hashchange', () => { route(); window.scrollTo(0, 0); });
 applyStatic();
 route();

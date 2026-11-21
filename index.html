@@ -510,7 +510,23 @@ pre.cat-json { margin: 0; background: var(--code-bg); color: var(--code-ink); bo
 .rule-link { background: var(--bg); border: 1px solid var(--line); color: var(--sakura); font-family: var(--font-mono); font-size: 12px; border-radius: 999px; padding: 2px 10px; }
 .rule-link:hover { border-color: var(--sakura); }
 .howto-step code { background: var(--code-bg); color: var(--code-ink); padding: 1px 5px; border-radius: 4px; font-size: .88em; }
+/* Big screens: the whole page grows with the window, so header, hero and cards keep their proportions */
+body { zoom: var(--ui-scale, 1); }
 </style>
+
+<script>
+/* The page is designed at 1366 px wide. On wider windows (big monitors, or zoomed out) it scales up to 2×,
+   so it looks the same as on a laptop. Below 1366 px nothing changes, so zooming in still works. */
+(function () {
+  const BASE = 1366, MAX = 2;
+  const fit = () => {
+    const s = Math.min(MAX, Math.max(1, window.innerWidth / BASE));
+    document.documentElement.style.setProperty('--ui-scale', s.toFixed(3));
+  };
+  fit();
+  window.addEventListener('resize', fit);
+})();
+</script>
 
 <div class="wrap">
   <header class="top" id="top-bar">
@@ -1727,6 +1743,20 @@ RULEBOOK = {
       rules: [
         { id: 'BR-CUS-01', text: L('Every customer has an email.', 'Toda cliente tem um e-mail.'), ex: [] },
         { id: 'BR-CUS-02', text: L('Tests and exercises use made-up customers only, like Jane Doe (<code>jane@example.com</code>). Never real people.', 'Testes e exercícios só usam clientes inventadas, como Jane Doe (<code>jane@example.com</code>). Nunca pessoas reais.'), ex: [] },
+      ],
+    },
+    {
+      id: 'auth', code: 'AUTH', name: L('Accounts and login', 'Contas e login'), icon: '🔑',
+      what: L('How customers sign up, log in and stay logged in. Try every rule in the mock shop.', 'Como as clientes criam conta, entram e continuam logadas. Teste cada regra na lojinha.'),
+      link: ['shop/#/login', L('Open the shop’s login →', 'Abrir o login da lojinha →')],
+      rules: [
+        { id: 'BR-AUTH-01', text: L('A wrong email and a wrong password get the same answer: <code>401</code> <code>"INVALID_CREDENTIALS"</code>. The shop never tells which one was wrong.', 'E-mail errado e senha errada recebem a mesma resposta: <code>401</code> <code>"INVALID_CREDENTIALS"</code>. A loja nunca diz qual dos dois estava errado.'), ex: [] },
+        { id: 'BR-AUTH-02', text: L('After 3 wrong passwords in a row the account is locked (<code>423</code> <code>"ACCOUNT_LOCKED"</code>), even with the right password. Only an admin unlocks it.', 'Depois de 3 senhas erradas seguidas a conta é bloqueada (<code>423</code> <code>"ACCOUNT_LOCKED"</code>), mesmo com a senha certa. Só um admin desbloqueia.'), ex: [] },
+        { id: 'BR-AUTH-03', text: L('An email has only one account, ignoring upper and lower case: <code>409</code> <code>"EMAIL_TAKEN"</code>.', 'Um e-mail tem uma única conta, sem diferenciar maiúsculas de minúsculas: <code>409</code> <code>"EMAIL_TAKEN"</code>.'), ex: [] },
+        { id: 'BR-AUTH-04', text: L('A password has at least 8 characters, with letters and numbers.', 'Uma senha tem pelo menos 8 caracteres, com letras e números.'), ex: [] },
+        { id: 'BR-AUTH-05', text: L('A session ends after 30 idle minutes (<code>401</code> <code>"SESSION_EXPIRED"</code>). Without “Remember me” it also ends when the tab is closed.', 'Uma sessão termina depois de 30 minutos parada (<code>401</code> <code>"SESSION_EXPIRED"</code>). Sem “Lembrar de mim”, ela também termina quando a aba é fechada.'), ex: [] },
+        { id: 'BR-AUTH-06', text: L('Checkout and orders need a login, and a customer only sees her own orders. Someone else’s order answers <code>404</code>.', 'Checkout e pedidos exigem login, e cada cliente só vê os próprios pedidos. O pedido de outra pessoa responde <code>404</code>.'), ex: [] },
+        { id: 'BR-AUTH-07', text: L('Only an admin opens the back office and changes products or ships orders. Anyone else gets <code>403</code> <code>"FORBIDDEN"</code>.', 'Só um admin abre o painel, muda produtos ou envia pedidos. Qualquer outra pessoa recebe <code>403</code> <code>"FORBIDDEN"</code>.'), ex: [] },
       ],
     },
     {
