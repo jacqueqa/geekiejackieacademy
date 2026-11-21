@@ -39,13 +39,14 @@ Todas as trilhas usam o mesmo universo: os produtos, pedidos, cupons e regras da
 - **Regras da Loja**: as regras de negócio, cada uma ligada aos exercícios que a usam.
 - **Catálogo de produtos**: os dados de mentira dos exercícios, em cartões ou em JSON.
 - **Grimório do Git**: todos os comandos, erros comuns e glossário.
+- **Glossário de programação**: 34 termos explicados de forma simples, com exemplos da lojinha, busca (sem diferenciar acentos e maiúsculas), navegação A–Z e filtros por categoria e por trilha.
 - **A lojinha** ([`shop/`](shop/)): um e-commerce de mentira com as mesmas regras e produtos, para treinar testes manuais, Cypress e testes de API. Veja o [guia da loja](shop/README.md).
 - **Meu trabalho (.md)**: exporta o progresso e o código em Markdown.
 - **Duas línguas**: português do Brasil e inglês. Código, comandos e nomes de testes ficam em inglês, como nos projetos reais.
 
 ### Como usar
 
-É um único arquivo, `index.html`, sem nada para instalar. Abra no navegador ou publique com o GitHub Pages. O progresso fica salvo no navegador de quem usa.
+É uma página, `index.html`, mais os termos do glossário em `glossary.js`, sem nada para instalar. Abra no navegador ou publique com o GitHub Pages. O progresso fica salvo no navegador de quem usa.
 
 ### Como editar o conteúdo
 
@@ -67,7 +68,11 @@ Só precisa do Node (22 ou mais), sem instalar nada:
 node --test "tests/*.test.mjs"
 ```
 
-Eles conferem o cálculo do progresso, o bloqueio abaixo de 80%, o desbloqueio em exatamente 24 de 30, que soluções reveladas não contam, e, para cada um dos 30 exercícios, que a solução de referência passa em todos os testes (visíveis e ocultos) e que o código inicial falha.
+Eles conferem o cálculo do progresso, o bloqueio abaixo de 80%, o desbloqueio em exatamente 24 de 30, que soluções reveladas não contam, e, para cada um dos 30 exercícios, que a solução de referência passa em todos os testes (visíveis e ocultos) e que o código inicial falha. No glossário, conferem os campos, que não há termos repetidos, a ordem alfabética, a busca (acentos, maiúsculas, sigla, sem resultados), os filtros e a barra A–Z.
+
+### Como adicionar um termo ao glossário
+
+Os termos ficam em `glossary.js`, separados da página. Copie um item da lista `GLOSSARY` e preencha `term`, `definition` (1 a 3 frases curtas) e `category` (uma de `GLOSSARY_CATEGORIES`). `abbr` (sigla ou nome em inglês), `example` (código ou situação da lojinha, como comentário `// ...`) e `tracks` (`start`, `dev`, `qa`, `ai`) são opcionais. A ordem não importa: a página ordena sozinha. Depois rode os testes.
 
 ---
 
@@ -103,6 +108,7 @@ Every track shares the same world: the shop’s products, orders, coupons and ru
 - **XP, ranks and badges** per track, hints (3 XP each) and a solution after 2 failed attempts.
 - **Shop Rulebook**: the business rules, each linked to the exercises that use it.
 - **Product catalog**: the exercises’ mock data, as cards or as JSON.
+- **Programming glossary**: 34 terms explained simply, with shop examples, search (ignoring accents and case), A–Z navigation and filters by category and track. The definitions are in Portuguese for now.
 - **Git grimoire**: every command, common errors and a glossary.
 - **The shop** ([`shop/`](shop/)): a mock e-commerce with the same rules and products, to practise manual tests, Cypress and API checks. See the [shop guide](shop/README.md).
 - **My work (.md)**: exports progress and code as Markdown.
@@ -110,7 +116,7 @@ Every track shares the same world: the shop’s products, orders, coupons and ru
 
 ### How to use it
 
-It is a single `index.html` file with nothing to install. Open it in a browser or publish it with GitHub Pages. Progress is saved in each learner’s browser.
+It is one page, `index.html`, plus the glossary terms in `glossary.js`, with nothing to install. Open it in a browser or publish it with GitHub Pages. Progress is saved in each learner’s browser.
 
 ### How to edit the content
 
@@ -132,7 +138,11 @@ Only Node (22 or later) is needed, nothing to install:
 node --test "tests/*.test.mjs"
 ```
 
-They check the progress maths, the lock below 80%, the unlock at exactly 24 of 30, that revealed solutions don’t count, and, for each of the 30 exercises, that the reference solution passes every test (visible and hidden) and the starter code fails.
+They check the progress maths, the lock below 80%, the unlock at exactly 24 of 30, that revealed solutions don’t count, and, for each of the 30 exercises, that the reference solution passes every test (visible and hidden) and the starter code fails. For the glossary they check the fields, no duplicates, the alphabetical order, the search (accents, case, acronyms, no results), the filters and the A–Z bar.
+
+### Adding a glossary term
+
+Terms live in `glossary.js`, apart from the page. Copy an item of `GLOSSARY` and fill in `term`, `definition` (1 to 3 short sentences) and `category` (one of `GLOSSARY_CATEGORIES`). `abbr`, `example` and `tracks` (`start`, `dev`, `qa`, `ai`) are optional. Order doesn't matter: the page sorts them. Then run the tests.
 
 ---
 
