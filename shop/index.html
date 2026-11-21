@@ -1,0 +1,1061 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lojinha da Bruxa Maria</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Mock e-commerce of Bruxa Maria's shop, for students to practise manual tests, Cypress/WebdriverIO and API checks.
+   Same palette as the academy: a candle-lit shop at night. Every element a test needs has a data-test attribute. */
+:root {
+  --geek: #38244F; --sakura: #EBA4C8; --lavender: #7773C9; --lavender-hi: #A6A2F0; --cyan: #69C9D5; --cream: #FFF2E5;
+  --bg: #22123A; --surface: #2E1A4A; --surface-2: #362056; --ink: var(--cream); --muted: #C4B3D6; --line: #4A3366;
+  --accent: var(--sakura); --accent-ink: var(--geek);
+  --gold: #F6C85F; --pass: #62D394; --fail: #FF8A8A; --fail-soft: #4A1E2C; --pass-soft: #1E3F33; --gold-soft: #43301F;
+  --code-bg: #170C29;
+  --radius: 14px;
+  --font-display: "Fredoka", "Nunito", system-ui, sans-serif;
+  --font-body: "Nunito", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  background-image: radial-gradient(900px 500px at 12% -10%, rgba(235,164,200,.14), transparent 60%), radial-gradient(800px 500px at 100% 0%, rgba(119,115,201,.2), transparent 60%);
+  background-attachment: fixed;
+  font: 15px/1.55 var(--font-body);
+  padding: 0 16px 120px;
+}
+h1, h2, h3 { font-family: var(--font-display); margin: 0; line-height: 1.15; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--sakura); }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; opacity: .55; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+code, .mono { font-family: var(--font-mono); font-size: .92em; }
+.wrap { max-width: 1120px; margin: 0 auto; }
+
+/* Header */
+.top { position: sticky; top: 0; z-index: 20; background: rgba(34,18,58,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); margin: 0 -16px; padding: 12px 16px; }
+.top .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); margin-right: auto; }
+.brand-mark { width: 40px; height: 40px; border-radius: 10px; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font-size: 20px; }
+.brand b { font-family: var(--font-display); font-size: 20px; display: block; line-height: 1.1; }
+.brand small { color: var(--muted); font-size: 12px; }
+.nav { display: flex; flex-wrap: wrap; gap: 4px; }
+.nav a { color: var(--muted); text-decoration: none; padding: 7px 12px; border-radius: 99px; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; }
+.nav a:hover { color: var(--ink); background: var(--surface); }
+.nav a.on { color: var(--accent-ink); background: var(--accent); }
+.count { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 99px; background: var(--gold); color: var(--geek); font-size: 12px; font-weight: 800; display: inline-grid; place-items: center; }
+.tools { display: flex; gap: 6px; }
+.chip-btn { background: var(--surface); border: 1px solid var(--line); border-radius: 99px; padding: 5px 11px; font-size: 13px; font-weight: 700; color: var(--muted); }
+.chip-btn:hover { color: var(--ink); border-color: var(--lavender); }
+
+@media (max-width: 640px) { .top { position: static; } }
+.promo { margin: 16px auto 0; max-width: 1120px; background: var(--surface); border: 1px dashed var(--lavender); border-radius: var(--radius); padding: 10px 14px; font-size: 14px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.promo b { color: var(--gold); }
+main { padding-top: 20px; }
+.page-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.page-head h1 { font-size: 28px; }
+.page-head p { color: var(--muted); }
+
+/* Generic */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+.btn { border: 0; border-radius: 10px; padding: 10px 16px; font-weight: 800; background: var(--accent); color: var(--accent-ink); display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; }
+.btn:hover:not(:disabled) { filter: brightness(1.08); }
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn.ghost:hover:not(:disabled) { border-color: var(--lavender-hi); }
+.btn.danger { background: transparent; color: var(--fail); border: 1px solid var(--fail); }
+.btn.small { padding: 6px 10px; font-size: 13px; border-radius: 8px; }
+.btn.block { width: 100%; }
+.btn[aria-busy="true"]::after { content: ""; width: 14px; height: 14px; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+input[type=text], input[type=email], input[type=number], input[type=search], select, textarea {
+  background: var(--code-bg); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; width: 100%; color: var(--ink);
+}
+input:focus, select:focus, textarea:focus { border-color: var(--lavender-hi); outline: none; }
+input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: var(--fail); }
+label.field { display: flex; flex-direction: column; gap: 5px; font-weight: 700; font-size: 14px; }
+.field-error { color: var(--fail); font-size: 13px; font-weight: 600; }
+.hint { color: var(--muted); font-size: 13px; font-weight: 400; }
+.alert { border-radius: 10px; padding: 11px 14px; font-weight: 600; border: 1px solid; margin-bottom: 14px; }
+.alert.error { background: var(--fail-soft); border-color: var(--fail); color: #FFD2D2; }
+.alert.success { background: var(--pass-soft); border-color: var(--pass); color: #CFF5DF; }
+.alert.info { background: var(--gold-soft); border-color: var(--gold); color: #FCE7B5; }
+.empty { text-align: center; padding: 40px 16px; color: var(--muted); }
+.empty .big { font-size: 42px; display: block; margin-bottom: 8px; }
+.muted { color: var(--muted); }
+
+/* Catalog */
+.filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px; }
+.filters input[type=search] { flex: 1 1 220px; width: auto; }
+.filters select { width: auto; flex: 0 0 auto; }
+.cats { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+.cat { background: transparent; border: 1px solid var(--line); border-radius: 99px; padding: 6px 13px; font-weight: 700; font-size: 13px; color: var(--muted); }
+.cat[aria-pressed="true"] { background: var(--lavender); border-color: var(--lavender); color: #fff; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+.p-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; transition: border-color .15s, transform .15s; }
+.p-card:hover { border-color: var(--lavender); transform: translateY(-2px); }
+.p-media { height: 120px; display: grid; place-items: center; font-size: 54px; background: linear-gradient(135deg, var(--surface-2), var(--code-bg)); text-decoration: none; position: relative; }
+.p-media .tag { position: absolute; top: 10px; left: 10px; font-size: 11px; }
+.p-body { padding: 14px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.p-body h3 { font-size: 17px; }
+.p-body h3 a { color: var(--ink); text-decoration: none; }
+.p-body h3 a:hover { color: var(--sakura); }
+.sku { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.price { font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--gold); }
+.p-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 8px; }
+.pill { display: inline-block; border-radius: 99px; padding: 2px 9px; font-size: 12px; font-weight: 800; border: 1px solid currentColor; white-space: nowrap; }
+.stock-in { color: var(--pass); }
+.stock-low { color: var(--gold); }
+.stock-out { color: var(--fail); }
+.stock-digital { color: var(--cyan); }
+.tag { background: var(--code-bg); border-radius: 99px; padding: 2px 9px; color: var(--muted); font-weight: 700; }
+
+/* Product page */
+.crumbs { font-size: 14px; color: var(--muted); margin-bottom: 14px; }
+.crumbs a { color: var(--muted); }
+.pdp { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 20px; }
+@media (max-width: 760px) { .pdp { grid-template-columns: minmax(0, 1fr); } }
+.pdp-media { min-height: 280px; display: grid; place-items: center; font-size: 120px; border-radius: var(--radius); background: linear-gradient(135deg, var(--surface-2), var(--code-bg)); border: 1px solid var(--line); }
+.pdp-info { display: flex; flex-direction: column; gap: 12px; }
+.pdp-info h1 { font-size: 32px; }
+.pdp-info .price { font-size: 30px; }
+.buy-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
+.qty { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--code-bg); }
+.qty button { background: transparent; border: 0; width: 36px; height: 40px; font-size: 18px; font-weight: 800; color: var(--ink); }
+.qty button:hover { background: var(--surface-2); }
+.qty input { width: 60px; text-align: center; border: 0; border-radius: 0; background: transparent; padding: 8px 4px; -moz-appearance: textfield; }
+.qty input::-webkit-outer-spin-button, .qty input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+dl.specs { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 0; font-size: 14px; }
+dl.specs dt { color: var(--muted); }
+dl.specs dd { margin: 0; }
+
+/* Cart & checkout */
+.two-col { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 20px; align-items: start; }
+@media (max-width: 860px) { .two-col { grid-template-columns: minmax(0, 1fr); } }
+.lines { display: flex; flex-direction: column; gap: 10px; }
+.line { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto auto; gap: 12px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+.line .ico { width: 56px; height: 56px; border-radius: 10px; background: var(--code-bg); display: grid; place-items: center; font-size: 28px; }
+.line .name { font-weight: 800; }
+.line .name a { color: var(--ink); text-decoration: none; }
+.line .line-total { font-weight: 800; min-width: 80px; text-align: right; }
+.line .warn { color: var(--gold); font-size: 13px; }
+@media (max-width: 560px) {
+  .line { grid-template-columns: 48px minmax(0, 1fr); }
+  .line .ico { width: 48px; height: 48px; }
+  .line .qty, .line .line-actions { grid-column: 2; }
+  .line .line-total { text-align: left; grid-column: 2; }
+}
+.summary { display: flex; flex-direction: column; gap: 12px; position: sticky; top: 90px; }
+.summary h2 { font-size: 19px; }
+.sum-row { display: flex; justify-content: space-between; gap: 10px; font-size: 15px; }
+.sum-row.discount { color: var(--pass); }
+.sum-row.total { font-family: var(--font-display); font-size: 21px; font-weight: 700; border-top: 1px solid var(--line); padding-top: 10px; }
+.sum-row.total span:last-child { color: var(--gold); }
+.coupon-form { display: flex; gap: 8px; }
+.coupon-form input { text-transform: uppercase; }
+.coupon-msg { font-size: 13px; font-weight: 700; }
+.coupon-msg.ok { color: var(--pass); }
+.coupon-msg.bad { color: var(--fail); }
+.ship-hint { font-size: 13px; color: var(--cyan); font-weight: 700; }
+.form-grid { display: grid; gap: 14px; }
+.form-grid .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 560px) { .form-grid .row2 { grid-template-columns: 1fr; } }
+fieldset { border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin: 0; display: grid; gap: 12px; }
+legend { font-family: var(--font-display); font-weight: 600; padding: 0 6px; }
+.test-cards { font-size: 13px; color: var(--muted); }
+.test-cards table { border-collapse: collapse; margin-top: 6px; }
+.test-cards td { padding: 3px 12px 3px 0; }
+.test-cards button { background: none; border: 0; padding: 0; color: var(--cyan); font-family: var(--font-mono); text-decoration: underline dotted; }
+
+/* Orders */
+table.list { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.list th { text-align: left; color: var(--muted); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+table.list td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+table.list tr:last-child td { border-bottom: 0; }
+.table-scroll { overflow-x: auto; }
+.status { display: inline-block; border-radius: 99px; padding: 3px 10px; font-size: 12px; font-weight: 800; }
+.status[data-status="Pending"] { background: var(--gold-soft); color: var(--gold); }
+.status[data-status="Paid"] { background: var(--pass-soft); color: var(--pass); }
+.status[data-status="Shipped"] { background: #1C3A44; color: var(--cyan); }
+.status[data-status="Delivered"] { background: #3A2552; color: var(--lavender-hi); }
+.status[data-status="Cancelled"], .status[data-status="Refunded"] { background: var(--fail-soft); color: var(--fail); }
+.stepper { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 4px 0 16px; }
+.step { padding: 5px 12px; border-radius: 99px; border: 1px dashed var(--line); color: var(--muted); font-size: 13px; font-weight: 700; }
+.step.done { border-style: solid; border-color: var(--pass); color: var(--pass); }
+.step.now { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.step.side { border-style: solid; border-color: var(--fail); color: var(--fail); }
+.arrow { color: var(--line); }
+.order-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.history { font-size: 13px; color: var(--muted); display: grid; gap: 4px; margin: 0; padding-left: 18px; }
+
+/* Admin */
+.admin-grid { display: grid; gap: 20px; }
+.admin-grid input[type=number] { width: 110px; padding: 6px 8px; }
+
+/* API log */
+.api-dock { position: fixed; right: 16px; bottom: 16px; z-index: 30; width: min(520px, calc(100vw - 32px)); }
+.api-toggle { float: right; background: var(--code-bg); border: 1px solid var(--lavender); color: var(--lavender-hi); border-radius: 99px; padding: 8px 14px; font-family: var(--font-mono); font-size: 13px; box-shadow: 0 6px 24px rgba(0,0,0,.4); }
+.api-panel { clear: both; margin-top: 8px; background: var(--code-bg); border: 1px solid var(--lavender); border-radius: 12px; max-height: 55vh; overflow: auto; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
+.api-panel header { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--code-bg); }
+.api-panel header b { font-family: var(--font-display); }
+.api-entry { border-bottom: 1px solid var(--line); font-family: var(--font-mono); font-size: 12.5px; }
+.api-entry summary { padding: 8px 12px; cursor: pointer; display: flex; gap: 8px; align-items: center; list-style: none; }
+.api-entry summary::-webkit-details-marker { display: none; }
+.m { font-weight: 600; min-width: 46px; }
+.m-GET { color: var(--cyan); } .m-POST { color: var(--pass); } .m-PATCH { color: var(--gold); } .m-DELETE { color: var(--fail); }
+.code-ok { color: var(--pass); } .code-bad { color: var(--fail); }
+.api-entry .path { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.api-entry pre { margin: 0; padding: 8px 12px 12px; white-space: pre-wrap; word-break: break-word; color: #F1E6F7; }
+.api-entry pre span { color: var(--muted); }
+
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--pass-soft); color: #CFF5DF; border: 1px solid var(--pass); padding: 10px 18px; border-radius: 99px; font-weight: 800; z-index: 40; box-shadow: 0 6px 24px rgba(0,0,0,.4); max-width: calc(100vw - 32px); }
+.toast.error { background: var(--fail-soft); color: #FFD2D2; border-color: var(--fail); }
+footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#/" data-test="brand-link">
+      <span class="brand-mark" aria-hidden="true">🔮</span>
+      <span><b data-i18n="brand"></b><small data-i18n="tagline"></small></span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="#/" data-nav="catalog" data-test="nav-catalog"><span data-i18n="navShop"></span></a>
+      <a href="#/cart" data-nav="cart" data-test="nav-cart"><span data-i18n="navCart"></span> <span class="count" data-test="cart-count" id="cart-count">0</span></a>
+      <a href="#/orders" data-nav="orders" data-test="nav-orders"><span data-i18n="navOrders"></span></a>
+      <a href="#/admin" data-nav="admin" data-test="nav-admin"><span data-i18n="navAdmin"></span></a>
+    </nav>
+    <div class="tools">
+      <button class="chip-btn" type="button" id="lang-btn" data-test="lang-toggle"></button>
+    </div>
+  </div>
+</header>
+<div class="promo" data-test="promo-bar"><span data-i18n-html="promoShipping"></span><span data-i18n-html="promoCoupon"></span></div>
+<main class="wrap" id="view" tabindex="-1"></main>
+<div class="wrap"><footer id="footer"></footer></div>
+
+<div class="api-dock">
+  <button class="api-toggle" type="button" id="api-toggle" data-test="api-log-toggle" aria-expanded="false"></button>
+  <section class="api-panel" id="api-panel" data-test="api-log" hidden>
+    <header><b data-i18n="apiTitle"></b><button class="btn ghost small" type="button" id="api-clear" data-test="api-log-clear" data-i18n="apiClear"></button></header>
+    <div id="api-list"></div>
+  </section>
+</div>
+<div id="toast-slot" aria-live="polite"></div>
+
+<script>
+'use strict';
+/* =====================================================================
+   1. Settings from the URL (for instructors and automated tests)
+      ?today=2026-12-01   fixes the shop date (coupon expiry)
+      ?latency=0          API delay in ms (default 400)
+      ?bugs=all           turns on the seeded bugs for QA practice (see BUG_LIST)
+   ===================================================================== */
+const params = new URLSearchParams(location.search);
+const BUG_LIST = ['last-unit', 'qty-zero', 'coupon-expiry', 'free-shipping', 'rounding', 'stock-on-create', 'price-snapshot', 'cancel-paid', 'double-pay', 'no-address'];
+const bugParam = (params.get('bugs') || '').split(',').map(s => s.trim()).filter(Boolean);
+const BUGS = new Set(bugParam.includes('all') ? BUG_LIST : bugParam.filter(b => BUG_LIST.includes(b)));
+const bug = k => BUGS.has(k);
+function isoDate(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+const TODAY = /^\d{4}-\d{2}-\d{2}$/.test(params.get('today') || '') ? params.get('today') : isoDate(new Date());
+const LATENCY = params.has('latency') ? Math.max(0, Math.min(5000, Number(params.get('latency')) || 0)) : 400;
+const STORE_KEY = 'bruxa-maria-shop-v1' + (BUGS.size ? '-training' : '');
+const LANG_KEY = 'geekie-jackie-lang'; // shared with the academy
+
+/* =====================================================================
+   2. Mock data: the same catalog, coupons and rules as the academy
+   ===================================================================== */
+const SHIPPING_FEE = 4.9;
+const FREE_SHIPPING_FROM = 50;
+const CATEGORIES = { Tarot: ['Tarot', 'Tarot'], Oracles: ['Oracles', 'Oráculos'], Accessories: ['Accessories', 'Acessórios'], Crystals: ['Crystals', 'Cristais'], Books: ['Books', 'Livros'] };
+const PRODUCTS = [
+  { sku: 'TAR-001', name: 'Rider-Waite Tarot', category: 'Tarot', price: 34.9, stock: 12, type: 'physical', icon: '☀️', desc: ['The classic 78-card deck. The first deck of most apprentices.', 'O clássico de 78 cartas. O primeiro baralho da maioria dos aprendizes.'] },
+  { sku: 'TAR-002', name: 'Marseille Tarot', category: 'Tarot', price: 29.9, stock: 8, type: 'physical', icon: '🗝️', desc: ['Traditional woodcut-style deck with bold colours.', 'Baralho tradicional em estilo de xilogravura, com cores fortes.'] },
+  { sku: 'TAR-003', name: 'Thoth Tarot', category: 'Tarot', price: 39.5, stock: 3, type: 'physical', icon: '👁️', desc: ['Rich symbolism for readers who like to study every card.', 'Simbolismo rico para quem gosta de estudar cada carta.'] },
+  { sku: 'TAR-004', name: 'Moonlit Cats Tarot', category: 'Tarot', price: 27, stock: 0, type: 'physical', icon: '🐈‍⬛', desc: ['Every card guarded by a cat. Sold out after the last full moon.', 'Cada carta guardada por um gato. Esgotou depois da última lua cheia.'] },
+  { sku: 'LEN-001', name: 'Lenormand deck', category: 'Oracles', price: 22, stock: 7, type: 'physical', icon: '🍀', desc: ['The 36-card Lenormand, also known as baralho cigano.', 'O Lenormand de 36 cartas, o nosso baralho cigano.'] },
+  { sku: 'LEN-003', name: 'Petit Lenormand Gold Edition', category: 'Oracles', price: 31, stock: 4, type: 'physical', icon: '⭐', desc: ['Gilded edges and a little box for travelling readers.', 'Bordas douradas e uma caixinha para quem lê em viagem.'] },
+  { sku: 'ORA-001', name: 'Sakura Moon Oracle', category: 'Oracles', price: 24.9, stock: 15, type: 'physical', icon: '🌸', desc: ['44 cards of cherry blossoms and moon phases.', '44 cartas de flores de cerejeira e fases da lua.'] },
+  { sku: 'ORA-002', name: 'Crystal Wisdom Oracle', category: 'Oracles', price: 26.5, stock: 9, type: 'physical', icon: '💎', desc: ['One card for each crystal, with its meaning on the back.', 'Uma carta para cada cristal, com o significado no verso.'] },
+  { sku: 'CAN-001', name: 'Moon candle', category: 'Accessories', price: 8.5, stock: 40, type: 'physical', icon: '🕯️', desc: ['Lavender-scented candle for full-moon readings.', 'Vela com aroma de lavanda para leituras de lua cheia.'] },
+  { sku: 'CAN-002', name: 'Lavender ritual candle', category: 'Accessories', price: 7.9, stock: 25, type: 'physical', icon: '💜', desc: ['A slim candle that burns for about two hours.', 'Uma vela fina que queima por cerca de duas horas.'] },
+  { sku: 'INC-001', name: 'Sandalwood incense', category: 'Accessories', price: 5.5, stock: 60, type: 'physical', icon: '🌿', desc: ['Box of 20 sticks.', 'Caixa com 20 varetas.'] },
+  { sku: 'CLO-001', name: 'Velvet reading cloth', category: 'Accessories', price: 14, stock: 11, type: 'physical', icon: '🟣', desc: ['Purple velvet, 60 × 60 cm, to keep the cards clean.', 'Veludo roxo, 60 × 60 cm, para manter as cartas limpas.'] },
+  { sku: 'BAG-001', name: 'Embroidered deck pouch', category: 'Accessories', price: 12.5, stock: 2, type: 'physical', icon: '👝', desc: ['Hand-embroidered pouch that fits one deck.', 'Bolsinha bordada à mão onde cabe um baralho.'] },
+  { sku: 'CRY-001', name: 'Amethyst cluster', category: 'Crystals', price: 18, stock: 6, type: 'physical', icon: '🔷', desc: ['Small cluster, about 6 cm. Each one is unique.', 'Drusa pequena, de uns 6 cm. Cada uma é única.'] },
+  { sku: 'CRY-002', name: 'Rose quartz', category: 'Crystals', price: 9.9, stock: 30, type: 'physical', icon: '🩷', desc: ['Tumbled stone that fits in a pocket.', 'Pedra rolada que cabe no bolso.'] },
+  { sku: 'CRY-003', name: 'Crystal ball', category: 'Crystals', price: 45, stock: 1, type: 'physical', icon: '🔮', desc: ['Clear quartz ball with a wooden stand. The last one!', 'Esfera de quartzo transparente com suporte de madeira. A última!'] },
+  { sku: 'BOK-001', name: 'Lenormand: The 36 Cards', category: 'Books', price: 9.9, stock: null, type: 'digital', icon: '📄', desc: ['PDF guide with the meaning of every card and sample spreads.', 'Guia em PDF com o significado de cada carta e exemplos de tiragens.'] },
+  { sku: 'BOK-002', name: 'The Witch’s Shop Handbook', category: 'Books', price: 19.9, stock: 5, type: 'physical', icon: '📘', desc: ['Printed guide to reading, care of decks and shop etiquette.', 'Guia impresso sobre leitura, cuidado com os baralhos e etiqueta da loja.'] },
+];
+// SAKURA expires on the shop date, to test the "up to and including" boundary (BR-CPN-01).
+const COUPONS = [
+  { code: 'FULLMOON', percent: 10, expiresOn: '2099-12-31' },
+  { code: 'SAKURA', percent: 20, expiresOn: TODAY },
+  { code: 'NEWMOON', percent: 15, expiresOn: '2025-01-31' },
+  { code: 'GREEDY', percent: 70, expiresOn: '2099-12-31' },
+];
+const TEST_CARDS = [
+  ['4242 4242 4242 4242', ['Approved', 'Aprovado']],
+  ['4000 0000 0000 0002', ['Declined (PAYMENT_FAILED)', 'Recusado (PAYMENT_FAILED)']],
+  ['4000 0000 0000 0077', ['Approved after 3 seconds', 'Aprovado depois de 3 segundos']],
+];
+const DECLINED_CARD = '4000000000000002';
+const SLOW_CARD = '4000000000000077';
+const LIFECYCLE = ['Pending', 'Paid', 'Shipped', 'Delivered'];
+
+/* =====================================================================
+   3. Texts (EN / PT). Product data, SKUs, statuses and error codes stay in English.
+   ===================================================================== */
+let LANG = (() => {
+  try { const v = localStorage.getItem(LANG_KEY); if (v === 'pt' || v === 'en') return v; } catch (e) {}
+  return /^pt/i.test(navigator.language || '') ? 'pt' : 'en';
+})();
+const pick = pair => LANG === 'pt' ? pair[1] : pair[0];
+const TXT = {
+  brand: ['Bruxa Maria’s Shop', 'Lojinha da Bruxa Maria'],
+  tagline: ['Tarot, Lenormand & little magic things', 'Tarot, baralho cigano e magiazinhas'],
+  navShop: ['Shop', 'Loja'], navCart: ['Cart', 'Carrinho'], navOrders: ['My orders', 'Meus pedidos'], navAdmin: ['Back office', 'Painel da Bruxa'],
+  langBtn: ['🇧🇷 Português', '🇬🇧 English'],
+  promoShipping: ['🚚 Free shipping on orders of <b>€50</b> or more, after the discount.', '🚚 Frete grátis em pedidos de <b>€50</b> ou mais, depois do desconto.'],
+  promoCoupon: ['🌕 Full-moon sale: coupon <b>FULLMOON</b> gives 10% off.', '🌕 Promoção de lua cheia: o cupom <b>FULLMOON</b> dá 10% de desconto.'],
+  catalogTitle: ['The shelves', 'As prateleiras'],
+  catalogSub: ['{n} products. Everything here is mock data: nobody gets charged.', '{n} produtos. Tudo aqui é de mentira: ninguém é cobrado.'],
+  search: ['Search by name or SKU', 'Buscar por nome ou SKU'],
+  all: ['All', 'Todos'],
+  sortFeatured: ['Sort: featured', 'Ordenar: destaques'], sortPriceAsc: ['Sort: price, low to high', 'Ordenar: menor preço'], sortPriceDesc: ['Sort: price, high to low', 'Ordenar: maior preço'], sortName: ['Sort: name A–Z', 'Ordenar: nome A–Z'],
+  noResults: ['No product matches this search.', 'Nenhum produto corresponde a esta busca.'],
+  resultCount: ['{n} of {t} products', '{n} de {t} produtos'],
+  inStock: ['In stock', 'Em estoque'], lowStock: ['Only {n} left', 'Só {n} no estoque'], soldOut: ['Sold out', 'Esgotado'], digital: ['Digital · PDF', 'Digital · PDF'],
+  addToCart: ['Add to cart', 'Adicionar ao carrinho'], added: ['{name} added to the cart', '{name} adicionado ao carrinho'],
+  productCol: ['Product', 'Produto'],
+  details: ['Details', 'Detalhes'], quantity: ['Quantity', 'Quantidade'], decrease: ['Decrease quantity', 'Diminuir quantidade'], increase: ['Increase quantity', 'Aumentar quantidade'],
+  category: ['Category', 'Categoria'], type: ['Type', 'Tipo'], stock: ['Stock', 'Estoque'], physical: ['Physical', 'Físico'], digitalType: ['Digital (sent by email)', 'Digital (enviado por e-mail)'],
+  backToShop: ['← Back to the shop', '← Voltar para a loja'], notFound: ['Product not found', 'Produto não encontrado'],
+  qtyInvalid: ['Quantity must be a whole number greater than 0.', 'A quantidade precisa ser um número inteiro maior que 0.'],
+  cartTitle: ['Your cart', 'Seu carrinho'], cartEmpty: ['Your cart is empty. The cards are waiting for you.', 'Seu carrinho está vazio. As cartas estão esperando por você.'],
+  remove: ['Remove', 'Remover'], each: ['{p} each', '{p} cada'], moreThanStock: ['Only {n} in stock', 'Só {n} no estoque'],
+  summary: ['Order summary', 'Resumo do pedido'], subtotal: ['Subtotal', 'Subtotal'], discount: ['Discount', 'Desconto'], itemsTotal: ['Total (items)', 'Total (itens)'],
+  shipping: ['Shipping', 'Frete'], free: ['Free', 'Grátis'], noShipping: ['— (digital)', '— (digital)'], amountDue: ['To pay', 'A pagar'],
+  missingForFree: ['Add {v} more for free shipping', 'Faltam {v} para o frete grátis'], gotFree: ['You got free shipping ✨', 'Você ganhou frete grátis ✨'],
+  coupon: ['Coupon', 'Cupom'], apply: ['Apply', 'Aplicar'], removeCoupon: ['Remove coupon', 'Remover cupom'],
+  cpnValid: ['{code}: {p}% off', '{code}: {p}% de desconto'],
+  cpnNOT_FOUND: ['Coupon {code} does not exist. The order goes at full price.', 'O cupom {code} não existe. O pedido segue com o preço cheio.'],
+  cpnEXPIRED: ['Coupon {code} expired on {d}. The order goes at full price.', 'O cupom {code} venceu em {d}. O pedido segue com o preço cheio.'],
+  cpnINVALID_PERCENT: ['Coupon {code} is not valid. The order goes at full price.', 'O cupom {code} não é válido. O pedido segue com o preço cheio.'],
+  checkout: ['Go to checkout', 'Finalizar compra'], keepShopping: ['Keep shopping', 'Continuar comprando'],
+  checkoutTitle: ['Checkout', 'Finalizar compra'], customer: ['Customer', 'Cliente'], name: ['Full name', 'Nome completo'], email: ['Email', 'E-mail'],
+  fakeData: ['Use made-up data only, like Jane Doe and jane@example.com (BR-CUS-02).', 'Use só dados inventados, como Jane Doe e jane@example.com (BR-CUS-02).'],
+  address: ['Shipping address', 'Endereço de entrega'], addressDigital: ['Your order only has digital products: they go to your email, no address needed.', 'Seu pedido só tem produtos digitais: eles vão para o seu e-mail, sem endereço.'],
+  payment: ['Payment', 'Pagamento'], card: ['Card number', 'Número do cartão'], testCards: ['Test cards (click to fill):', 'Cartões de teste (clique para preencher):'],
+  placeOrder: ['Place order and pay {v}', 'Fazer pedido e pagar {v}'],
+  errREQUIRED: ['This field is required.', 'Este campo é obrigatório.'], errINVALID: ['This value is not valid.', 'Este valor não é válido.'],
+  ordersTitle: ['My orders', 'Meus pedidos'], ordersEmpty: ['No orders yet.', 'Nenhum pedido ainda.'],
+  colOrder: ['Order', 'Pedido'], colDate: ['Date', 'Data'], colItems: ['Items', 'Itens'], colStatus: ['Status', 'Status'], colTotal: ['To pay', 'A pagar'], colCustomer: ['Customer', 'Cliente'], colActions: ['Actions', 'Ações'],
+  orderTitle: ['Order {id}', 'Pedido {id}'], placed: ['Order placed and paid! The witch is wrapping it with care. 🕯️', 'Pedido feito e pago! A bruxa está embalando com carinho. 🕯️'],
+  placedUnpaid: ['Order {id} was created, but the payment failed. It stays Pending: try another card below.', 'O pedido {id} foi criado, mas o pagamento falhou. Ele continua Pending: tente outro cartão abaixo.'],
+  payNow: ['Pay {v}', 'Pagar {v}'], cancel: ['Cancel order', 'Cancelar pedido'], refund: ['Ask for a refund', 'Pedir reembolso'],
+  cancelled: ['Order cancelled.', 'Pedido cancelado.'], refunded: ['Order refunded.', 'Pedido reembolsado.'], paid: ['Payment approved!', 'Pagamento aprovado!'],
+  history: ['History', 'Histórico'], payments: ['Payment attempts', 'Tentativas de pagamento'], approved: ['approved', 'aprovado'], declined: ['declined', 'recusado'],
+  shipTo: ['Ship to', 'Entregar em'], emailTo: ['Digital products go to', 'Produtos digitais vão para'], viewOrder: ['View', 'Ver'],
+  orderNotFound: ['Order not found', 'Pedido não encontrado'],
+  adminTitle: ['Bruxa Maria’s back office', 'Painel da Bruxa Maria'], adminSub: ['Change prices and stock, and move orders along. Only the witch should be here!', 'Mude preços e estoque e avance os pedidos. Só a bruxa deveria estar aqui!'],
+  adminProducts: ['Products', 'Produtos'], adminOrders: ['All orders', 'Todos os pedidos'], save: ['Save', 'Salvar'], saved: ['{sku} saved', '{sku} salvo'],
+  ship: ['Ship', 'Enviar'], deliver: ['Mark delivered', 'Marcar como entregue'],
+  resetTitle: ['Reset the shop', 'Reiniciar a loja'], resetSub: ['Puts stock and prices back, and deletes the cart and every order. Handy before a test run.', 'Volta o estoque e os preços ao início e apaga o carrinho e todos os pedidos. Útil antes de rodar os testes.'],
+  reset: ['Reset everything', 'Reiniciar tudo'], resetConfirm: ['Reset the shop? Every order will be deleted.', 'Reiniciar a loja? Todos os pedidos serão apagados.'], resetDone: ['The shop is like new.', 'A loja está novinha.'],
+  apiTitle: ['API log', 'Log da API'], apiClear: ['Clear', 'Limpar'], apiEmpty: ['No requests yet. Every click that talks to the server shows up here.', 'Nenhuma requisição ainda. Cada clique que fala com o servidor aparece aqui.'],
+  request: ['request', 'requisição'], response: ['response', 'resposta'],
+  footDate: ['Shop date: {d}', 'Data da loja: {d}'], footMock: ['Mock shop for training. No real payments, no real products.', 'Loja de mentira para treino. Sem pagamentos nem produtos de verdade.'], footAcademy: ['← Geekie Jackie Academy', '← Geekie Jackie Academy'],
+  footApi: ['Console: <code>shopApi.get("/api/products")</code>', 'Console: <code>shopApi.get("/api/products")</code>'],
+  st_Pending: ['Pending', 'Pendente'], st_Paid: ['Paid', 'Pago'], st_Shipped: ['Shipped', 'Enviado'], st_Delivered: ['Delivered', 'Entregue'], st_Cancelled: ['Cancelled', 'Cancelado'], st_Refunded: ['Refunded', 'Reembolsado'],
+  e_OUT_OF_STOCK: ['Not enough stock for {sku}: {available} available.', 'Estoque insuficiente para {sku}: {available} disponível(is).'],
+  e_PAYMENT_FAILED: ['Payment declined. The order is still Pending: try another card.', 'Pagamento recusado. O pedido continua Pending: tente outro cartão.'],
+  e_INVALID_CARD: ['The card number must have 16 digits.', 'O número do cartão precisa ter 16 dígitos.'],
+  e_EMPTY_ORDER: ['An order needs at least one item.', 'Um pedido precisa ter pelo menos um item.'],
+  e_INVALID_QUANTITY: ['Invalid quantity for {sku}.', 'Quantidade inválida para {sku}.'],
+  e_PRODUCT_NOT_FOUND: ['Product {sku} does not exist.', 'O produto {sku} não existe.'],
+  e_VALIDATION_ERROR: ['Please check the highlighted fields.', 'Confira os campos destacados.'],
+  e_ALREADY_PAID: ['This order is already paid.', 'Este pedido já foi pago.'],
+  e_ORDER_ALREADY_PAID: ['A paid order cannot be cancelled. Ask for a refund instead.', 'Um pedido pago não pode ser cancelado. Peça o reembolso.'],
+  e_INVALID_TRANSITION: ['An order {from} cannot go to {to}.', 'Um pedido {from} não pode ir para {to}.'],
+  e_INVALID_PRICE: ['The price must be greater than 0.', 'O preço precisa ser maior que 0.'],
+  e_INVALID_STOCK: ['Stock must be a whole number, 0 or more (digital products have no stock).', 'O estoque precisa ser um número inteiro, 0 ou mais (produtos digitais não têm estoque).'],
+  e_NOT_FOUND: ['Not found.', 'Não encontrado.'], e_INTERNAL_ERROR: ['Something went wrong.', 'Algo deu errado.'],
+};
+function t(key, vars) {
+  let s = TXT[key] ? pick(TXT[key]) : key;
+  if (vars) Object.keys(vars).forEach(k => { s = s.split('{' + k + '}').join(vars[k]); });
+  return s;
+}
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const money = v => '€' + (LANG === 'pt' ? Number(v).toFixed(2).replace('.', ',') : Number(v).toFixed(2));
+const catLabel = c => CATEGORIES[c] ? pick(CATEGORIES[c]) : c;
+const statusLabel = s => TXT['st_' + s] ? t('st_' + s) : s;
+const fmtDate = iso => { try { return new Date(iso).toLocaleString(LANG === 'pt' ? 'pt-BR' : 'en-GB', { dateStyle: 'short', timeStyle: 'short' }); } catch (e) { return iso; } };
+function errorText(body) {
+  if (!body || !body.error) return t('e_INTERNAL_ERROR');
+  const key = 'e_' + body.error;
+  return TXT[key] ? t(key, { sku: body.sku || '', available: body.available, from: body.from || '', to: body.to || '' }) : (body.message || body.error);
+}
+
+/* =====================================================================
+   4. Shop state (saved in this browser)
+   ===================================================================== */
+function freshState() { return { stock: {}, price: {}, cart: [], coupon: '', orders: [], customers: {}, seq: 1001, custSeq: 1 }; }
+function loadState() {
+  try { const raw = localStorage.getItem(STORE_KEY); if (raw) return Object.assign(freshState(), JSON.parse(raw)); } catch (e) {}
+  return freshState();
+}
+let S = loadState();
+function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(S)); } catch (e) {} }
+const clone = v => v === undefined ? undefined : JSON.parse(JSON.stringify(v));
+const round2 = n => Math.round((n + Number.EPSILON) * 100) / 100;
+
+function product(sku) {
+  const p = PRODUCTS.find(x => x.sku === sku);
+  if (!p) return null;
+  return Object.assign({}, p, { price: sku in S.price ? S.price[sku] : p.price, stock: sku in S.stock ? S.stock[sku] : p.stock });
+}
+function apiProduct(p) { return { sku: p.sku, name: p.name, category: p.category, price: p.price, stock: p.stock, type: p.type, description: p.desc[0] }; }
+
+/* =====================================================================
+   5. Business rules (the same BR-* codes as the academy's Rulebook)
+   ===================================================================== */
+// BR-STK-01 / BR-STK-05
+function canSell(p, qty) {
+  if (p.type === 'digital') return true;
+  if (bug('last-unit')) return p.stock > qty;
+  if (bug('qty-zero')) return p.stock >= qty;
+  return qty > 0 && p.stock >= qty;
+}
+const validQty = q => bug('qty-zero') ? Number.isInteger(q) : Number.isInteger(q) && q > 0;
+// BR-CPN-01 / BR-CPN-04
+function evaluateCoupon(raw) {
+  const code = String(raw || '').trim().toUpperCase();
+  if (!code) return null;
+  const c = COUPONS.find(x => x.code === code);
+  if (!c) return { code, percent: null, expiresOn: null, valid: false, reason: 'NOT_FOUND' };
+  let reason = null;
+  if (c.percent < 1 || c.percent > 50) reason = 'INVALID_PERCENT';
+  else if (bug('coupon-expiry') ? TODAY >= c.expiresOn : TODAY > c.expiresOn) reason = 'EXPIRED';
+  return { code, percent: c.percent, expiresOn: c.expiresOn, valid: !reason, reason };
+}
+// BR-ORD-04 / BR-CPN-02 / BR-SHP-02 / BR-SHP-03
+function computeTotals(items, coupon) {
+  const r = bug('rounding') ? (n => Math.floor(n * 100) / 100) : round2;
+  const subtotal = round2(items.reduce((s, i) => s + i.price * i.quantity, 0));
+  const discount = coupon && coupon.valid ? round2(subtotal * coupon.percent / 100) : 0;
+  const total = r(subtotal - discount);
+  const physical = items.some(i => i.type === 'physical' && i.quantity > 0);
+  const base = bug('free-shipping') ? subtotal : total;
+  const shipping = !physical ? 0 : (base >= FREE_SHIPPING_FROM ? 0 : SHIPPING_FEE);
+  return { subtotal, discount, total, shipping, amountDue: r(total + shipping) };
+}
+function changeStock(items, sign) {
+  items.forEach(i => {
+    const p = product(i.sku);
+    if (p && p.type === 'physical') S.stock[i.sku] = p.stock + sign * i.quantity;
+  });
+}
+
+/* =====================================================================
+   6. Mock API. Every call waits LATENCY ms and is written to the API log.
+      Errors look like { error: "OUT_OF_STOCK", ... }.
+   ===================================================================== */
+const ok = (body, status) => ({ status: status || 200, body });
+const fail = (status, error, extra) => ({ status, body: Object.assign({ error }, extra || {}) });
+const wait = ms => new Promise(res => setTimeout(res, ms));
+
+function serializeOrder(o) {
+  const out = clone(o);
+  if (bug('price-snapshot')) { // BR-ORD-05 broken: items follow today's price
+    out.items.forEach(i => { const p = product(i.sku); if (p) i.price = p.price; });
+    Object.assign(out, computeTotals(out.items, out.coupon));
+  }
+  return out;
+}
+function findOrder(id) { return S.orders.find(o => o.id === id); }
+function setStatus(o, status) { o.status = status; o.history.push({ status, at: new Date().toISOString() }); }
+
+const ROUTES = [
+  ['GET', /^\/api\/products$/, (m, body, q) => {
+    let list = PRODUCTS.map(p => apiProduct(product(p.sku)));
+    if (q.get('category')) list = list.filter(p => p.category === q.get('category'));
+    if (q.get('q')) { const s = q.get('q').toLowerCase(); list = list.filter(p => p.name.toLowerCase().includes(s) || p.sku.toLowerCase().includes(s)); }
+    return ok(list);
+  }],
+  ['GET', /^\/api\/products\/([^/]+)$/, m => {
+    const p = product(decodeURIComponent(m[1]));
+    return p ? ok(apiProduct(p)) : fail(404, 'PRODUCT_NOT_FOUND', { sku: decodeURIComponent(m[1]) });
+  }],
+  ['PATCH', /^\/api\/products\/([^/]+)$/, (m, body) => {
+    const sku = decodeURIComponent(m[1]); const p = product(sku);
+    if (!p) return fail(404, 'PRODUCT_NOT_FOUND', { sku });
+    body = body || {};
+    if ('price' in body && !(typeof body.price === 'number' && body.price > 0)) return fail(400, 'INVALID_PRICE', { sku }); // BR-PRD-02
+    if ('stock' in body) {
+      const okStock = p.type === 'digital' ? body.stock === null : Number.isInteger(body.stock) && body.stock >= 0;
+      if (!okStock) return fail(400, 'INVALID_STOCK', { sku });
+    }
+    if ('price' in body) S.price[sku] = round2(body.price);
+    if ('stock' in body && p.type === 'physical') S.stock[sku] = body.stock;
+    return ok(apiProduct(product(sku)));
+  }],
+  ['GET', /^\/api\/coupons\/([^/]+)$/, m => {
+    const c = evaluateCoupon(decodeURIComponent(m[1]));
+    return !c || c.reason === 'NOT_FOUND' ? fail(404, 'COUPON_NOT_FOUND', { code: c ? c.code : '' }) : ok(c);
+  }],
+  ['GET', /^\/api\/orders$/, () => ok(S.orders.slice().reverse().map(serializeOrder))],
+  ['GET', /^\/api\/orders\/([^/]+)$/, m => {
+    const o = findOrder(m[1]); return o ? ok(serializeOrder(o)) : fail(404, 'NOT_FOUND');
+  }],
+  ['POST', /^\/api\/orders$/, (m, body) => {
+    body = body || {};
+    const raw = Array.isArray(body.items) ? body.items : [];
+    if (!raw.length) return fail(400, 'EMPTY_ORDER'); // BR-ORD-01
+    const merged = [];
+    for (const it of raw) {
+      const p = product(it && it.sku);
+      if (!p) return fail(404, 'PRODUCT_NOT_FOUND', { sku: it && it.sku });
+      const q = Number(it.quantity);
+      if (!validQty(q)) return fail(400, 'INVALID_QUANTITY', { sku: p.sku });
+      const prev = merged.find(x => x.sku === p.sku);
+      if (prev) prev.quantity += q; else merged.push({ sku: p.sku, name: p.name, type: p.type, price: p.price, quantity: q });
+    }
+    const c = body.customer || {};
+    const details = [];
+    const name = String(c.name || '').trim(), email = String(c.email || '').trim(), address = String(body.shippingAddress || '').trim();
+    if (!name) details.push({ field: 'name', code: 'REQUIRED' });
+    if (!email) details.push({ field: 'email', code: 'REQUIRED' });
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) details.push({ field: 'email', code: 'INVALID' }); // BR-CUS-01
+    const hasPhysical = merged.some(i => i.type === 'physical');
+    if (hasPhysical && !address && !bug('no-address')) details.push({ field: 'shippingAddress', code: 'REQUIRED' }); // BR-SHP-01
+    if (details.length) return fail(400, 'VALIDATION_ERROR', { details });
+    for (const i of merged) { const p = product(i.sku); if (!canSell(p, i.quantity)) return fail(409, 'OUT_OF_STOCK', { sku: i.sku, available: p.stock }); } // BR-ORD-03
+    const coupon = evaluateCoupon(body.couponCode); // BR-CPN-03: one coupon per order
+    const couponField = coupon ? { code: coupon.code, percent: coupon.percent, valid: coupon.valid } : null;
+    const key = email.toLowerCase();
+    if (!S.customers[key]) S.customers[key] = 'cus-' + String(S.custSeq++).padStart(3, '0');
+    const now = new Date().toISOString();
+    const order = Object.assign({
+      id: 'ord-' + S.seq++, customerId: S.customers[key], customer: { name, email },
+      shippingAddress: hasPhysical ? (address || null) : null,
+      items: merged, coupon: couponField, status: 'Pending', createdAt: now,
+    }, computeTotals(merged, couponField), { history: [{ status: 'Pending', at: now }], payments: [] });
+    if (bug('stock-on-create')) changeStock(merged, -1);
+    S.orders.push(order);
+    return ok(serializeOrder(order), 201); // BR-ORD-02
+  }],
+  ['POST', /^\/api\/orders\/([^/]+)\/pay$/, async (m, body) => {
+    const o = findOrder(m[1]);
+    if (!o) return fail(404, 'NOT_FOUND');
+    if (o.status !== 'Pending' && !(bug('double-pay') && o.status === 'Paid')) {
+      return o.status === 'Paid' ? fail(409, 'ALREADY_PAID') : fail(409, 'INVALID_TRANSITION', { from: o.status, to: 'Paid' }); // BR-PAY-01
+    }
+    const card = String((body && body.cardNumber) || '').replace(/\s+/g, '');
+    if (!/^\d{16}$/.test(card)) return fail(400, 'INVALID_CARD');
+    if (card === SLOW_CARD) await wait(3000);
+    const due = serializeOrder(o).amountDue;
+    if (card === DECLINED_CARD) { // BR-PAY-02
+      o.payments.push({ at: new Date().toISOString(), last4: card.slice(-4), amount: due, result: 'declined' });
+      return fail(409, 'PAYMENT_FAILED', { orderId: o.id, status: o.status });
+    }
+    if (!bug('stock-on-create')) {
+      for (const i of o.items) { const p = product(i.sku); if (p && !canSell(p, i.quantity)) return fail(409, 'OUT_OF_STOCK', { sku: i.sku, available: p.stock }); }
+      changeStock(o.items, -1); // BR-STK-03: stock goes down when paid
+    }
+    o.payments.push({ at: new Date().toISOString(), last4: card.slice(-4), amount: due, result: 'approved' });
+    setStatus(o, 'Paid');
+    return ok(serializeOrder(o));
+  }],
+  ['POST', /^\/api\/orders\/([^/]+)\/cancel$/, m => {
+    const o = findOrder(m[1]);
+    if (!o) return fail(404, 'NOT_FOUND');
+    if (o.status === 'Paid' && !bug('cancel-paid')) return fail(409, 'ORDER_ALREADY_PAID'); // BR-PAY-03
+    if (o.status !== 'Pending' && o.status !== 'Paid') return fail(409, 'INVALID_TRANSITION', { from: o.status, to: 'Cancelled' });
+    // With the stock-on-create bug the stock taken at creation never comes back here.
+    setStatus(o, 'Cancelled');
+    return ok(serializeOrder(o));
+  }],
+  ['POST', /^\/api\/orders\/([^/]+)\/refund$/, m => {
+    const o = findOrder(m[1]);
+    if (!o) return fail(404, 'NOT_FOUND');
+    if (o.status !== 'Paid') return fail(409, 'INVALID_TRANSITION', { from: o.status, to: 'Refunded' });
+    changeStock(o.items, +1);
+    setStatus(o, 'Refunded');
+    return ok(serializeOrder(o));
+  }],
+  ['POST', /^\/api\/orders\/([^/]+)\/ship$/, m => {
+    const o = findOrder(m[1]);
+    if (!o) return fail(404, 'NOT_FOUND');
+    if (o.status !== 'Paid') return fail(409, 'INVALID_TRANSITION', { from: o.status, to: 'Shipped' });
+    setStatus(o, 'Shipped'); return ok(serializeOrder(o));
+  }],
+  ['POST', /^\/api\/orders\/([^/]+)\/deliver$/, m => {
+    const o = findOrder(m[1]);
+    if (!o) return fail(404, 'NOT_FOUND');
+    if (o.status !== 'Shipped') return fail(409, 'INVALID_TRANSITION', { from: o.status, to: 'Delivered' });
+    setStatus(o, 'Delivered'); return ok(serializeOrder(o));
+  }],
+  ['POST', /^\/api\/reset$/, () => { S = freshState(); return ok({ reset: true }); }],
+];
+
+const API_LOG = [];
+let apiSeq = 0;
+async function call(method, url, body) {
+  const started = performance.now();
+  const [path, query] = url.split('?');
+  await wait(LATENCY);
+  let res = null;
+  try {
+    const route = ROUTES.find(r => r[0] === method && r[1].test(path));
+    res = route ? await route[2](path.match(route[1]), clone(body), new URLSearchParams(query || '')) : fail(404, 'NOT_FOUND', { path });
+  } catch (e) { res = fail(500, 'INTERNAL_ERROR', { message: String(e && e.message || e) }); }
+  save();
+  const out = { status: res.status, ok: res.status < 400, body: clone(res.body) };
+  API_LOG.unshift({ n: ++apiSeq, method, url, status: res.status, ms: Math.round(performance.now() - started), req: clone(body), res: clone(res.body) });
+  if (API_LOG.length > 60) API_LOG.pop();
+  renderApiLog();
+  return out;
+}
+window.shopApi = {
+  get: url => call('GET', url), post: (url, body) => call('POST', url, body), patch: (url, body) => call('PATCH', url, body),
+  reset: () => call('POST', '/api/reset').then(r => { route(); return r; }),
+  coupons: COUPONS.map(c => c.code), testCards: TEST_CARDS.map(c => c[0]), today: TODAY,
+};
+
+/* =====================================================================
+   7. Views (hash router: #/  #/product/SKU  #/cart  #/checkout  #/orders  #/orders/ID  #/admin)
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const view = $('view');
+let flash = null; // { kind, text } shown once on the next render
+let catalogUI = { q: '', cat: 'All', sort: 'featured' };
+let checkoutDraft = { name: '', email: '', address: '', card: '' };
+let fieldErrors = {};
+
+function cartLines() {
+  return S.cart.map(l => { const p = product(l.sku); return p ? { p, qty: l.qty } : null; }).filter(Boolean);
+}
+function cartCount() { return S.cart.reduce((s, l) => s + (Number(l.qty) > 0 ? Number(l.qty) : 0), 0); }
+function cartTotals() {
+  const items = cartLines().map(l => ({ price: l.p.price, quantity: l.qty, type: l.p.type }));
+  const coupon = evaluateCoupon(S.coupon);
+  return Object.assign({ coupon }, computeTotals(items, coupon));
+}
+function stockPill(p) {
+  if (p.type === 'digital') return '<span class="pill stock-digital" data-test="stock-status" data-stock="digital">' + esc(t('digital')) + '</span>';
+  if (p.stock <= 0) return '<span class="pill stock-out" data-test="stock-status" data-stock="0">' + esc(t('soldOut')) + '</span>'; // BR-STK-04
+  if (p.stock <= 3) return '<span class="pill stock-low" data-test="stock-status" data-stock="' + p.stock + '">' + esc(t('lowStock', { n: p.stock })) + '</span>';
+  return '<span class="pill stock-in" data-test="stock-status" data-stock="' + p.stock + '">' + esc(t('inStock')) + '</span>';
+}
+const priceTag = (v, test) => '<span class="price" data-test="' + (test || 'product-price') + '" data-value="' + v + '">' + money(v) + '</span>';
+const flashHtml = () => { if (!flash) return ''; const f = flash; flash = null; return '<div class="alert ' + f.kind + '" role="' + (f.kind === 'error' ? 'alert' : 'status') + '" data-test="' + (f.kind === 'error' ? 'error-message' : 'success-message') + '">' + esc(f.text) + '</div>'; };
+
+function addToCart(sku, qty) {
+  const line = S.cart.find(l => l.sku === sku);
+  if (line) line.qty += qty; else S.cart.push({ sku, qty });
+  save(); updateCartCount();
+}
+function updateCartCount() { $('cart-count').textContent = cartCount(); }
+
+function viewCatalog() {
+  const all = PRODUCTS.map(p => product(p.sku));
+  const q = catalogUI.q.trim().toLowerCase();
+  let list = all.filter(p => (catalogUI.cat === 'All' || p.category === catalogUI.cat) && (!q || p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q)));
+  if (catalogUI.sort === 'price-asc') list.sort((a, b) => a.price - b.price);
+  if (catalogUI.sort === 'price-desc') list.sort((a, b) => b.price - a.price);
+  if (catalogUI.sort === 'name') list.sort((a, b) => a.name.localeCompare(b.name));
+  const sortOpt = (v, k) => '<option value="' + v + '"' + (catalogUI.sort === v ? ' selected' : '') + '>' + esc(t(k)) + '</option>';
+  return flashHtml() +
+    '<div class="page-head"><div><h1>' + esc(t('catalogTitle')) + '</h1><p>' + esc(t('catalogSub', { n: all.length })) + '</p></div></div>' +
+    '<div class="filters"><label class="sr-only" for="search">' + esc(t('search')) + '</label>' +
+    '<input type="search" id="search" data-test="search-input" placeholder="' + esc(t('search')) + '" value="' + esc(catalogUI.q) + '">' +
+    '<label class="sr-only" for="sort">Sort</label><select id="sort" data-test="sort-select">' +
+    sortOpt('featured', 'sortFeatured') + sortOpt('price-asc', 'sortPriceAsc') + sortOpt('price-desc', 'sortPriceDesc') + sortOpt('name', 'sortName') + '</select></div>' +
+    '<div class="cats" role="group" aria-label="' + esc(t('category')) + '">' +
+    ['All'].concat(Object.keys(CATEGORIES)).map(c => '<button type="button" class="cat" data-action="filter-cat" data-cat="' + c + '" data-test="category-' + c.toLowerCase() + '" aria-pressed="' + (catalogUI.cat === c) + '">' + esc(c === 'All' ? t('all') : catLabel(c)) + '</button>').join('') +
+    '</div><p class="muted" style="margin-bottom:10px;font-size:13px" data-test="result-count">' + esc(t('resultCount', { n: list.length, t: all.length })) + '</p>' +
+    (list.length ? '<div class="grid" data-test="product-list">' + list.map(productCard).join('') + '</div>'
+      : '<div class="empty card" data-test="no-results"><span class="big">🔍</span>' + esc(t('noResults')) + '</div>');
+}
+function productCard(p) {
+  const out = p.type === 'physical' && p.stock <= 0;
+  return '<article class="p-card" data-test="product-card" data-sku="' + p.sku + '">' +
+    '<a class="p-media" href="#/product/' + p.sku + '" aria-hidden="true" tabindex="-1"><span class="tag">' + esc(catLabel(p.category)) + '</span>' + p.icon + '</a>' +
+    '<div class="p-body"><span class="sku" data-test="product-sku">' + p.sku + '</span>' +
+    '<h3><a href="#/product/' + p.sku + '" data-test="product-name">' + esc(p.name) + '</a></h3>' +
+    '<p class="muted" style="font-size:13.5px">' + esc(pick(p.desc)) + '</p>' +
+    '<div>' + stockPill(p) + '</div>' +
+    '<div class="p-foot">' + priceTag(p.price) +
+    '<button class="btn small" type="button" data-action="add" data-sku="' + p.sku + '" data-test="add-to-cart"' + (out ? ' disabled' : '') + '>' + esc(out ? t('soldOut') : t('addToCart')) + '</button></div></div></article>';
+}
+
+function viewProduct(sku) {
+  const p = product(sku);
+  if (!p) return '<div class="empty card" data-test="not-found"><span class="big">🃏</span><h1>' + esc(t('notFound')) + '</h1><p style="margin-top:12px"><a href="#/">' + esc(t('backToShop')) + '</a></p></div>';
+  const out = p.type === 'physical' && p.stock <= 0;
+  return flashHtml() + '<p class="crumbs"><a href="#/" data-test="back-to-shop">' + esc(t('backToShop')) + '</a></p>' +
+    '<div class="pdp" data-test="product-detail" data-sku="' + p.sku + '"><div class="pdp-media" aria-hidden="true">' + p.icon + '</div>' +
+    '<div class="pdp-info"><span class="sku" data-test="product-sku">' + p.sku + '</span><h1 data-test="product-name">' + esc(p.name) + '</h1>' +
+    priceTag(p.price) + '<div>' + stockPill(p) + '</div><p data-test="product-description">' + esc(pick(p.desc)) + '</p>' +
+    '<form class="buy-row" data-form="pdp-add" data-sku="' + p.sku + '" novalidate>' +
+    '<label class="field"><span>' + esc(t('quantity')) + '</span>' + qtyControl('pdp-qty', 1, out) + '</label>' +
+    '<button class="btn" type="submit" data-test="add-to-cart"' + (out ? ' disabled' : '') + '>' + esc(out ? t('soldOut') : t('addToCart')) + '</button></form>' +
+    '<p class="field-error" id="pdp-error" data-test="quantity-error" hidden></p>' +
+    '<div class="card"><h3 style="font-size:16px;margin-bottom:8px">' + esc(t('details')) + '</h3><dl class="specs">' +
+    '<dt>SKU</dt><dd class="mono">' + p.sku + '</dd><dt>' + esc(t('category')) + '</dt><dd data-test="product-category">' + esc(catLabel(p.category)) + '</dd>' +
+    '<dt>' + esc(t('type')) + '</dt><dd>' + esc(p.type === 'digital' ? t('digitalType') : t('physical')) + '</dd>' +
+    '<dt>' + esc(t('stock')) + '</dt><dd data-test="product-stock">' + (p.stock === null ? '—' : p.stock) + '</dd></dl></div></div></div>';
+}
+function qtyControl(id, value, disabled, sku) {
+  const d = disabled ? ' disabled' : '';
+  const data = sku ? ' data-sku="' + sku + '"' : '';
+  return '<span class="qty"><button type="button" data-action="qty-step" data-step="-1" data-for="' + id + '"' + data + ' data-test="qty-decrease" aria-label="' + esc(t('decrease')) + '"' + d + '>−</button>' +
+    '<input type="number" inputmode="numeric" id="' + id + '" value="' + esc(value) + '" step="1"' + (bug('qty-zero') ? '' : ' min="1"') + data + ' data-test="qty-input" aria-label="' + esc(t('quantity')) + '"' + d + '>' +
+    '<button type="button" data-action="qty-step" data-step="1" data-for="' + id + '"' + data + ' data-test="qty-increase" aria-label="' + esc(t('increase')) + '"' + d + '>+</button></span>';
+}
+
+function summaryHtml(tot, opts) {
+  opts = opts || {};
+  const c = tot.coupon;
+  let couponMsg = '';
+  if (c) couponMsg = c.valid ? '<p class="coupon-msg ok" data-test="coupon-message" data-valid="true">✓ ' + esc(t('cpnValid', { code: c.code, p: c.percent })) + '</p>'
+    : '<p class="coupon-msg bad" data-test="coupon-message" data-valid="false">✗ ' + esc(t('cpn' + c.reason, { code: c.code, d: c.expiresOn || '' })) + '</p>';
+  const hasPhysical = opts.hasPhysical;
+  let shipHint = '';
+  if (hasPhysical) {
+    const base = bug('free-shipping') ? tot.subtotal : tot.total;
+    shipHint = tot.shipping === 0 ? '<p class="ship-hint" data-test="shipping-hint">' + esc(t('gotFree')) + '</p>'
+      : '<p class="ship-hint" data-test="shipping-hint">' + esc(t('missingForFree', { v: money(round2(FREE_SHIPPING_FROM - base)) })) + '</p>';
+  }
+  const row = (label, v, test, cls, text) => '<div class="sum-row ' + (cls || '') + '"><span>' + esc(label) + '</span><span data-test="' + test + '" data-value="' + v + '">' + (text || money(v)) + '</span></div>';
+  return '<aside class="card summary" data-test="order-summary"><h2>' + esc(t('summary')) + '</h2>' +
+    (opts.couponForm ? '<form class="coupon-form" data-form="coupon" novalidate><label class="sr-only" for="coupon">' + esc(t('coupon')) + '</label>' +
+      '<input type="text" id="coupon" data-test="coupon-input" placeholder="' + esc(t('coupon')) + '" value="' + esc(S.coupon) + '" autocomplete="off">' +
+      '<button class="btn ghost" type="submit" data-test="apply-coupon">' + esc(t('apply')) + '</button></form>' : '') +
+    couponMsg + (opts.couponForm && c ? '<button type="button" class="btn ghost small" data-action="remove-coupon" data-test="remove-coupon">' + esc(t('removeCoupon')) + '</button>' : '') +
+    row(t('subtotal'), tot.subtotal, 'summary-subtotal') +
+    (tot.discount ? row(t('discount'), tot.discount, 'summary-discount', 'discount', '−' + money(tot.discount)) : '') +
+    row(t('itemsTotal'), tot.total, 'summary-total') +
+    row(t('shipping'), tot.shipping, 'summary-shipping', '', !hasPhysical ? esc(t('noShipping')) : tot.shipping === 0 ? esc(t('free')) : money(tot.shipping)) +
+    shipHint + row(t('amountDue'), tot.amountDue, 'summary-amount-due', 'total') + (opts.footer || '') + '</aside>';
+}
+
+function viewCart() {
+  const lines = cartLines();
+  if (!lines.length) return flashHtml() + '<div class="page-head"><h1>' + esc(t('cartTitle')) + '</h1></div><div class="empty card" data-test="cart-empty"><span class="big">🧺</span><p>' + esc(t('cartEmpty')) + '</p><p style="margin-top:14px"><a class="btn" href="#/" data-test="keep-shopping">' + esc(t('keepShopping')) + '</a></p></div>';
+  const tot = cartTotals();
+  const hasPhysical = lines.some(l => l.p.type === 'physical');
+  return flashHtml() + '<div class="page-head"><h1>' + esc(t('cartTitle')) + '</h1></div><div class="two-col"><div class="lines" data-test="cart-lines">' +
+    lines.map(l => {
+      const over = l.p.type === 'physical' && l.qty > l.p.stock;
+      return '<div class="line" data-test="cart-line" data-sku="' + l.p.sku + '"><span class="ico" aria-hidden="true">' + l.p.icon + '</span>' +
+        '<div><div class="name"><a href="#/product/' + l.p.sku + '" data-test="cart-line-name">' + esc(l.p.name) + '</a></div><div class="sku">' + l.p.sku + ' · ' + esc(t('each', { p: money(l.p.price) })) + '</div>' +
+        (over ? '<div class="warn" data-test="stock-warning">⚠ ' + esc(t('moreThanStock', { n: Math.max(0, l.p.stock) })) + '</div>' : '') + '</div>' +
+        qtyControl('qty-' + l.p.sku, l.qty, false, l.p.sku) +
+        '<div class="line-actions" style="display:flex;flex-direction:column;align-items:end;gap:4px"><span class="line-total" data-test="cart-line-total" data-value="' + round2(l.p.price * l.qty) + '">' + money(round2(l.p.price * l.qty)) + '</span>' +
+        '<button class="btn ghost small" type="button" data-action="remove-line" data-sku="' + l.p.sku + '" data-test="remove-item">' + esc(t('remove')) + '</button></div></div>';
+    }).join('') + '</div>' +
+    summaryHtml(tot, { couponForm: true, hasPhysical, footer: '<a class="btn block" href="#/checkout" data-test="checkout-button">' + esc(t('checkout')) + '</a><a class="btn ghost block" href="#/" data-test="keep-shopping">' + esc(t('keepShopping')) + '</a>' }) + '</div>';
+}
+
+function viewCheckout() {
+  const lines = cartLines();
+  if (!lines.length) { location.hash = '#/cart'; return ''; }
+  const tot = cartTotals();
+  const hasPhysical = lines.some(l => l.p.type === 'physical');
+  const d = checkoutDraft;
+  const fld = (id, label, type, value, extra) => {
+    const e = fieldErrors[id];
+    return '<label class="field"><span>' + esc(label) + '</span>' +
+      (type === 'textarea' ? '<textarea id="f-' + id + '" name="' + id + '" rows="3" data-test="' + id + '-input"' + (e ? ' aria-invalid="true"' : '') + '>' + esc(value) + '</textarea>'
+        : '<input type="' + type + '" id="f-' + id + '" name="' + id + '" value="' + esc(value) + '" data-test="' + id + '-input"' + (e ? ' aria-invalid="true"' : '') + (extra || '') + '>') +
+      (e ? '<span class="field-error" data-test="' + id + '-error">' + esc(t('err' + e)) + '</span>' : '') + '</label>';
+  };
+  return flashHtml() + '<div class="page-head"><h1>' + esc(t('checkoutTitle')) + '</h1></div><div class="two-col">' +
+    '<form class="form-grid" data-form="checkout" data-test="checkout-form" novalidate>' +
+    '<fieldset><legend>' + esc(t('customer')) + '</legend><p class="hint">' + esc(t('fakeData')) + '</p><div class="row2">' +
+    fld('name', t('name'), 'text', d.name, ' autocomplete="off" placeholder="Jane Doe"') + fld('email', t('email'), 'email', d.email, ' autocomplete="off" placeholder="jane@example.com"') + '</div></fieldset>' +
+    '<fieldset><legend>' + esc(t('address')) + '</legend>' +
+    (hasPhysical ? fld('address', t('address'), 'textarea', d.address) : '<p class="hint" data-test="digital-only-note">' + esc(t('addressDigital')) + '</p>') + '</fieldset>' +
+    '<fieldset><legend>' + esc(t('payment')) + '</legend>' + fld('card', t('card'), 'text', d.card, ' inputmode="numeric" autocomplete="off" placeholder="4242 4242 4242 4242"') +
+    '<div class="test-cards" data-test="test-cards">' + esc(t('testCards')) + '<table>' +
+    TEST_CARDS.map(c => '<tr><td><button type="button" data-action="fill-card" data-card="' + c[0] + '">' + c[0] + '</button></td><td>' + esc(pick(c[1])) + '</td></tr>').join('') + '</table></div></fieldset>' +
+    '<button class="btn" type="submit" data-test="place-order">' + esc(t('placeOrder', { v: money(tot.amountDue) })) + '</button></form>' +
+    summaryHtml(tot, { hasPhysical, footer: '<div class="lines" style="gap:6px;font-size:14px">' + lines.map(l => '<div class="sum-row"><span>' + l.qty + ' × ' + esc(l.p.name) + '</span><span>' + money(round2(l.p.price * l.qty)) + '</span></div>').join('') + '</div><a href="#/cart" data-test="back-to-cart">← ' + esc(t('cartTitle')) + '</a>' }) + '</div>';
+}
+
+function stepper(o) {
+  const side = o.status === 'Cancelled' || o.status === 'Refunded';
+  const idx = LIFECYCLE.indexOf(o.status);
+  const reached = side ? (o.history.some(h => h.status === 'Paid') ? 1 : 0) : idx;
+  let html = LIFECYCLE.map((s, i) => '<span class="step ' + (i < reached || (side && i === reached) ? 'done' : i === reached && !side ? 'now' : '') + '">' + esc(statusLabel(s)) + '</span>').join('<span class="arrow">→</span>');
+  if (side) html += '<span class="arrow">↘</span><span class="step side">' + esc(statusLabel(o.status)) + '</span>';
+  return '<div class="stepper" data-test="order-stepper">' + html + '</div>';
+}
+function orderItemsTable(o) {
+  return '<div class="table-scroll"><table class="list" data-test="order-items"><thead><tr><th>SKU</th><th>' + esc(t('productCol')) + '</th><th>' + esc(t('quantity')) + '</th><th>€</th></tr></thead><tbody>' +
+    o.items.map(i => '<tr data-test="order-item" data-sku="' + i.sku + '"><td class="mono">' + i.sku + '</td><td>' + esc(i.name) + '</td><td data-test="order-item-qty">' + i.quantity + '</td><td data-test="order-item-price" data-value="' + i.price + '">' + money(i.price) + '</td></tr>').join('') + '</tbody></table></div>';
+}
+
+let orderCache = {};
+function viewOrder(id) {
+  const o = orderCache[id];
+  if (!o) return '<div class="empty card" data-test="not-found"><span class="big">🧾</span><h1>' + esc(t('orderNotFound')) + '</h1></div>';
+  const hasPhysical = o.items.some(i => i.type === 'physical');
+  const canPay = o.status === 'Pending' || (bug('double-pay') && o.status === 'Paid');
+  const canCancel = o.status === 'Pending' || (bug('cancel-paid') && o.status === 'Paid');
+  // The order keeps { code, percent, valid }; the reason is looked up again only to word the message.
+  const ev = o.coupon && !o.coupon.valid ? (evaluateCoupon(o.coupon.code) || {}) : {};
+  const tot = Object.assign({}, o, { coupon: o.coupon ? Object.assign({}, o.coupon, { reason: o.coupon.valid ? null : (ev.reason || 'INVALID_PERCENT'), expiresOn: ev.expiresOn || '' }) : null });
+  return flashHtml() + '<p class="crumbs"><a href="#/orders" data-test="back-to-orders">← ' + esc(t('ordersTitle')) + '</a></p>' +
+    '<div class="page-head"><div><h1 data-test="order-id">' + esc(t('orderTitle', { id: o.id })) + '</h1><p>' + esc(fmtDate(o.createdAt)) + ' · ' + esc(o.customer.name) + ' · ' + esc(o.customer.email) + '</p></div>' +
+    '<span class="status" data-test="order-status" data-status="' + o.status + '">' + esc(statusLabel(o.status)) + '</span></div>' + stepper(o) +
+    '<div class="two-col"><div style="display:grid;gap:16px"><div class="card">' + orderItemsTable(o) + '</div>' +
+    '<div class="card" style="display:grid;gap:10px">' +
+    (hasPhysical ? '<p><b>' + esc(t('shipTo')) + ':</b> <span data-test="order-address">' + esc(o.shippingAddress || '—') + '</span></p>' : '') +
+    (o.items.some(i => i.type === 'digital') ? '<p><b>' + esc(t('emailTo')) + ':</b> ' + esc(o.customer.email) + '</p>' : '') +
+    (canPay ? '<form class="buy-row" data-form="pay" data-id="' + o.id + '" novalidate><label class="field" style="flex:1 1 220px"><span>' + esc(t('card')) + '</span><input type="text" id="pay-card" inputmode="numeric" autocomplete="off" placeholder="4242 4242 4242 4242" data-test="card-input"></label>' +
+      '<button class="btn" type="submit" data-test="pay-button">' + esc(t('payNow', { v: money(o.amountDue) })) + '</button></form>' : '') +
+    '<div class="order-actions">' +
+    (canCancel ? '<button class="btn danger" type="button" data-action="order" data-op="cancel" data-id="' + o.id + '" data-test="cancel-order">' + esc(t('cancel')) + '</button>' : '') +
+    (o.status === 'Paid' ? '<button class="btn ghost" type="button" data-action="order" data-op="refund" data-id="' + o.id + '" data-test="refund-order">' + esc(t('refund')) + '</button>' : '') + '</div>' +
+    '<details><summary class="muted">' + esc(t('history')) + '</summary><ol class="history" data-test="order-history">' + o.history.map(h => '<li>' + esc(statusLabel(h.status)) + ' · ' + esc(fmtDate(h.at)) + '</li>').join('') + '</ol></details>' +
+    (o.payments.length ? '<details><summary class="muted">' + esc(t('payments')) + ' (' + o.payments.length + ')</summary><ol class="history" data-test="payment-attempts">' + o.payments.map(p => '<li>•••• ' + p.last4 + ' · ' + money(p.amount) + ' · ' + esc(t(p.result)) + '</li>').join('') + '</ol></details>' : '') +
+    '</div></div>' + summaryHtml(tot, { hasPhysical }) + '</div>';
+}
+
+function ordersTable(orders, admin) {
+  return '<div class="table-scroll"><table class="list" data-test="' + (admin ? 'admin-orders' : 'orders-table') + '"><thead><tr><th>' + esc(t('colOrder')) + '</th><th>' + esc(t('colDate')) + '</th>' +
+    (admin ? '<th>' + esc(t('colCustomer')) + '</th>' : '') + '<th>' + esc(t('colItems')) + '</th><th>' + esc(t('colStatus')) + '</th><th>' + esc(t('colTotal')) + '</th><th>' + (admin ? esc(t('colActions')) : '') + '</th></tr></thead><tbody>' +
+    orders.map(o => '<tr data-test="order-row" data-id="' + o.id + '"><td class="mono"><a href="#/orders/' + o.id + '">' + o.id + '</a></td><td>' + esc(fmtDate(o.createdAt)) + '</td>' +
+      (admin ? '<td>' + esc(o.customer.name) + '</td>' : '') + '<td>' + o.items.reduce((s, i) => s + i.quantity, 0) + '</td>' +
+      '<td><span class="status" data-test="order-status" data-status="' + o.status + '">' + esc(statusLabel(o.status)) + '</span></td><td data-value="' + o.amountDue + '">' + money(o.amountDue) + '</td><td>' +
+      (admin ? (o.status === 'Paid' ? '<button class="btn small" type="button" data-action="order" data-op="ship" data-id="' + o.id + '" data-test="ship-order">' + esc(t('ship')) + '</button>' : '') +
+        (o.status === 'Shipped' ? '<button class="btn small" type="button" data-action="order" data-op="deliver" data-id="' + o.id + '" data-test="deliver-order">' + esc(t('deliver')) + '</button>' : '')
+        : '<a class="btn ghost small" href="#/orders/' + o.id + '" data-test="view-order">' + esc(t('viewOrder')) + '</a>') + '</td></tr>').join('') + '</tbody></table></div>';
+}
+let ordersCache = [];
+function viewOrders() {
+  return flashHtml() + '<div class="page-head"><h1>' + esc(t('ordersTitle')) + '</h1></div>' +
+    (ordersCache.length ? '<div class="card">' + ordersTable(ordersCache, false) + '</div>' : '<div class="empty card" data-test="orders-empty"><span class="big">🧾</span>' + esc(t('ordersEmpty')) + '</div>');
+}
+function viewAdmin() {
+  const rows = PRODUCTS.map(b => product(b.sku)).map(p => '<tr data-test="admin-product-row" data-sku="' + p.sku + '"><td class="mono">' + p.sku + '</td><td>' + esc(p.name) + '</td>' +
+    '<td><input type="number" step="0.01" value="' + p.price + '" data-test="admin-price" aria-label="Price ' + p.sku + '"></td>' +
+    '<td>' + (p.type === 'digital' ? '<span class="muted">null</span>' : '<input type="number" step="1" value="' + p.stock + '" data-test="admin-stock" aria-label="Stock ' + p.sku + '">') + '</td>' +
+    '<td><button class="btn small ghost" type="button" data-action="save-product" data-sku="' + p.sku + '" data-test="admin-save">' + esc(t('save')) + '</button></td></tr>').join('');
+  return flashHtml() + '<div class="page-head"><div><h1>' + esc(t('adminTitle')) + '</h1><p>' + esc(t('adminSub')) + '</p></div></div><div class="admin-grid">' +
+    '<section class="card"><h2 style="font-size:19px;margin-bottom:10px">' + esc(t('adminOrders')) + '</h2>' + (ordersCache.length ? ordersTable(ordersCache, true) : '<p class="muted">' + esc(t('ordersEmpty')) + '</p>') + '</section>' +
+    '<section class="card"><h2 style="font-size:19px;margin-bottom:10px">' + esc(t('adminProducts')) + '</h2><div class="table-scroll"><table class="list" data-test="admin-products"><thead><tr><th>SKU</th><th>' + esc(t('productCol')) + '</th><th>€</th><th>' + esc(t('stock')) + '</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div></section>' +
+    '<section class="card" style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between"><div><h2 style="font-size:19px">' + esc(t('resetTitle')) + '</h2><p class="muted">' + esc(t('resetSub')) + '</p></div>' +
+    '<button class="btn danger" type="button" data-action="reset" data-test="reset-shop">' + esc(t('reset')) + '</button></section></div>';
+}
+
+async function route() {
+  const hash = location.hash.replace(/^#/, '') || '/';
+  const parts = hash.split('/').filter(Boolean);
+  const page = parts[0] || 'catalog';
+  document.querySelectorAll('[data-nav]').forEach(a => a.classList.toggle('on', a.dataset.nav === page || (page === 'product' && a.dataset.nav === 'catalog') || (page === 'checkout' && a.dataset.nav === 'cart')));
+  if (page !== 'checkout') fieldErrors = {};
+  let html;
+  if (page === 'product') html = viewProduct(decodeURIComponent(parts[1] || ''));
+  else if (page === 'cart') html = viewCart();
+  else if (page === 'checkout') html = viewCheckout();
+  else if (page === 'orders' && parts[1]) {
+    const r = await call('GET', '/api/orders/' + encodeURIComponent(parts[1]));
+    if (r.ok) orderCache[r.body.id] = r.body; else delete orderCache[parts[1]];
+    html = viewOrder(parts[1]);
+  } else if (page === 'orders' || page === 'admin') {
+    const r = await call('GET', '/api/orders');
+    ordersCache = r.ok ? r.body : [];
+    html = page === 'orders' ? viewOrders() : viewAdmin();
+  } else html = viewCatalog();
+  if (location.hash.replace(/^#/, '') !== hash && location.hash) return; // navigated away while loading
+  view.innerHTML = html;
+  updateCartCount();
+}
+
+/* =====================================================================
+   8. Events
+   ===================================================================== */
+function toast(text, isError) {
+  const slot = $('toast-slot');
+  slot.innerHTML = '<div class="toast' + (isError ? ' error' : '') + '" data-test="toast">' + esc(text) + '</div>';
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => { slot.innerHTML = ''; }, 2600);
+}
+function busy(btn, on) { if (!btn) return; btn.disabled = on; btn.setAttribute('aria-busy', on ? 'true' : 'false'); }
+function setCartQty(sku, raw) {
+  const line = S.cart.find(l => l.sku === sku);
+  if (!line) return;
+  let q = parseInt(raw, 10);
+  if (!bug('qty-zero') && !(q > 0)) { q = 1; toast(t('qtyInvalid'), true); }
+  if (Number.isNaN(q)) q = 0;
+  line.qty = q; save(); route();
+}
+
+document.addEventListener('click', async e => {
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const a = el.dataset.action;
+  if (a === 'add') {
+    const p = product(el.dataset.sku); addToCart(p.sku, 1); toast(t('added', { name: p.name }));
+  } else if (a === 'filter-cat') {
+    catalogUI.cat = el.dataset.cat; route();
+  } else if (a === 'qty-step') {
+    const input = $(el.dataset.for); if (!input) return;
+    const next = (parseInt(input.value, 10) || 0) + Number(el.dataset.step);
+    const v = bug('qty-zero') ? next : Math.max(1, next);
+    if (el.dataset.sku && input.id.startsWith('qty-')) setCartQty(el.dataset.sku, v); else input.value = v;
+  } else if (a === 'remove-line') {
+    S.cart = S.cart.filter(l => l.sku !== el.dataset.sku); save(); route();
+  } else if (a === 'remove-coupon') {
+    S.coupon = ''; save(); route();
+  } else if (a === 'fill-card') {
+    const input = $('f-card'); if (input) { input.value = el.dataset.card; checkoutDraft.card = el.dataset.card; }
+  } else if (a === 'order') {
+    busy(el, true);
+    const r = await call('POST', '/api/orders/' + el.dataset.id + '/' + el.dataset.op);
+    if (r.ok) flash = { kind: 'success', text: el.dataset.op === 'cancel' ? t('cancelled') : el.dataset.op === 'refund' ? t('refunded') : statusLabel(r.body.status) + ' ✓' };
+    else flash = { kind: 'error', text: errorText(r.body) };
+    route();
+  } else if (a === 'save-product') {
+    const row = el.closest('tr');
+    const body = { price: Number(row.querySelector('[data-test=admin-price]').value) };
+    const st = row.querySelector('[data-test=admin-stock]');
+    if (st) body.stock = st.value === '' ? NaN : Number(st.value);
+    busy(el, true);
+    const r = await call('PATCH', '/api/products/' + el.dataset.sku, body);
+    busy(el, false);
+    if (r.ok) toast(t('saved', { sku: el.dataset.sku })); else toast(errorText(r.body), true);
+  } else if (a === 'reset') {
+    if (!confirm(t('resetConfirm'))) return;
+    busy(el, true);
+    await call('POST', '/api/reset');
+    checkoutDraft = { name: '', email: '', address: '', card: '' }; orderCache = {};
+    flash = { kind: 'success', text: t('resetDone' ) };
+    route();
+  }
+});
+
+document.addEventListener('input', e => {
+  if (e.target.id === 'search') {
+    catalogUI.q = e.target.value;
+    const pos = e.target.selectionStart;
+    route().then(() => { const s = $('search'); if (s) { s.focus(); try { s.setSelectionRange(pos, pos); } catch (err) {} } });
+  }
+  if (e.target.closest('[data-form=checkout]')) {
+    const map = { name: 'name', email: 'email', address: 'address', card: 'card' };
+    if (map[e.target.name]) checkoutDraft[map[e.target.name]] = e.target.value;
+  }
+});
+document.addEventListener('change', e => {
+  if (e.target.id === 'sort') { catalogUI.sort = e.target.value; route(); }
+  if (e.target.matches('.line [data-test=qty-input]')) setCartQty(e.target.dataset.sku, e.target.value);
+});
+
+document.addEventListener('submit', async e => {
+  const form = e.target.closest('[data-form]');
+  if (!form) return;
+  e.preventDefault();
+  const kind = form.dataset.form;
+  const btn = form.querySelector('[type=submit]');
+  if (kind === 'pdp-add') {
+    const q = Number($('pdp-qty').value);
+    const err = $('pdp-error');
+    if (!validQty(q)) { err.textContent = t('qtyInvalid'); err.hidden = false; return; }
+    err.hidden = true;
+    const p = product(form.dataset.sku); addToCart(p.sku, q); toast(t('added', { name: p.name }));
+  } else if (kind === 'coupon') {
+    S.coupon = $('coupon').value.trim().toUpperCase(); save();
+    if (S.coupon) { busy(btn, true); await call('GET', '/api/coupons/' + encodeURIComponent(S.coupon)); }
+    route();
+  } else if (kind === 'checkout') {
+    fieldErrors = {};
+    const card = checkoutDraft.card.replace(/\s+/g, '');
+    if (!/^\d{16}$/.test(card)) fieldErrors.card = checkoutDraft.card.trim() ? 'INVALID' : 'REQUIRED';
+    busy(btn, true);
+    const lines = cartLines();
+    const body = {
+      customer: { name: checkoutDraft.name, email: checkoutDraft.email },
+      shippingAddress: lines.some(l => l.p.type === 'physical') ? checkoutDraft.address : null,
+      items: lines.map(l => ({ sku: l.p.sku, quantity: l.qty })),
+      couponCode: S.coupon || null,
+    };
+    if (fieldErrors.card) { // the card is checked before talking to the server
+      flash = { kind: 'error', text: t('e_VALIDATION_ERROR') }; busy(btn, false); route(); return;
+    }
+    const created = await call('POST', '/api/orders', body);
+    if (!created.ok) {
+      if (created.body.error === 'VALIDATION_ERROR') created.body.details.forEach(d => { fieldErrors[d.field === 'shippingAddress' ? 'address' : d.field] = d.code; });
+      flash = { kind: 'error', text: errorText(created.body) };
+      busy(btn, false); route(); return;
+    }
+    const order = created.body;
+    S.cart = []; S.coupon = ''; save(); updateCartCount();
+    const paid = await call('POST', '/api/orders/' + order.id + '/pay', { cardNumber: card });
+    checkoutDraft.card = '';
+    flash = paid.ok ? { kind: 'success', text: t('placed') } : { kind: 'error', text: paid.body.error === 'PAYMENT_FAILED' ? t('placedUnpaid', { id: order.id }) : errorText(paid.body) };
+    location.hash = '#/orders/' + order.id;
+  } else if (kind === 'pay') {
+    busy(btn, true);
+    const r = await call('POST', '/api/orders/' + form.dataset.id + '/pay', { cardNumber: $('pay-card').value });
+    flash = r.ok ? { kind: 'success', text: t('paid') } : { kind: 'error', text: errorText(r.body) };
+    route();
+  }
+});
+
+/* API log panel */
+function renderApiLog() {
+  const list = $('api-list');
+  $('api-toggle').textContent = '{ } ' + t('apiTitle') + ' · ' + API_LOG.length;
+  if (!list || $('api-panel').hidden) return;
+  list.innerHTML = API_LOG.length ? API_LOG.map(x =>
+    '<details class="api-entry" data-test="api-entry" data-method="' + x.method + '" data-status="' + x.status + '"><summary><span class="m m-' + x.method + '">' + x.method + '</span><span class="path">' + esc(x.url) + '</span>' +
+    '<span class="' + (x.status < 400 ? 'code-ok' : 'code-bad') + '">' + x.status + '</span><span class="muted">' + x.ms + 'ms</span></summary>' +
+    '<pre>' + (x.req !== undefined ? '<span>// ' + esc(t('request')) + '</span>\n' + esc(JSON.stringify(x.req, null, 2)) + '\n' : '') + '<span>// ' + esc(t('response')) + ' ' + x.status + '</span>\n' + esc(JSON.stringify(x.res, null, 2)) + '</pre></details>').join('')
+    : '<p class="muted" style="padding:12px;font-size:13px">' + esc(t('apiEmpty')) + '</p>';
+}
+$('api-toggle').addEventListener('click', () => {
+  const panel = $('api-panel'); panel.hidden = !panel.hidden;
+  $('api-toggle').setAttribute('aria-expanded', String(!panel.hidden));
+  renderApiLog();
+});
+$('api-clear').addEventListener('click', () => { API_LOG.length = 0; renderApiLog(); });
+
+/* Language */
+function applyStatic() {
+  document.documentElement.lang = LANG === 'pt' ? 'pt-BR' : 'en';
+  document.title = t('brand');
+  document.querySelectorAll('[data-i18n]').forEach(n => { n.textContent = t(n.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-html]').forEach(n => { n.innerHTML = t(n.dataset.i18nHtml); });
+  $('lang-btn').textContent = t('langBtn');
+  $('footer').innerHTML = '<a href="../" data-test="academy-link">' + esc(t('footAcademy')) + '</a><span data-test="shop-date" data-date="' + TODAY + '">' + esc(t('footDate', { d: TODAY })) + '</span><span>' + esc(t('footMock')) + '</span><span>' + t('footApi') + '</span>';
+  renderApiLog();
+}
+$('lang-btn').addEventListener('click', () => {
+  LANG = LANG === 'pt' ? 'en' : 'pt';
+  try { localStorage.setItem(LANG_KEY, LANG); } catch (e) {}
+  applyStatic(); route();
+});
+// Another tab of the shop changed the data: reload it here too.
+window.addEventListener('storage', e => { if (e.key === STORE_KEY) { S = loadState(); route(); } });
+window.addEventListener('hashchange', () => { route(); window.scrollTo(0, 0); });
+applyStatic();
+route();
+</script>
+</body>
+</html>

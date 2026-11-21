@@ -28,6 +28,7 @@ Todas as trilhas usam o mesmo universo: os produtos, pedidos, cupons e regras da
 - **Regras da Loja**: as regras de negócio, cada uma ligada aos exercícios que a usam.
 - **Catálogo de produtos**: os dados de mentira dos exercícios, em cartões ou em JSON.
 - **Grimório do Git**: todos os comandos, erros comuns e glossário.
+- **A lojinha** ([`shop/`](shop/)): um e-commerce de mentira com as mesmas regras e produtos, para treinar testes manuais, Cypress e testes de API. Veja o [guia da loja](shop/README.md).
 - **Meu trabalho (.md)**: exporta o progresso e o código em Markdown.
 - **Duas línguas**: português do Brasil e inglês. Código, comandos e nomes de testes ficam em inglês, como nos projetos reais.
 
@@ -69,6 +70,7 @@ Every track shares the same world: the shop’s products, orders, coupons and ru
 - **Shop Rulebook**: the business rules, each linked to the exercises that use it.
 - **Product catalog**: the exercises’ mock data, as cards or as JSON.
 - **Git grimoire**: every command, common errors and a glossary.
+- **The shop** ([`shop/`](shop/)): a mock e-commerce with the same rules and products, to practise manual tests, Cypress and API checks. See the [shop guide](shop/README.md).
 - **My work (.md)**: exports progress and code as Markdown.
 - **Two languages**: Brazilian Portuguese and English. Code, commands and test names stay in English, like in real projects.
 
