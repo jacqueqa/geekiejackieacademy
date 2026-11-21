@@ -61,7 +61,7 @@ Os exercícios da Trilha Inicial ficam no bloco `START-TRACK` (função `buildSt
 
 ### Testes automatizados
 
-Só precisa do Node (18 ou mais), sem instalar nada:
+Só precisa do Node (22 ou mais), sem instalar nada:
 
 ```sh
 node --test "tests/*.test.mjs"
@@ -126,7 +126,7 @@ Start Track exercises live in the `START-TRACK` block (`buildStartTrack`), each 
 
 ### Automated tests
 
-Only Node (18 or later) is needed, nothing to install:
+Only Node (22 or later) is needed, nothing to install:
 
 ```sh
 node --test "tests/*.test.mjs"
