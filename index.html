@@ -559,6 +559,47 @@ dl.io dd { margin: 0; }
 .win-nocount { border-color: var(--xp) !important; }
 .win #redo-btn { margin-top: 10px; }
 
+/* Glossary */
+.gl-lang-note { font-size: 13.5px; color: var(--xp); }
+.gl-az { display: flex; flex-wrap: wrap; gap: 4px; }
+.gl-letter-btn { min-width: 32px; height: 32px; padding: 0 6px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+  font-family: var(--font-display); font-weight: 700; font-size: 14px; }
+.gl-letter-btn:hover:not(:disabled) { border-color: var(--cyan); color: var(--cyan); }
+.gl-letter-btn:disabled { color: var(--line); border-color: transparent; background: transparent; cursor: default; }
+.gl-bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.gl-count { color: var(--muted); font-size: 13.5px; }
+.gl-group { display: flex; flex-direction: column; gap: 8px; }
+.gl-group + .gl-group { margin-top: 18px; }
+/* the search bar stays on top while scrolling: leave room for it when jumping to a letter */
+.gl-group-head { scroll-margin-top: 240px; font-size: 26px; color: var(--cyan); border-bottom: 1px solid var(--line); padding-bottom: 4px; }
+.gl-group-head:focus { outline: none; }
+.gl-group-head:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.gl-item { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.gl-item.open { border-color: var(--cyan); }
+.gl-item-h { margin: 0; font-size: inherit; font-weight: inherit; }
+.gl-toggle { width: 100%; display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: none; border: 0; color: var(--ink); text-align: left; }
+.gl-toggle:hover { background: var(--accent-soft); }
+.gl-names { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.gl-term { font-family: var(--font-display); font-size: 17px; font-weight: 700; }
+.gl-abbr { font-family: var(--font-mono); font-size: 12.5px; color: var(--muted); }
+.gl-cat { flex: none; font-size: 11px; font-weight: 700; letter-spacing: .04em; color: var(--muted); border: 1px solid var(--line); border-radius: 99px; padding: 2px 9px; }
+.gl-chevron { flex: none; font-size: 22px; line-height: 1; color: var(--muted); transition: transform .15s ease; }
+.gl-item.open .gl-chevron { transform: rotate(90deg); color: var(--cyan); }
+.gl-panel { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 8px; }
+.gl-panel > p { max-width: 70ch; }
+.gl-panel .rb-example { white-space: pre; }
+.gl-tracks { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.gl-tracks .rb-sub { margin-right: 4px; }
+.gl-empty { text-align: center; padding: 34px 16px; border: 1px dashed var(--line); border-radius: 16px; display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--muted); }
+.gl-empty b { color: var(--ink); }
+.gl-empty-icon { font-size: 34px; }
+@media (max-width: 600px) {
+  .gl-az, .gl-filter { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin; }
+  .gl-filter .rb-chip, .gl-letter-btn { flex: none; }
+  .gl-cat { display: none; }
+  .gl-group-head { scroll-margin-top: 250px; }
+}
+
 /* Big screens: the whole page grows with the window, so header, hero and cards keep their proportions */
 body { zoom: var(--ui-scale, 1); }
 </style>
@@ -636,6 +677,25 @@ body { zoom: var(--ui-scale, 1); }
       <div class="rb-row" id="gr-filters"></div>
     </div>
     <div id="gr-body" style="display:flex;flex-direction:column;gap:18px"></div>
+  </section>
+
+  <section class="rulebook glossary" id="glossary-view" hidden data-test="glossary-view">
+    <a class="back-link" href="#" data-i18n="allTracks">← All tracks</a>
+    <div class="rb-head">
+      <div class="rb-stats" id="gl-stats"></div>
+      <h2 data-i18n="glTitle">📚 Programming glossary</h2>
+      <p id="gl-intro"></p>
+      <p class="gl-lang-note" id="gl-lang-note" hidden></p>
+    </div>
+    <div class="rb-tools">
+      <label class="visually-hidden" for="gl-search" data-i18n="glSearchLbl">Search the glossary</label>
+      <input class="rb-search" id="gl-search" type="search" autocomplete="off" spellcheck="false" placeholder="Search a term" data-i18n-ph="glSearch">
+      <nav class="gl-az" id="gl-az" data-i18n-aria="glAz" aria-label="Letters"></nav>
+      <div class="rb-row gl-filter" id="gl-cats" role="group" data-i18n-aria="glCatLbl" aria-label="Category"></div>
+      <div class="rb-row gl-filter" id="gl-tracks" role="group" data-i18n-aria="glTrackLbl" aria-label="Track"></div>
+    </div>
+    <div class="gl-bar"><p class="gl-count" id="gl-count" aria-live="polite"></p><button type="button" class="link-btn" id="gl-all"></button></div>
+    <div id="gl-body"></div>
   </section>
 
   <section class="catalog" id="catalog-view" hidden>
@@ -784,6 +844,8 @@ body { zoom: var(--ui-scale, 1); }
       <span id="feedback-slot"></span>
       <a class="link-btn" href="#grimoire" data-i18n="grimoire">Git grimoire</a>
       <span class="foot-sep" aria-hidden="true">·</span>
+      <a class="link-btn" href="#glossary" data-i18n="glossaryLink">Glossary</a>
+      <span class="foot-sep" aria-hidden="true">·</span>
       <a class="link-btn" href="#catalog" data-i18n="catalog">Catalog</a>
       <span class="foot-sep" aria-hidden="true">·</span>
       <a class="link-btn" href="#rulebook" data-i18n="rulebook">Shop Rulebook</a>
@@ -836,6 +898,8 @@ body { zoom: var(--ui-scale, 1); }
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<!-- Glossary terms (Recursos técnicos → Glossário). Data only; see the comment at the top of the file. -->
+<script src="glossary.js"></script>
 <script type="text/plain" id="worker-src">
 function sortKeys(v) {
   if (Array.isArray(v)) return v.map(sortKeys);
@@ -1870,6 +1934,8 @@ RESOURCES = [
     bullets: [L('Every business rule of the shop in one place', 'Todas as regras de negócio da loja num só lugar'), L('Products, orders, coupons, payments, the oracle', 'Produtos, pedidos, cupons, pagamentos, o oráculo'), L('Linked to the exercises that use each rule', 'Com links para os exercícios que usam cada regra')] },
   { title: L('Product catalog', 'Catálogo de produtos'), url: '#catalog', color: 'var(--m-get)', art: 'TAR-001  Rider-Waite Tarot\nLEN-001  Lenormand deck\nCAN-001  Moon candle',
     bullets: [L('The mock data used in every exercise', 'Os dados de mentira usados em todos os exercícios'), L('SKUs, categories, prices and stock', 'SKUs, categorias, preços e estoque'), L('As cards or as the JSON the API returns', 'Em cartões ou no JSON que a API devolve')] },
+  { title: L('Glossary', 'Glossário'), url: '#glossary', color: 'var(--cyan)', art: 'algoritmo → função\n  → loop → array\n// palavras do dia a dia',
+    bullets: [L('Programming words explained simply', 'Palavras de programação explicadas de forma simples'), L('Examples from the shop, A–Z and search', 'Exemplos da lojinha, A–Z e busca'), L('Filter by category and by track', 'Filtro por categoria e por trilha')] },
   { title: L('The shop (mock e-commerce)', 'A lojinha (e-commerce de mentira)'), url: 'shop/', color: 'var(--m-post)', art: 'catalog → cart → coupon\n  → checkout → POST /api/orders\n  → pay → 201 / 409',
     bullets: [L('A working online shop built from the same rules and products', 'Uma loja online funcionando, feita com as mesmas regras e produtos'), L('Practise manual tests, Cypress and API checks', 'Para treinar testes manuais, Cypress e testes de API'), L('With test cards, coupons and an API log', 'Com cartões de teste, cupons e log da API')] },
   { title: L('Git grimoire', 'Grimório do Git'), url: '#grimoire', color: 'var(--m-git)', art: 'clone → pull → branch\n  → add → commit → push',
@@ -2984,6 +3050,14 @@ const UI = {
     cards: 'Cards', items: '{n} items', copyJson: 'Copy JSON', jsonCopied: 'JSON copied', selectCopy: 'Select the text and copy it',
     digital: 'Digital · always available', soldOut: 'Sold out', onlyLeft: 'Only {n} left', inStock: '{n} in stock', viewJson: '{ } view as JSON', catEmpty: 'No product matches this search.',
     notInCat: 'Not in the catalog', notInCatSub: 'Records that look like products but must never reach the shelf.',
+    glossaryLink: 'Glossary', glTitle: '📚 Programming glossary', glSearchLbl: 'Search the glossary',
+    glIntro: 'Programming words explained simply, with examples from the shop. Search, jump to a letter or filter by category and track.',
+    glPtOnly: 'For now the definitions are in Portuguese.',
+    glSearch: 'Search a term, an acronym or a word like “loop”', glAz: 'Jump to a letter', glCatLbl: 'Filter by category', glTrackLbl: 'Filter by track',
+    glStats: '{n} terms · {c} categories', glAllCats: 'All categories', glAllTracks: 'All tracks', glJump: 'Go to letter {l}',
+    glCountAll: '{n} terms', glCount: '{n} of {t} terms', glOpenAll: 'Open all', glCloseAll: 'Close all',
+    glEmpty: 'No term matches “{q}”.', glEmptyFilters: 'No term matches these filters.', glEmptyHint: 'Try fewer letters, or remove a filter.',
+    glClear: 'Clear search and filters', glExample: 'Example', glTracks: 'Tracks', glNoData: 'The glossary file (glossary.js) did not load.',
     grTitle: '📖 The Git Grimoire', grSearch: 'Search a spell, an error message or a word like “branch”', grStats: '{n} spells · {c} chapters in the exercises · {k} common curses',
     repoOf: '{m} repo', curses: 'Curses', glossary: 'Glossary', conventions: '{m} conventions', convSub: 'Repo, branch and commit rules for the {m} track. The spells below use them.',
     repository: 'Repository', branchEx: 'Branch example', commitEx: 'Commit example', ritual: 'The daily ritual', ritualSub: 'The path every change takes, from your computer to main.',
@@ -3056,6 +3130,14 @@ const UI = {
     cards: 'Cartões', items: '{n} itens', copyJson: 'Copiar JSON', jsonCopied: 'JSON copiado', selectCopy: 'Selecione o texto e copie',
     digital: 'Digital · sempre disponível', soldOut: 'Esgotado', onlyLeft: 'Só restam {n}', inStock: '{n} em estoque', viewJson: '{ } ver como JSON', catEmpty: 'Nenhum produto corresponde a esta busca.',
     notInCat: 'Fora do catálogo', notInCatSub: 'Registros que parecem produtos, mas nunca podem chegar à prateleira.',
+    glossaryLink: 'Glossário', glTitle: '📚 Glossário de programação', glSearchLbl: 'Buscar no glossário',
+    glIntro: 'Palavras de programação explicadas de um jeito simples, com exemplos da lojinha. Busque, pule para uma letra ou filtre por categoria e trilha.',
+    glPtOnly: '',
+    glSearch: 'Busque um termo, uma sigla ou uma palavra como “função”', glAz: 'Pular para uma letra', glCatLbl: 'Filtrar por categoria', glTrackLbl: 'Filtrar por trilha',
+    glStats: '{n} termos · {c} categorias', glAllCats: 'Todas as categorias', glAllTracks: 'Todas as trilhas', glJump: 'Ir para a letra {l}',
+    glCountAll: '{n} termos', glCount: '{n} de {t} termos', glOpenAll: 'Abrir todos', glCloseAll: 'Fechar todos',
+    glEmpty: 'Nenhum termo encontrado para “{q}”.', glEmptyFilters: 'Nenhum termo com estes filtros.', glEmptyHint: 'Tente com menos letras, ou tire um filtro.',
+    glClear: 'Limpar busca e filtros', glExample: 'Exemplo', glTracks: 'Trilhas', glNoData: 'O arquivo do glossário (glossary.js) não carregou.',
     grTitle: '📖 O Grimório do Git', grSearch: 'Busque um feitiço, uma mensagem de erro ou uma palavra como “branch”', grStats: '{n} feitiços · {c} capítulos nos exercícios · {k} maldições comuns',
     repoOf: 'Repo {m}', curses: 'Maldições', glossary: 'Glossário', conventions: 'Convenções de {m}', convSub: 'Regras de repo, branch e commit da trilha {m}. Os feitiços abaixo usam estas regras.',
     repository: 'Repositório', branchEx: 'Exemplo de branch', commitEx: 'Exemplo de commit', ritual: 'O ritual diário', ritualSub: 'O caminho que toda mudança faz, do seu computador até a main.',
@@ -3109,6 +3191,38 @@ function startTrackProgress(exercises, st) {
 }
 function canAccessTrack(module, progress) { return !module.requires || progress.unlocked; }
 /* ACCESS-RULES:END */
+
+/* GLOSSARY-LOGIC:BEGIN
+   Search, filters and A–Z of the glossary (the terms live in glossary.js). Pure functions, tested in tests/. */
+const GLOSS_AZ = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+// Lowercase without accents, so "funcao", "FUNÇÃO" and "Função" all match.
+function glossNormalize(s) { return String(s == null ? '' : s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+function glossSort(list) { return list.slice().sort((a, b) => a.term.localeCompare(b.term, 'pt')); }
+function glossLetter(term) { const c = glossNormalize(term).charAt(0).toUpperCase(); return GLOSS_AZ.includes(c) ? c : '#'; }
+function glossSlug(term) { return glossNormalize(term).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+// opts: { query, category, track }. Searches the term, the acronym and the definition.
+function glossFilter(list, opts) {
+  const o = opts || {};
+  const q = glossNormalize(o.query).trim();
+  return glossSort(list).filter(g =>
+    (!o.category || g.category === o.category) &&
+    (!o.track || (g.tracks || []).includes(o.track)) &&
+    (!q || [g.term, g.abbr, g.definition].some(f => glossNormalize(f).includes(q))));
+}
+// Every letter A–Z, enabled only when at least one term of the list starts with it.
+function glossLetters(list) {
+  const have = new Set(list.map(g => glossLetter(g.term)));
+  return GLOSS_AZ.map(letter => ({ letter, enabled: have.has(letter) }));
+}
+function glossGroups(list) {
+  const groups = [];
+  glossSort(list).forEach(g => {
+    const letter = glossLetter(g.term), last = groups[groups.length - 1];
+    if (last && last.letter === letter) last.terms.push(g); else groups.push({ letter, terms: [g] });
+  });
+  return groups;
+}
+/* GLOSSARY-LOGIC:END */
 
 const HINT_COST = CONFIG.hintCost;
 const STORE_KEY = CONFIG.storageKey;
@@ -3578,6 +3692,15 @@ bindResetAll();
 function showView() {
   $('locked-view').hidden = true;
   const hash = (location.hash || '').replace('#', '');
+  $('glossary-view').hidden = hash !== 'glossary';
+  if (hash === 'glossary') {
+    activeModule = null;
+    ['home-view', 'rulebook-view', 'howto-view', 'module-view', 'catalog-view', 'grimoire-view'].forEach(id => { $(id).hidden = true; });
+    renderHeader(); renderGlossary();
+    document.title = CONFIG.name + ': ' + t('glossaryLink');
+    window.scrollTo(0, 0);
+    return;
+  }
   const mod = MODULES.find(m => m.id === hash);
   const isHowTo = hash === 'how-to';
   const isRulebook = hash === 'rulebook';
@@ -4046,6 +4169,109 @@ function applyGrimoireFilter() {
   $('gr-empty').hidden = shown > 0;
 }
 $('gr-search').addEventListener('input', applyGrimoireFilter);
+
+/* ---------- Glossary (terms in glossary.js, search in GLOSSARY-LOGIC) ---------- */
+const glossUI = { query: '', category: '', track: '', open: new Set() };
+function glossData() { return typeof GLOSSARY !== 'undefined' && Array.isArray(GLOSSARY) ? GLOSSARY : []; }
+function glossCategories() { return typeof GLOSSARY_CATEGORIES !== 'undefined' ? GLOSSARY_CATEGORIES : []; }
+function glossTrackName(m) { return m.id === START_TRACK_ID ? t('moduleTitle', { m: m.name }) : m.name; }
+function renderGlossary() {
+  const chip = (attr, val, label, on) => '<button type="button" class="rb-chip' + (on ? ' on' : '') + '" data-' + attr + '="' + esc(val) + '" aria-pressed="' + on + '">' + esc(label) + '</button>';
+  $('gl-intro').textContent = t('glIntro');
+  $('gl-lang-note').hidden = LANG === 'pt';
+  $('gl-lang-note').textContent = t('glPtOnly');
+  $('gl-stats').textContent = t('glStats', { n: glossData().length, c: glossCategories().length });
+  $('gl-cats').innerHTML = chip('cat', '', t('glAllCats'), !glossUI.category) + glossCategories().map(c => chip('cat', c, c, glossUI.category === c)).join('');
+  $('gl-tracks').innerHTML = chip('track', '', t('glAllTracks'), !glossUI.track) + MODULES.map(m => chip('track', m.id, glossTrackName(m), glossUI.track === m.id)).join('');
+  if ($('gl-search').value !== glossUI.query) $('gl-search').value = glossUI.query;
+  renderGlossaryList();
+}
+function glossAllOpen(list) { return list.length > 0 && list.every(g => glossUI.open.has(glossSlug(g.term))); }
+function renderGlossaryAllButton(list) {
+  const allOpen = glossAllOpen(list);
+  $('gl-all').hidden = !list.length;
+  $('gl-all').textContent = allOpen ? t('glCloseAll') : t('glOpenAll');
+  $('gl-all').dataset.open = allOpen ? '1' : '';
+}
+function renderGlossaryList() {
+  const all = glossData();
+  const list = glossFilter(all, glossUI);
+  $('gl-az').innerHTML = glossLetters(list).map(x =>
+    '<button type="button" class="gl-letter-btn" data-letter="' + x.letter + '"' + (x.enabled ? '' : ' disabled') + ' aria-label="' + esc(t('glJump', { l: x.letter })) + '">' + x.letter + '</button>').join('');
+  $('gl-count').textContent = list.length === all.length ? t('glCountAll', { n: list.length }) : t('glCount', { n: list.length, t: all.length });
+  renderGlossaryAllButton(list);
+  if (!all.length) { $('gl-body').innerHTML = '<p class="rb-empty">' + esc(t('glNoData')) + '</p>'; return; }
+  if (!list.length) {
+    const q = glossUI.query.trim();
+    $('gl-body').innerHTML = '<div class="gl-empty" data-test="gl-empty"><div class="gl-empty-icon" aria-hidden="true">🔮</div>' +
+      '<p><b>' + esc(q ? t('glEmpty', { q }) : t('glEmptyFilters')) + '</b></p><p>' + esc(t('glEmptyHint')) + '</p>' +
+      '<button class="btn" type="button" id="gl-clear">' + esc(t('glClear')) + '</button></div>';
+    $('gl-clear').addEventListener('click', clearGlossary);
+    return;
+  }
+  $('gl-body').innerHTML = glossGroups(list).map(g =>
+    '<section class="gl-group" id="gl-letter-' + g.letter + '" aria-labelledby="gl-h-' + g.letter + '">' +
+    '<h3 class="gl-group-head" id="gl-h-' + g.letter + '" tabindex="-1">' + g.letter + '</h3>' +
+    g.terms.map(glossItem).join('') + '</section>').join('');
+}
+function glossItem(g) {
+  const slug = glossSlug(g.term), open = glossUI.open.has(slug);
+  const tracks = (g.tracks || []).map(id => MODULES.find(m => m.id === id)).filter(Boolean);
+  return '<div class="gl-item' + (open ? ' open' : '') + '" data-test="gl-item">' +
+    '<h4 class="gl-item-h"><button type="button" class="gl-toggle" id="gl-b-' + slug + '" data-slug="' + slug + '" aria-expanded="' + open + '" aria-controls="gl-p-' + slug + '">' +
+    '<span class="gl-names"><span class="gl-term">' + esc(g.term) + '</span>' + (g.abbr ? '<span class="gl-abbr">' + esc(g.abbr) + '</span>' : '') + '</span>' +
+    '<span class="gl-cat">' + esc(g.category) + '</span><span class="gl-chevron" aria-hidden="true">›</span></button></h4>' +
+    '<div class="gl-panel" id="gl-p-' + slug + '" role="region" aria-labelledby="gl-b-' + slug + '"' + (open ? '' : ' hidden') + '>' +
+    '<p>' + esc(g.definition) + '</p>' +
+    (g.example ? '<div class="rb-sub">' + esc(t('glExample')) + '</div><pre class="rb-example"><code>' + esc(g.example) + '</code></pre>' : '') +
+    (tracks.length ? '<div class="gl-tracks"><span class="rb-sub">' + esc(t('glTracks')) + '</span>' +
+      tracks.map(m => '<a class="rb-chip" href="#' + m.id + '">' + esc(glossTrackName(m)) + '</a>').join('') + '</div>' : '') +
+    '</div></div>';
+}
+// After the search or a filter changes, bring the top of the results back under the sticky search bar.
+function glossResultsInView() {
+  const tools = document.querySelector('#glossary-view .rb-tools').getBoundingClientRect();
+  const bar = document.querySelector('#glossary-view .gl-bar').getBoundingClientRect();
+  if (bar.top < tools.bottom) window.scrollBy(0, bar.top - tools.bottom - 8);
+}
+function clearGlossary() {
+  glossUI.query = ''; glossUI.category = ''; glossUI.track = ''; glossUI.open = new Set();
+  renderGlossary();
+  glossResultsInView();
+  $('gl-search').focus();
+}
+$('gl-search').addEventListener('input', e => {
+  glossUI.query = e.target.value;
+  // While searching, the matching terms open so the definitions show right away.
+  glossUI.open = glossUI.query.trim() ? new Set(glossFilter(glossData(), glossUI).map(g => glossSlug(g.term))) : new Set();
+  renderGlossaryList();
+  glossResultsInView();
+});
+$('gl-search').addEventListener('keydown', e => { if (e.key === 'Escape' && e.target.value) { e.preventDefault(); clearGlossary(); } });
+$('gl-cats').addEventListener('click', e => { const b = e.target.closest('[data-cat]'); if (b) { glossUI.category = b.dataset.cat; renderGlossary(); glossResultsInView(); } });
+$('gl-tracks').addEventListener('click', e => { const b = e.target.closest('[data-track]'); if (b) { glossUI.track = b.dataset.track; renderGlossary(); glossResultsInView(); } });
+$('gl-az').addEventListener('click', e => {
+  const b = e.target.closest('[data-letter]');
+  const h = b && $('gl-h-' + b.dataset.letter);
+  if (!h) return;
+  h.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  h.focus({ preventScroll: true });
+});
+$('gl-all').addEventListener('click', () => {
+  const list = glossFilter(glossData(), glossUI);
+  glossUI.open = $('gl-all').dataset.open ? new Set() : new Set(list.map(g => glossSlug(g.term)));
+  renderGlossaryList();
+});
+$('gl-body').addEventListener('click', e => {
+  const b = e.target.closest('.gl-toggle');
+  if (!b) return;
+  const slug = b.dataset.slug, open = !glossUI.open.has(slug);
+  if (open) glossUI.open.add(slug); else glossUI.open.delete(slug);
+  b.setAttribute('aria-expanded', String(open));
+  b.closest('.gl-item').classList.toggle('open', open);
+  $('gl-p-' + slug).hidden = !open;
+  renderGlossaryAllButton(glossFilter(glossData(), glossUI));
+});
 
 /* ---------- Catalog ---------- */
 let catFilter = 'All', catView = 'cards';
