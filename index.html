@@ -2219,6 +2219,28 @@ function t(key, vars) {
    ENGINE: no changes needed below this line
    ===================================================================== */
 
+/* ACCESS-RULES:BEGIN
+   Who can open which track. Pure functions (no DOM, no storage) so they are tested in tests/
+   and can move to the backend later. Until then they run in the browser only.
+   - DEV, QA and AI have `requires: 'start'`: they open once the learner completes 80% of the Start Track.
+   - An exercise solved after revealing the solution gives 0 XP and does not count toward the 80%. */
+const START_TRACK_ID = 'start';
+const UNLOCK_PERCENT = 80;
+function countsForUnlock(ex, st) { return !!(st.done && st.done[ex.id]) && !(st.solutions && st.solutions[ex.id]); }
+function startTrackProgress(exercises, st) {
+  const total = exercises.length;
+  const done = exercises.filter(ex => countsForUnlock(ex, st)).length;
+  const required = Math.ceil(total * UNLOCK_PERCENT / 100);
+  return {
+    done, total, required,
+    missing: Math.max(0, required - done),
+    percent: total ? Math.floor(done * 100 / total) : 0,
+    unlocked: total > 0 && done >= required,
+  };
+}
+function canAccessTrack(module, progress) { return !module.requires || progress.unlocked; }
+/* ACCESS-RULES:END */
+
 const HINT_COST = CONFIG.hintCost;
 const STORE_KEY = CONFIG.storageKey;
 const emptyReport = () => '<span class="empty-rep">' + t('emptyReport') + '</span>';
