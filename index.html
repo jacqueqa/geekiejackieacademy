@@ -523,6 +523,42 @@ pre.cat-json { margin: 0; background: var(--code-bg); color: var(--code-ink); bo
   .top .brand { order: 3; }
 }
 
+/* Start Track: featured card, unlock meter with the 80% mark, locked tracks */
+.home-cards .mod-card.is-start { grid-column: 1 / -1; }
+@media (min-width: 901px) {
+  .home-cards .mod-card.is-start { flex-direction: row; }
+  .home-cards .mod-card.is-start > .mod-card-media, .home-cards .mod-card.is-start > .mod-card-body { flex: 1 1 0; min-width: 0; }
+  .home-cards .mod-card.is-start .mod-art { height: 100%; aspect-ratio: auto; min-height: 260px; border-bottom: 0; border-right: 1px solid var(--line); }
+}
+.unlock { display: flex; flex-direction: column; gap: 6px; }
+.mod-card-body .unlock { padding-bottom: 12px; margin-bottom: 4px; border-bottom: 1px solid var(--line); }
+#unlock-count, #locked-count { font-weight: 800; color: var(--ink); }
+.unlock-bar { position: relative; height: 12px; overflow: visible; }
+.unlock-bar > span { background: linear-gradient(90deg, var(--xp), var(--sakura)); }
+.unlock-mark { position: absolute; top: -5px; bottom: -5px; width: 3px; margin-left: -1px; border-radius: 2px; background: var(--ink); box-shadow: 0 0 0 2px var(--surface); }
+.unlock-text { font-size: 13.5px; color: var(--muted); }
+.lock-badge { position: absolute; top: 12px; right: 12px; z-index: 2; padding: 5px 11px; border-radius: 99px; background: var(--fail-soft); border: 1px solid var(--fail); color: #FFD2D2; font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.mod-card.is-locked .mod-art { filter: grayscale(.75) brightness(.55); }
+.mod-card.is-locked .mod-cta { color: var(--muted); }
+.lock-note { font-size: 13.5px; color: var(--ink); background: var(--bg); border: 1px dashed var(--fail); border-radius: 10px; padding: 8px 10px; }
+.locked-view { max-width: 640px; margin: 0 auto; padding-top: 16px; display: flex; flex-direction: column; gap: 14px; }
+.locked-card { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 28px; display: flex; flex-direction: column; gap: 14px; text-align: center; }
+.locked-card .unlock { text-align: left; }
+.locked-icon { font-size: 40px; }
+.locked-card h2 { font-size: clamp(22px, 3vw, 28px); }
+.locked-card p { color: var(--muted); }
+.locked-card .btn { align-self: center; text-decoration: none; }
+.m-FN { color: var(--xp); }
+.chip.concept-chip { color: var(--cyan); border-color: var(--cyan); }
+.chip.reinforce-chip { color: var(--lavender-hi); border-color: var(--lavender-hi); }
+dl.io { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 14px; margin: 12px 0 0; font-size: 14.5px; }
+dl.io dt { font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; font-size: 12px; padding-top: 2px; }
+dl.io dd { margin: 0; }
+@media (max-width: 600px) { dl.io { grid-template-columns: minmax(0, 1fr); } dl.io dd { margin-bottom: 6px; } }
+.hint-step + .hint-step { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); }
+.win-nocount { border-color: var(--xp) !important; }
+.win #redo-btn { margin-top: 10px; }
+
 /* Big screens: the whole page grows with the window, so header, hero and cards keep their proportions */
 body { zoom: var(--ui-scale, 1); }
 </style>
@@ -644,6 +680,20 @@ body { zoom: var(--ui-scale, 1); }
       <div class="rb-row" id="rb-filters"></div>
     </div>
     <div id="rb-body" style="display:flex;flex-direction:column;gap:18px"></div>
+  </section>
+
+  <section class="locked-view" id="locked-view" hidden data-test="locked-view">
+    <a class="back-link" href="#" data-i18n="allTracks">← All tracks</a>
+    <div class="locked-card">
+      <div class="locked-icon" aria-hidden="true">🔒</div>
+      <h2 id="locked-title"></h2>
+      <p id="locked-text"></p>
+      <div class="unlock">
+        <div class="mod-progress"><span id="locked-count"></span><span class="mod-rank" id="locked-percent"></span></div>
+        <div class="bar unlock-bar"><span id="locked-bar" style="width:0%"></span><i class="unlock-mark" id="locked-mark"></i></div>
+      </div>
+      <a class="btn primary" href="#start" id="locked-go"></a>
+    </div>
   </section>
 
   <div id="module-view" hidden>
@@ -1000,6 +1050,305 @@ function cmdTable(rows, headers) {
     '</tbody></table></div>';
 }
 
+/* START-TRACK:BEGIN
+   The Start Track: 30 problem-solving exercises (20 main + 10 reinforcement). DEV, QA and AI open at 80% (see ACCESS-RULES).
+   Each concept follows a classic HackerRank problem (named in `hr`); every statement, example and test here is original
+   and set in Bruxa Maria's shop. Money is in cents (3490 = €34.90) so sums are exact.
+   An exercise is written with S({...}):
+     n, fn, params, xp, title, tag (the concept), hr, story, what, why, task, input, output, constraints, concept,
+     examples [{ args, expected, note?, show? }] (2–3, visible), tests [] (more visible cases), hidden [] (not shown),
+     hints [] (1–3, progressive), solution, reinforces [exercise numbers] for the reinforcement ones. */
+function buildStartTrack(L) {
+  const LEVEL_OF = n => n <= 7 ? 201 : n <= 14 ? 202 : n <= 20 ? 203 : 204;
+  const short = v => { const s = JSON.stringify(v); return s.length > 52 ? s.slice(0, 49) + '…' : s; };
+  const idOf = n => 's' + String(n).padStart(2, '0');
+  const S = d => {
+    const sig = d.fn + '(' + d.params + ')';
+    const call = args => d.fn + '(' + args.map(a => JSON.stringify(a)).join(', ') + ')';
+    const test = hidden => c => ({ name: d.fn + '(' + c.args.map(short).join(', ') + ') → ' + short(c.expected), args: c.args, expected: c.expected, hidden: hidden || undefined });
+    return {
+      id: idOf(d.n), order: d.n, level: LEVEL_OF(d.n), kind: d.n > 20 ? 'reinforcement' : 'main',
+      reinforces: d.reinforces ? d.reinforces.map(idOf) : null,
+      title: d.title, xp: d.xp, tag: d.tag, conceptTag: d.tag, hr: d.hr, fn: d.fn,
+      story: d.story,
+      action: { method: 'FN', path: sig, label: d.tag },
+      what: d.what, why: d.why,
+      task: '<p>' + d.task + '</p><dl class="io"><dt>' + L('Input', 'Entrada') + '</dt><dd>' + d.input + '</dd><dt>' + L('Output', 'Saída') + '</dt><dd>' + d.output +
+        '</dd><dt>' + L('Constraints', 'Restrições') + '</dt><dd>' + d.constraints + '</dd></dl>',
+      concept: d.concept,
+      examples: d.examples,
+      sample: d.examples.map(e => call(e.args) + '\n' + (e.show ? e.show.split('\n').map(l => '// ' + l).join('\n') : '// → ' + JSON.stringify(e.expected)) + (e.note ? '   (' + e.note + ')' : '')).join('\n\n'),
+      starter: 'function ' + sig + ' {\n  // Your code here\n\n}\n',
+      hints: d.hints, solution: d.solution,
+      tests: d.examples.map(test(false)).concat((d.tests || []).map(test(false)), (d.hidden || []).map(test(true))),
+    };
+  };
+
+  const module = {
+    id: 'start', name: L('Start', 'Inicial'), stack: L('Problem solving · JavaScript', 'Resolução de problemas · JavaScript'), color: 'var(--xp)',
+    art: 'for (const p of prices) {\n  total <b>+=</b> p;\n}\n// Think before you code.',
+    bullets: [L('30 problem-solving exercises', '30 exercícios de resolução de problemas'), L('Arrays, loops, text and sets', 'Arrays, loops, textos e conjuntos'),
+      L('Unlocks DEV, QA and AI at 80%', 'Desbloqueia DEV, QA e IA com 80%')],
+  };
+  const ranks = [
+    { at: 0, name: L('New Intern', 'Novo Estagiário') }, { at: 0.15, name: L('Logic Apprentice', 'Aprendiz de Lógica') }, { at: 0.4, name: L('Coin Counter', 'Contador de Moedas') },
+    { at: 0.7, name: L('Rune Decoder', 'Decifrador de Runas') }, { at: 0.95, name: L('Algorithm Master', 'Mestre dos Algoritmos') },
+  ];
+  const levels = [
+    { id: 201, module: 'start', name: L('First spells', 'Primeiros feitiços'), topic: L('Sums, arrays and conditionals', 'Somas, arrays e condicionais'), badge: 'I' },
+    { id: 202, module: 'start', name: L('The shop’s accounts', 'As contas da loja'), topic: L('Maximum, matrices, text and remainders', 'Máximo, matrizes, texto e resto'), badge: 'II' },
+    { id: 203, module: 'start', name: L('Letters and codes', 'Letras e códigos'), topic: L('Simulation, sets, characters and XOR', 'Simulação, conjuntos, caracteres e XOR'), badge: 'III' },
+    { id: 204, module: 'start', name: L('Reinforcement', 'Reforço'), topic: L('The same ideas, new problems', 'As mesmas ideias, problemas novos'), badge: '+' },
+  ];
+
+  const exercises = [
+  /* ---------- Level I: first spells ---------- */
+  S({
+    n: 1, fn: 'orderTotal', params: 'price, shipping', xp: 10, hr: 'Solve Me First',
+    title: L('Price plus shipping', 'Preço mais frete'), tag: L('Adding two values', 'Somar dois valores'),
+    story: L('A customer wants to know how much she pays for a deck with shipping. I always do it in my head and get it wrong!',
+      'Uma cliente quer saber quanto paga por um baralho com frete. Eu sempre faço de cabeça e erro!'),
+    what: L('<p>Every order has the product price and the shipping price. The shop keeps money in <b>cents</b>: <code>3490</code> means €34.90. Whole numbers never have rounding errors.</p>',
+      '<p>Todo pedido tem o preço do produto e o preço do frete. A loja guarda dinheiro em <b>cêntimos</b>: <code>3490</code> quer dizer €34,90. Números inteiros nunca têm erro de arredondamento.</p>'),
+    why: L('<p>Receiving values, combining them and returning a result is the first step of every program. The cart, the invoice and the checkout all start like this.</p>',
+      '<p>Receber valores, combinar e devolver um resultado é o primeiro passo de qualquer programa. O carrinho, a nota fiscal e o checkout começam assim.</p>'),
+    task: L('Write <code>orderTotal(price, shipping)</code> that returns what the customer pays.', 'Escreva <code>orderTotal(price, shipping)</code>, que devolve quanto a cliente paga.'),
+    input: L('<code>price</code> and <code>shipping</code>: whole numbers, in cents.', '<code>price</code> e <code>shipping</code>: números inteiros, em cêntimos.'),
+    output: L('A whole number: the sum, in cents.', 'Um número inteiro: a soma, em cêntimos.'),
+    constraints: '<code>1 ≤ price ≤ 1 000 000</code>, <code>0 ≤ shipping ≤ 1 000</code>',
+    concept: L('The <code>+</code> operator adds two numbers, and <code>return</code> hands the result back to whoever called the function.',
+      'O operador <code>+</code> soma dois números, e o <code>return</code> devolve o resultado para quem chamou a função.'),
+    examples: [
+      { args: [3490, 490], expected: 3980, note: L('Rider-Waite Tarot + shipping', 'Rider-Waite Tarot + frete') },
+      { args: [850, 0], expected: 850, note: L('Moon candle, free shipping', 'Vela da lua, frete grátis') },
+    ],
+    hidden: [{ args: [1, 1], expected: 2 }, { args: [1000000, 1000], expected: 1001000 }],
+    hints: [L('Add the two parameters and return the result.', 'Some os dois parâmetros e devolva o resultado com <code>return</code>.')],
+    solution: 'function orderTotal(price, shipping) {\n  return price + shipping;\n}\n',
+  }),
+  S({
+    n: 2, fn: 'cartSubtotal', params: 'prices', xp: 10, hr: 'Simple Array Sum',
+    title: L('The cart subtotal', 'O subtotal do carrinho'), tag: L('Adding up an array', 'Somar um array'),
+    story: L('The cart has several items. Before coupons and shipping, I need the subtotal.', 'O carrinho tem vários itens. Antes de cupom e frete, preciso do subtotal.'),
+    what: L('<p>An <b>array</b> is a list of values in order. <code>[3490, 850, 850]</code> is a cart with a Rider-Waite Tarot and two Moon candles, in cents.</p>',
+      '<p>Um <b>array</b> é uma lista de valores em ordem. <code>[3490, 850, 850]</code> é um carrinho com um Rider-Waite Tarot e duas velas da lua, em cêntimos.</p>'),
+    why: L('<p>Going through a list and building up a result is the pattern behind totals, stock counts and reports. You will use it in almost every exercise.</p>',
+      '<p>Percorrer uma lista acumulando um resultado é o padrão por trás de totais, contagens de estoque e relatórios. Você vai usar isso em quase todos os exercícios.</p>'),
+    task: L('Write <code>cartSubtotal(prices)</code> that returns the sum of all prices.', 'Escreva <code>cartSubtotal(prices)</code>, que devolve a soma de todos os preços.'),
+    input: L('<code>prices</code>: an array of whole numbers, in cents.', '<code>prices</code>: um array de números inteiros, em cêntimos.'),
+    output: L('The sum of the array.', 'A soma do array.'),
+    constraints: '<code>1 ≤ prices.length ≤ 1000</code>, <code>1 ≤ prices[i] ≤ 1 000 000</code>',
+    concept: L('Start a variable at 0 and add each item in a loop: <code>for (const p of prices) total += p;</code>',
+      'Comece uma variável em 0 e some cada item num loop: <code>for (const p of prices) total += p;</code>'),
+    examples: [
+      { args: [[3490, 850, 850]], expected: 5190, note: 'TAR-001 + 2 × CAN-001' },
+      { args: [[990]], expected: 990, note: L('one Rose quartz', 'um quartzo rosa') },
+    ],
+    hidden: [{ args: [[2200, 1400, 1400]], expected: 5000 }, { args: [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]], expected: 55 }, { args: [Array(1000).fill(1000000)], expected: 1000000000 }],
+    hints: [L('Create a variable <code>total</code> that starts at 0.', 'Crie uma variável <code>total</code> que começa em 0.'),
+      L('Go through the array with <code>for (const p of prices)</code> and add each price to <code>total</code>. Return it at the end.',
+        'Percorra o array com <code>for (const p of prices)</code> e some cada preço em <code>total</code>. Devolva no fim.')],
+    solution: 'function cartSubtotal(prices) {\n  let total = 0;\n  for (const p of prices) total += p;\n  return total;\n}\n',
+  }),
+  S({
+    n: 3, fn: 'compareSellers', params: 'ana, bia', xp: 10, hr: 'Compare the Triplets',
+    title: L('Who sold more?', 'Quem vendeu mais?'), tag: L('Comparing two lists', 'Comparar duas listas'),
+    story: L('Ana and Bia work at the counter. Every week I compare their sales of Tarot, Oracles and Crystals: whoever sold more in a category gets a point.',
+      'A Ana e a Bia atendem no balcão. Toda semana comparo as vendas delas de Tarot, Oráculos e Cristais: quem vendeu mais numa categoria ganha um ponto.'),
+    what: L('<p>Each seller has 3 numbers, always in the same order: Tarot, Oracles, Crystals. Compare them position by position. A tie gives no point to anyone.</p>',
+      '<p>Cada vendedora tem 3 números, sempre na mesma ordem: Tarot, Oráculos, Cristais. Compare posição por posição. Empate não dá ponto para ninguém.</p>'),
+    why: L('<p>Comparing two lists item by item is how the shop compares weeks, sellers or prices. It is the base of every report with a winner.</p>',
+      '<p>Comparar duas listas item a item é como a loja compara semanas, vendedoras ou preços. É a base de todo relatório com vencedor.</p>'),
+    task: L('Write <code>compareSellers(ana, bia)</code> that returns <code>[pointsOfAna, pointsOfBia]</code>.', 'Escreva <code>compareSellers(ana, bia)</code>, que devolve <code>[pontosDaAna, pontosDaBia]</code>.'),
+    input: L('<code>ana</code> and <code>bia</code>: arrays of 3 whole numbers (sales of Tarot, Oracles and Crystals).', '<code>ana</code> e <code>bia</code>: arrays de 3 números inteiros (vendas de Tarot, Oráculos e Cristais).'),
+    output: L('An array with 2 numbers: the points of Ana and of Bia.', 'Um array com 2 números: os pontos da Ana e da Bia.'),
+    constraints: '<code>0 ≤ ana[i], bia[i] ≤ 100</code>',
+    concept: L('Use the same index on both arrays: <code>ana[i]</code> and <code>bia[i]</code> are the same category.', 'Use o mesmo índice nos dois arrays: <code>ana[i]</code> e <code>bia[i]</code> são a mesma categoria.'),
+    examples: [
+      { args: [[12, 4, 9], [8, 4, 15]], expected: [1, 1], note: L('Tarot: Ana · Oracles: tie · Crystals: Bia', 'Tarot: Ana · Oráculos: empate · Cristais: Bia') },
+      { args: [[20, 30, 10], [5, 25, 12]], expected: [2, 1] },
+    ],
+    hidden: [{ args: [[1, 1, 1], [1, 1, 1]], expected: [0, 0] }, { args: [[0, 0, 0], [3, 2, 1]], expected: [0, 3] }, { args: [[100, 0, 50], [99, 1, 50]], expected: [1, 1] }],
+    hints: [L('Start two counters at 0, one for each seller.', 'Comece dois contadores em 0, um para cada vendedora.'),
+      L('Loop over the indexes 0, 1 and 2. In each one, use <code>if</code> / <code>else if</code> to give the point. A tie gives nothing.',
+        'Percorra os índices 0, 1 e 2. Em cada um, use <code>if</code> / <code>else if</code> para dar o ponto. Empate não dá nada.')],
+    solution: 'function compareSellers(ana, bia) {\n  let a = 0, b = 0;\n  for (let i = 0; i < 3; i++) {\n    if (ana[i] > bia[i]) a++;\n    else if (bia[i] > ana[i]) b++;\n  }\n  return [a, b];\n}\n',
+  }),
+  S({
+    n: 4, fn: 'yearRevenue', params: 'months', xp: 10, hr: 'A Very Big Sum',
+    title: L('The year’s revenue', 'O faturamento do ano'), tag: L('Big numbers and limits', 'Números grandes e limites'),
+    story: L('My accountant wants the year’s revenue in cents. The numbers are huge and her old spreadsheet gets them wrong.',
+      'Minha contadora quer o faturamento do ano em cêntimos. Os números são enormes e a planilha antiga dela erra a conta.'),
+    what: L('<p>Every month the shop makes billions of cents. In many languages a whole number has a limit: a 32-bit integer stops at <code>2 147 483 647</code> and then “wraps around” to a negative number. In JavaScript, numbers are exact up to <code>Number.MAX_SAFE_INTEGER</code> (9 007 199 254 740 991).</p>',
+      '<p>Todo mês a loja fatura bilhões de cêntimos. Em muitas linguagens um número inteiro tem limite: um inteiro de 32 bits para em <code>2 147 483 647</code> e depois “dá a volta” para um número negativo. Em JavaScript, os números são exatos até <code>Number.MAX_SAFE_INTEGER</code> (9 007 199 254 740 991).</p>'),
+    why: L('<p>Totals grow. A sum that fits today can overflow next year. Knowing the limits of your numbers avoids invoices with absurd values.</p>',
+      '<p>Totais crescem. Uma soma que cabe hoje pode estourar no ano que vem. Conhecer os limites dos seus números evita notas fiscais com valores absurdos.</p>'),
+    task: L('Write <code>yearRevenue(months)</code> that returns the sum of every month.', 'Escreva <code>yearRevenue(months)</code>, que devolve a soma de todos os meses.'),
+    input: L('<code>months</code>: an array of whole numbers, in cents.', '<code>months</code>: um array de números inteiros, em cêntimos.'),
+    output: L('The exact total.', 'O total exato.'),
+    constraints: '<code>1 ≤ months.length ≤ 12</code>, <code>0 ≤ months[i] ≤ 10 000 000 000</code>',
+    concept: L('It is the same sum as in “The cart subtotal”. What changes is the size: 12 × 10¹⁰ still fits safely in a JavaScript number.',
+      'É a mesma soma de “O subtotal do carrinho”. O que muda é o tamanho: 12 × 10¹⁰ ainda cabe com segurança num número do JavaScript.'),
+    examples: [
+      { args: [[2500000000, 3100000000, 2900000000]], expected: 8500000000 },
+      { args: [[2147483647, 1]], expected: 2147483648, note: L('one more than the 32-bit limit', 'um a mais que o limite de 32 bits') },
+    ],
+    hidden: [{ args: [Array(12).fill(10000000000)], expected: 120000000000 }, { args: [[0]], expected: 0 }, { args: [[9999999999, 1]], expected: 10000000000 }],
+    hints: [L('It is a normal sum: loop and add.', 'É uma soma normal: percorra e some.'),
+      L('Start the total at <code>0</code> (a number), not at <code>""</code> (a text), or the values get glued together.', 'Comece o total em <code>0</code> (um número), não em <code>""</code> (um texto), senão os valores ficam grudados.')],
+    solution: 'function yearRevenue(months) {\n  let total = 0;\n  for (const m of months) total += m;\n  return total;\n}\n',
+  }),
+  S({
+    n: 5, fn: 'stockChangeRatios', params: 'changes', xp: 10, hr: 'Plus Minus',
+    title: L('How did the stock change?', 'Como o estoque mudou?'), tag: L('Ratios and decimals', 'Proporções e casas decimais'),
+    story: L('At closing time I write down how the stock of each product changed. I want to know what share went up, went down or stayed the same.',
+      'No fechamento anoto quanto o estoque de cada produto mudou. Quero saber que parte subiu, desceu ou ficou igual.'),
+    what: L('<p>Each number is the change of one product: positive (restocked), negative (sold) or zero. The <b>ratio</b> is how many of each kind divided by the number of products. The shop report shows ratios with exactly 6 decimals.</p>',
+      '<p>Cada número é a mudança de um produto: positivo (reposto), negativo (vendido) ou zero. A <b>proporção</b> é quantos de cada tipo dividido pelo número de produtos. O relatório da loja mostra proporções com exatamente 6 casas decimais.</p>'),
+    why: L('<p>Shares and percentages are everywhere in reports. Formatting them the same way every time makes reports comparable and tests reliable.</p>',
+      '<p>Proporções e percentuais estão em todo relatório. Formatar sempre do mesmo jeito deixa os relatórios comparáveis e os testes confiáveis.</p>'),
+    task: L('Write <code>stockChangeRatios(changes)</code> that returns 3 texts: the ratio of positive, negative and zero changes, each with 6 decimals.',
+      'Escreva <code>stockChangeRatios(changes)</code>, que devolve 3 textos: a proporção de mudanças positivas, negativas e zero, cada uma com 6 casas decimais.'),
+    input: L('<code>changes</code>: an array of whole numbers.', '<code>changes</code>: um array de números inteiros.'),
+    output: L('An array of 3 strings, like <code>["0.400000", "0.400000", "0.200000"]</code>.', 'Um array de 3 strings, como <code>["0.400000", "0.400000", "0.200000"]</code>.'),
+    constraints: '<code>1 ≤ changes.length ≤ 100</code>, <code>-100 ≤ changes[i] ≤ 100</code>',
+    concept: L('<code>(2 / 5).toFixed(6)</code> returns the text <code>"0.400000"</code>.', '<code>(2 / 5).toFixed(6)</code> devolve o texto <code>"0.400000"</code>.'),
+    examples: [
+      { args: [[3, -2, 0, 5, -1]], expected: ['0.400000', '0.400000', '0.200000'] },
+      { args: [[0, 0, 4, -4]], expected: ['0.250000', '0.250000', '0.500000'] },
+    ],
+    hidden: [{ args: [[1]], expected: ['1.000000', '0.000000', '0.000000'] }, { args: [[-1, -2, -3]], expected: ['0.000000', '1.000000', '0.000000'] },
+      { args: [[1, 2, 3, 0, 0, -1]], expected: ['0.500000', '0.166667', '0.333333'] }],
+    hints: [L('Count the positives, the negatives and the zeros in one loop.', 'Conte os positivos, os negativos e os zeros num único loop.'),
+      L('Divide each count by <code>changes.length</code> and format it with <code>.toFixed(6)</code>.', 'Divida cada contagem por <code>changes.length</code> e formate com <code>.toFixed(6)</code>.')],
+    solution: 'function stockChangeRatios(changes) {\n  let pos = 0, neg = 0, zero = 0;\n  for (const c of changes) {\n    if (c > 0) pos++;\n    else if (c < 0) neg++;\n    else zero++;\n  }\n  const n = changes.length;\n  return [pos / n, neg / n, zero / n].map(r => r.toFixed(6));\n}\n',
+  }),
+  S({
+    n: 6, fn: 'displayStairs', params: 'n', xp: 10, hr: 'Staircase',
+    title: L('The window display', 'A vitrine em degraus'), tag: L('Nested loops and patterns', 'Loops aninhados e padrões'),
+    story: L('For the full-moon sale I stack deck boxes in steps in the shop window. I want a drawing to plan it.',
+      'Para a promoção de lua cheia empilho caixas de baralho em degraus na vitrine. Quero um desenho para planejar.'),
+    what: L('<p>The display has <code>n</code> rows. Row 1 has 1 box, row 2 has 2, up to row <code>n</code>. The boxes (<code>#</code>) lean against the right wall, so each row starts with spaces. Rows are joined with a line break, <code>\\n</code>.</p>',
+      '<p>A vitrine tem <code>n</code> fileiras. A fileira 1 tem 1 caixa, a 2 tem 2, até a fileira <code>n</code>. As caixas (<code>#</code>) ficam encostadas na parede da direita, então cada fileira começa com espaços. As fileiras são unidas com quebra de linha, <code>\\n</code>.</p>'),
+    why: L('<p>A loop inside another loop is how you build grids, tables and reports line by line.</p>', '<p>Um loop dentro de outro é como se constroem grades, tabelas e relatórios linha por linha.</p>'),
+    task: L('Write <code>displayStairs(n)</code> that returns the drawing as one string.', 'Escreva <code>displayStairs(n)</code>, que devolve o desenho numa única string.'),
+    input: L('<code>n</code>: the number of rows.', '<code>n</code>: o número de fileiras.'),
+    output: L('<code>n</code> lines joined by <code>\\n</code>. Line <code>i</code> has <code>n − i</code> spaces and <code>i</code> times <code>#</code>. No line break at the end.',
+      '<code>n</code> linhas unidas por <code>\\n</code>. A linha <code>i</code> tem <code>n − i</code> espaços e <code>i</code> vezes <code>#</code>. Sem quebra de linha no fim.'),
+    constraints: '<code>1 ≤ n ≤ 100</code>',
+    concept: L('<code>" ".repeat(3)</code> returns <code>"   "</code>. You can also build each line with an inner loop.', '<code>" ".repeat(3)</code> devolve <code>"   "</code>. Também dá para montar cada linha com um loop interno.'),
+    examples: [
+      { args: [3], expected: '  #\n ##\n###', show: '  #\n ##\n###' },
+      { args: [1], expected: '#' },
+    ],
+    hidden: [{ args: [2], expected: ' #\n##' }, { args: [5], expected: '    #\n   ##\n  ###\n ####\n#####' }, { args: [6], expected: '     #\n    ##\n   ###\n  ####\n #####\n######' }],
+    hints: [L('Make one line per row, from 1 to <code>n</code>.', 'Faça uma linha por fileira, de 1 até <code>n</code>.'),
+      L('Row <code>i</code> is <code>" ".repeat(n - i) + "#".repeat(i)</code>.', 'A fileira <code>i</code> é <code>" ".repeat(n - i) + "#".repeat(i)</code>.'),
+      L('Put the lines in an array and join them with <code>lines.join("\\n")</code>.', 'Guarde as linhas num array e una com <code>lines.join("\\n")</code>.')],
+    solution: 'function displayStairs(n) {\n  const lines = [];\n  for (let i = 1; i <= n; i++) {\n    lines.push(" ".repeat(n - i) + "#".repeat(i));\n  }\n  return lines.join("\\n");\n}\n',
+  }),
+  S({
+    n: 7, fn: 'kitPrices', params: 'prices', xp: 10, hr: 'Mini-Max Sum',
+    title: L('The 4-item gift kit', 'O kit de presente com 4 itens'), tag: L('Adding all but one', 'Somar tudo menos um'),
+    story: L('I am putting together a gift kit with 4 of these 5 products. What is the cheapest and the most expensive kit I can make?',
+      'Estou montando um kit de presente com 4 destes 5 produtos. Qual é o kit mais barato e o mais caro que consigo montar?'),
+    what: L('<p>Leaving one product out gives one kit. Leaving out the most expensive gives the cheapest kit; leaving out the cheapest gives the most expensive one.</p>',
+      '<p>Deixar um produto de fora forma um kit. Deixar de fora o mais caro dá o kit mais barato; deixar de fora o mais barato dá o kit mais caro.</p>'),
+    why: L('<p>Instead of trying every combination, one observation (the total minus one item) solves it in a single pass. Looking for that shortcut is the heart of problem solving.</p>',
+      '<p>Em vez de testar todas as combinações, uma observação (o total menos um item) resolve numa passada só. Procurar esse atalho é o coração da resolução de problemas.</p>'),
+    task: L('Write <code>kitPrices(prices)</code> that returns <code>[cheapestKit, mostExpensiveKit]</code>.', 'Escreva <code>kitPrices(prices)</code>, que devolve <code>[kitMaisBarato, kitMaisCaro]</code>.'),
+    input: L('<code>prices</code>: 5 whole numbers, in cents.', '<code>prices</code>: 5 números inteiros, em cêntimos.'),
+    output: L('An array with 2 numbers.', 'Um array com 2 números.'),
+    constraints: '<code>prices.length = 5</code>, <code>1 ≤ prices[i] ≤ 1 000 000 000</code>',
+    concept: L('<code>Math.min(...prices)</code> and <code>Math.max(...prices)</code> find the smallest and the largest value.', '<code>Math.min(...prices)</code> e <code>Math.max(...prices)</code> encontram o menor e o maior valor.'),
+    examples: [
+      { args: [[2200, 850, 3490, 1400, 990]], expected: [5440, 8080] },
+      { args: [[500, 500, 500, 500, 500]], expected: [2000, 2000] },
+    ],
+    hidden: [{ args: [[1, 2, 3, 4, 5]], expected: [10, 14] }, { args: [[1000000000, 1000000000, 1000000000, 1000000000, 1000000000]], expected: [4000000000, 4000000000] },
+      { args: [[7, 69, 2, 221, 8974]], expected: [299, 9271] }],
+    hints: [L('First add up all 5 prices.', 'Primeiro some os 5 preços.'),
+      L('The cheapest kit is the total minus the largest price. The most expensive is the total minus the smallest.', 'O kit mais barato é o total menos o maior preço. O mais caro é o total menos o menor.')],
+    solution: 'function kitPrices(prices) {\n  const total = prices.reduce((s, p) => s + p, 0);\n  return [total - Math.max(...prices), total - Math.min(...prices)];\n}\n',
+  }),
+
+  /* ---------- Level II: the shop's accounts ---------- */
+  S({
+    n: 8, fn: 'tallestCandles', params: 'heights', xp: 15, hr: 'Birthday Cake Candles',
+    title: L('The tallest candles', 'As velas mais altas'), tag: L('Maximum and counting', 'Máximo e contagem'),
+    story: L('Only the tallest candles go on the front shelf. How many of them do I have?', 'Só as velas mais altas vão para a prateleira da frente. Quantas eu tenho?'),
+    what: L('<p>You get the height of each candle, in millimetres. Find the tallest height and count how many candles have exactly that height.</p>',
+      '<p>Você recebe a altura de cada vela, em milímetros. Encontre a maior altura e conte quantas velas têm exatamente essa altura.</p>'),
+    why: L('<p>“Find the best and count it” shows up in rankings, best sellers and record days.</p>', '<p>“Achar o melhor e contar” aparece em rankings, mais vendidos e dias de recorde.</p>'),
+    task: L('Write <code>tallestCandles(heights)</code> that returns how many candles have the maximum height.', 'Escreva <code>tallestCandles(heights)</code>, que devolve quantas velas têm a altura máxima.'),
+    input: L('<code>heights</code>: an array of whole numbers (millimetres).', '<code>heights</code>: um array de números inteiros (milímetros).'),
+    output: L('A whole number: how many candles are the tallest.', 'Um número inteiro: quantas velas são as mais altas.'),
+    constraints: '<code>1 ≤ heights.length ≤ 100 000</code>, <code>1 ≤ heights[i] ≤ 10 000 000</code>',
+    concept: L('One loop is enough: keep the tallest height so far and a counter. A taller candle resets the counter to 1.',
+      'Um loop basta: guarde a maior altura até agora e um contador. Uma vela mais alta volta o contador para 1.'),
+    examples: [
+      { args: [[120, 180, 180, 70]], expected: 2 },
+      { args: [[95]], expected: 1 },
+    ],
+    hidden: [{ args: [[40, 40, 40, 40]], expected: 4 }, { args: [[1, 2, 3, 10, 9, 10, 10]], expected: 3 }, { args: [[10000000, 1, 10000000]], expected: 2 }],
+    hints: [L('First find the maximum, with <code>Math.max(...heights)</code> or a loop.', 'Primeiro encontre o máximo, com <code>Math.max(...heights)</code> ou um loop.'),
+      L('Then count the candles equal to it. Or do both in one loop: a new maximum resets the count to 1.', 'Depois conte as velas iguais a ele. Ou faça as duas coisas num loop: um máximo novo volta a contagem para 1.')],
+    solution: 'function tallestCandles(heights) {\n  let tallest = 0, count = 0;\n  for (const h of heights) {\n    if (h > tallest) { tallest = h; count = 1; }\n    else if (h === tallest) count++;\n  }\n  return count;\n}\n',
+  }),
+  S({
+    n: 9, fn: 'tableauDifference', params: 'grid', xp: 15, hr: 'Diagonal Difference',
+    title: L('The square spread', 'A tiragem quadrada'), tag: L('Matrices and 2D indexes', 'Matrizes e índices 2D'),
+    story: L('In my square spreads I add up the card numbers on both diagonals. The difference tells me where the reading leans.',
+      'Nas minhas tiragens quadradas somo os números das cartas das duas diagonais. A diferença diz para onde a leitura pende.'),
+    what: L('<p>A square spread is a <b>matrix</b>: an array of rows, each row an array. <code>grid[r][c]</code> is the card at row <code>r</code>, column <code>c</code>. The main diagonal goes from top-left to bottom-right, the other one from top-right to bottom-left.</p>',
+      '<p>Uma tiragem quadrada é uma <b>matriz</b>: um array de linhas, cada linha um array. <code>grid[r][c]</code> é a carta da linha <code>r</code>, coluna <code>c</code>. A diagonal principal vai do canto superior esquerdo ao inferior direito; a outra, do superior direito ao inferior esquerdo.</p>'),
+    why: L('<p>Shelves, spreads and seat maps are grids. Moving around with two indexes is a skill you will reuse a lot.</p>', '<p>Prateleiras, tiragens e mapas de assentos são grades. Andar com dois índices é uma habilidade que você vai reusar muito.</p>'),
+    task: L('Write <code>tableauDifference(grid)</code> that returns the absolute difference between the sums of the two diagonals.',
+      'Escreva <code>tableauDifference(grid)</code>, que devolve a diferença absoluta entre as somas das duas diagonais.'),
+    input: L('<code>grid</code>: an <code>n × n</code> matrix of whole numbers.', '<code>grid</code>: uma matriz <code>n × n</code> de números inteiros.'),
+    output: L('A whole number, 0 or more.', 'Um número inteiro, 0 ou mais.'),
+    constraints: '<code>1 ≤ n ≤ 100</code>, <code>-100 ≤ grid[r][c] ≤ 100</code>',
+    concept: L('On the main diagonal the row equals the column: <code>grid[i][i]</code>. On the other one they add up to <code>n − 1</code>: <code>grid[i][n - 1 - i]</code>. <code>Math.abs()</code> drops the sign.',
+      'Na diagonal principal a linha é igual à coluna: <code>grid[i][i]</code>. Na outra, as duas somam <code>n − 1</code>: <code>grid[i][n - 1 - i]</code>. <code>Math.abs()</code> tira o sinal.'),
+    examples: [
+      { args: [[[6, 1, 8], [7, 5, 3], [2, 9, 4]]], expected: 0, note: L('6+5+4 = 15 and 8+5+2 = 15', '6+5+4 = 15 e 8+5+2 = 15') },
+      { args: [[[3, 1], [2, 10]]], expected: 10, note: L('3+10 = 13 and 1+2 = 3', '3+10 = 13 e 1+2 = 3') },
+    ],
+    hidden: [{ args: [[[5]]], expected: 0 }, { args: [[[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 36]]], expected: 20 }, { args: [[[-1, 2], [3, -4]]], expected: 10 }],
+    hints: [L('One loop from 0 to <code>n − 1</code> is enough: each <code>i</code> gives one cell of each diagonal.', 'Um loop de 0 até <code>n − 1</code> basta: cada <code>i</code> dá uma casa de cada diagonal.'),
+      L('Add <code>grid[i][i]</code> to one sum and <code>grid[i][n - 1 - i]</code> to the other, then return <code>Math.abs(a - b)</code>.', 'Some <code>grid[i][i]</code> numa soma e <code>grid[i][n - 1 - i]</code> na outra, depois devolva <code>Math.abs(a - b)</code>.')],
+    solution: 'function tableauDifference(grid) {\n  const n = grid.length;\n  let a = 0, b = 0;\n  for (let i = 0; i < n; i++) {\n    a += grid[i][i];\n    b += grid[i][n - 1 - i];\n  }\n  return Math.abs(a - b);\n}\n',
+  }),
+  S({
+    n: 10, fn: 'to24h', params: 'time', xp: 15, hr: 'Time Conversion',
+    title: L('Order time in 24 hours', 'Hora do pedido em 24 horas'), tag: L('Converting text formats', 'Converter formatos de texto'),
+    story: L('The old order system saves the time like “09:15:00PM”. The new reports need “21:15:00”.', 'O sistema antigo de pedidos grava a hora como “09:15:00PM”. Os relatórios novos precisam de “21:15:00”.'),
+    what: L('<p>In the 12-hour format, <code>12:xx:xxAM</code> is just after midnight (hour 00) and <code>12:xx:xxPM</code> is noon (hour 12). The other PM hours add 12. Reports always use the 24-hour format (rule BR-ORD-06).</p>',
+      '<p>No formato de 12 horas, <code>12:xx:xxAM</code> é logo depois da meia-noite (hora 00) e <code>12:xx:xxPM</code> é meio-dia (hora 12). As outras horas PM somam 12. Os relatórios sempre usam o formato de 24 horas (regra BR-ORD-06).</p>'),
+    why: L('<p>Data arrives in many formats. Converting text safely, including tricky cases like 12 AM, avoids orders at the wrong time.</p>', '<p>Os dados chegam em muitos formatos. Converter texto com segurança, inclusive os casos chatos como 12 AM, evita pedidos na hora errada.</p>'),
+    task: L('Write <code>to24h(time)</code> that returns the same time in the 24-hour format.', 'Escreva <code>to24h(time)</code>, que devolve a mesma hora no formato de 24 horas.'),
+    input: L('<code>time</code>: text like <code>hh:mm:ssAM</code> or <code>hh:mm:ssPM</code>.', '<code>time</code>: texto como <code>hh:mm:ssAM</code> ou <code>hh:mm:ssPM</code>.'),
+    output: L('Text <code>HH:mm:ss</code>.', 'Texto <code>HH:mm:ss</code>.'),
+    constraints: L('Always a valid time, with <code>01 ≤ hh ≤ 12</code>.', 'Sempre uma hora válida, com <code>01 ≤ hh ≤ 12</code>.'),
+    concept: L('<code>time.slice(0, 2)</code> gives the hour and <code>time.slice(-2)</code> gives AM or PM. <code>String(7).padStart(2, "0")</code> gives <code>"07"</code>.',
+      '<code>time.slice(0, 2)</code> dá a hora e <code>time.slice(-2)</code> dá AM ou PM. <code>String(7).padStart(2, "0")</code> dá <code>"07"</code>.'),
+    examples: [
+      { args: ['09:15:00PM'], expected: '21:15:00' },
+      { args: ['12:30:10AM'], expected: '00:30:10', note: L('just after midnight', 'logo depois da meia-noite') },
+      { args: ['06:45:00AM'], expected: '06:45:00' },
+    ],
+    hidden: [{ args: ['12:00:00PM'], expected: '12:00:00' }, { args: ['12:00:00AM'], expected: '00:00:00' }, { args: ['11:59:59PM'], expected: '23:59:59' }, { args: ['01:02:03AM'], expected: '01:02:03' }],
+    hints: [L('Split the text into the hour, the middle part (<code>:mm:ss</code>) and AM/PM.', 'Separe o texto em hora, parte do meio (<code>:mm:ss</code>) e AM/PM.'),
+      L('Turn the hour into a number and use <code>% 12</code>, so 12 becomes 0. Then add 12 when it is PM.', 'Transforme a hora em número e use <code>% 12</code>, assim 12 vira 0. Depois some 12 quando for PM.'),
+      L('Format the hour back with <code>String(h).padStart(2, "0")</code>.', 'Formate a hora de volta com <code>String(h).padStart(2, "0")</code>.')],
+    solution: 'function to24h(time) {\n  let h = Number(time.slice(0, 2)) % 12;\n  if (time.slice(-2) === "PM") h += 12;\n  return String(h).padStart(2, "0") + time.slice(2, 8);\n}\n',
+  }),
+  ];
+
+  return { module, ranks, levels, exercises };
+}
+/* START-TRACK:END */
+
 function buildContent() {
 
 /* ---------- 1. Config ---------- */
@@ -1012,8 +1361,8 @@ CONFIG = {
     'Seu primeiro estágio em tecnologia na lojinha de tarot e baralho cigano da Bruxa Maria.'),
   company: L('Bruxa Maria’s Shop', 'na lojinha da Bruxa Maria'),
   learnerLabel: L('Apprentice', 'Aprendiz'),
-  homeIntro: L('Three tracks, one shop. Every track starts with Git and then solves real problems of the shop: products, stock, orders and coupons. Everything runs here with mock data, so there is nothing to install.',
-    'Três trilhas, uma loja. Toda trilha começa com Git e depois resolve problemas reais da loja: produtos, estoque, pedidos e cupons. Tudo roda aqui com dados de mentira, então não há nada para instalar.'),
+  homeIntro: L('Start with the Start Track: 30 problem-solving exercises set in the shop. Complete 80% of it and DEV, QA and AI open. Those three tracks start with Git and solve real problems of the shop: products, stock, orders and coupons. Everything runs here with mock data, so there is nothing to install.',
+    'Comece pela Trilha Inicial: 30 exercícios de resolução de problemas no contexto da loja. Complete 80% dela e as trilhas DEV, QA e IA se abrem. Essas três começam com Git e resolvem problemas reais da loja: produtos, estoque, pedidos e cupons. Tudo roda aqui com dados de mentira, então não há nada para instalar.'),
   welcome: L('“Hello, apprentice! The shop has grown, the orders keep coming and I can’t handle the tech alone anymore. Pick a track and let’s get to work. Careful though: one tiny bug and a tarot delivery turns into a box of potions!” 🐈‍⬛',
     '“Olá, aprendiz! A loja cresceu, os pedidos não param de chegar e eu já não dou conta da tecnologia sozinha. Escolha uma trilha e vamos ao trabalho. Mas cuidado: um bugzinho e uma entrega de tarot vira uma caixa de poções!” 🐈‍⬛'),
   gitHost: 'GitHub',
@@ -1704,6 +2053,7 @@ RULEBOOK = {
         { id: 'BR-ORD-03', text: L('An order with an item out of stock is refused with <code>409</code> and the error <code>"OUT_OF_STOCK"</code>.', 'Um pedido com item sem estoque é recusado com <code>409</code> e o erro <code>"OUT_OF_STOCK"</code>.'), ex: ['q1e2'] },
         { id: 'BR-ORD-04', text: L('The total is the sum of price × quantity of every item, minus a valid coupon, rounded to 2 decimals.', 'O total é a soma de preço × quantidade de cada item, menos um cupom válido, arredondada para 2 casas decimais.'), ex: ['d2e3'] },
         { id: 'BR-ORD-05', text: L('Each item keeps the price it had when the order was created. Later price changes don’t affect it.', 'Cada item guarda o preço que tinha quando o pedido foi criado. Mudanças de preço depois não o afetam.'), ex: [] },
+        { id: 'BR-ORD-06', text: L('Reports show order times in the 24-hour format (<code>21:15:00</code>). The old order system saved them in the 12-hour format (<code>09:15:00PM</code>).', 'Os relatórios mostram a hora dos pedidos no formato de 24 horas (<code>21:15:00</code>). O sistema antigo de pedidos gravava no formato de 12 horas (<code>09:15:00PM</code>).'), ex: ['s10'] },
       ],
       example: `{ id: "ord-1001", customerId: "cus-001",
   items: [ { sku: "TAR-001", price: 34.9, quantity: 1 },
@@ -2084,6 +2434,14 @@ function makeGitExercises(mod, levelId) {
 // Add the Git level to every track that has one in LEVELS and in GIT_CONTEXT.
 LEVELS.filter(l => l.git && GIT_CONTEXT[l.module]).forEach(l => EXERCISES.push(...makeGitExercises(l.module, l.id)));
 
+// The Start Track comes first. DEV, QA and AI require it (80%, see ACCESS-RULES).
+const START = buildStartTrack(L);
+MODULES.forEach(m => { m.requires = START.module.id; });
+MODULES.unshift(START.module);
+RANKS[START.module.id] = START.ranks;
+LEVELS.unshift(...START.levels);
+EXERCISES.unshift(...START.exercises);
+
 } // end of buildContent()
 buildContent();
 
@@ -2100,7 +2458,19 @@ const UI = {
     myWork: 'My work (.md)', resetAll: 'Reset all progress', eraseQ: 'Erase all XP and code?', eraseYes: 'Yes, reset', cancel: 'Cancel', progressReset: 'Progress reset',
     drawerTitle: 'My work', drawerSub: 'Your progress as a Markdown file, to keep or to share with your lead.', tracks: 'Tracks', include: 'Include',
     incCode: 'My code and commands', incTodo: 'Exercises not started', preview: 'Preview', copy: 'Copy', copied: 'Copied', download: 'Download .md', close: 'Close',
-    startTrack: 'Choose a track to start', xpToIn: '{n} XP to {r} ({m})', trackDone: '{m} complete', xpTo: '{n} XP to {r}', moduleDone: 'Track complete',
+    startTrack: 'Start with the Start Track',
+    lockedBadge: 'Locked', lockedNote: 'Complete {r} of the {t} Start Track exercises to open it. {n} to go.',
+    unlockCount: '{d} / {t} exercises', unlockText: '{n} more to reach {p}% and open DEV, QA and AI.', unlockedText: 'DEV, QA and AI are open. Keep going to finish the track!',
+    lockedTitle: 'The {m} is still locked', lockedText: 'DEV, QA and AI open when you complete {r} of the {t} exercises ({p}%) of the {s}. You are {n} away. Exercises solved with the revealed solution don’t count.',
+    lockedGo: 'Go to the {s} →',
+    reinforces: 'Reinforces {x}', hintN: '<b>Hint {n} of {t}.</b> ',
+    solNoCount: 'Solved with the solution, this exercise gives 0 XP and does <b>not</b> count toward the {p}%.',
+    solOpenStart: 'Show the solution. You get 0 XP and the exercise does not count toward the {p}% until you solve it again on your own.',
+    noCount: 'You used the solution, so: 0 XP, and this exercise does not count toward the {p}% that opens DEV, QA and AI. Solve it again on your own to make it count (still 0 XP).',
+    redoDone: 'Solved on your own: it now counts toward the {p}%. No XP, because you had seen the solution.',
+    redo: 'Solve it again on my own', redoToast: 'Fresh start: the code is back to the beginning.',
+    hiddenTests: '{n} hidden tests: {p} passing', hiddenFail: '{n} hidden test(s) failing. Hidden cases are not shown, like on an online judge: think about edge cases (empty, one item, ties, very large values).',
+    xpToIn: '{n} XP to {r} ({m})', trackDone: '{m} complete', xpTo: '{n} XP to {r}', moduleDone: 'Track complete',
     allXp: '{x} / {m} XP in all tracks', levelBadge: 'Level {n}: {name}', earned: ' (earned)', locked: ' (locked)', trackHead: '{m} track',
     levelChip: 'Level {n} · {name}', like: 'Like {x}', openX: 'Open {x}', soon: 'Coming soon', moduleTitle: '{m} track',
     notQuite: 'Not quite. Check the command name, the spaces and the spelling.', needsGit: 'This step needs a Git command. Git commands start with “git ”.',
@@ -2136,6 +2506,7 @@ const UI = {
     cursesTitle: 'Common curses', cursesSub: 'Error messages you will meet, what they mean and the counter-spell.',
     forbTitle: 'Forbidden spells', forbSub: 'Things nobody casts at Bruxa Maria’s shop.', grEmpty: 'No spell matches this search.', selectCmd: 'Select the command and copy it',
     howSteps: [
+      ['Start with the Start Track', '30 problem-solving exercises set in the shop: arrays, loops, text and sets. DEV, QA and AI open when you complete 24 of them (80%). An exercise solved with the revealed solution does not count.'],
       ['Pick a track', 'Each track is one journey: {tracks}. Your XP and rank are counted per track.'],
       ['Follow the four steps', 'Every exercise starts with a message from Bruxa Maria and reads the same way: the action, what it is, why we do it at {c}, and your exercise.'],
       ['Write code or type commands', 'Code exercises have an editor and a <b>Run tests</b> button (or <code>Ctrl/⌘ + Enter</code>). Git exercises have a terminal where you type each command.'],
@@ -2159,7 +2530,19 @@ const UI = {
     myWork: 'Meu trabalho (.md)', resetAll: 'Apagar todo o progresso', eraseQ: 'Apagar todo o XP e o código?', eraseYes: 'Sim, apagar', cancel: 'Cancelar', progressReset: 'Progresso apagado',
     drawerTitle: 'Meu trabalho', drawerSub: 'O seu progresso como um arquivo Markdown, para guardar ou mostrar para a sua liderança.', tracks: 'Trilhas', include: 'Incluir',
     incCode: 'Meu código e comandos', incTodo: 'Exercícios não começados', preview: 'Prévia', copy: 'Copiar', copied: 'Copiado', download: 'Baixar .md', close: 'Fechar',
-    startTrack: 'Escolha uma trilha para começar', xpToIn: 'Faltam {n} XP para {r} ({m})', trackDone: '{m} completa', xpTo: 'Faltam {n} XP para {r}', moduleDone: 'Trilha completa',
+    startTrack: 'Comece pela Trilha Inicial',
+    lockedBadge: 'Bloqueada', lockedNote: 'Complete {r} dos {t} exercícios da Trilha Inicial para abrir. Faltam {n}.',
+    unlockCount: '{d} / {t} exercícios', unlockText: 'Faltam {n} para chegar a {p}% e abrir DEV, QA e IA.', unlockedText: 'DEV, QA e IA estão abertas. Continue até terminar a trilha!',
+    lockedTitle: 'A {m} ainda está bloqueada', lockedText: 'DEV, QA e IA se abrem quando você completa {r} dos {t} exercícios ({p}%) da {s}. Faltam {n}. Exercícios resolvidos com a solução revelada não contam.',
+    lockedGo: 'Ir para a {s} →',
+    reinforces: 'Reforça {x}', hintN: '<b>Dica {n} de {t}.</b> ',
+    solNoCount: 'Resolvido com a solução, este exercício dá 0 XP e <b>não</b> conta para os {p}%.',
+    solOpenStart: 'Mostrar a solução. Você ganha 0 XP e o exercício não conta para os {p}% até você resolver de novo sozinho.',
+    noCount: 'Você usou a solução, então: 0 XP, e este exercício não conta para os {p}% que abrem DEV, QA e IA. Resolva de novo sozinho para ele contar (continua com 0 XP).',
+    redoDone: 'Resolvido sozinho: agora conta para os {p}%. Sem XP, porque você já tinha visto a solução.',
+    redo: 'Resolver de novo sozinho', redoToast: 'Recomeço: o código voltou ao início.',
+    hiddenTests: '{n} testes ocultos: {p} passando', hiddenFail: '{n} teste(s) oculto(s) falhando. Os casos ocultos não aparecem, como num juiz online: pense nos casos-limite (vazio, um item só, empates, valores muito grandes).',
+    xpToIn: 'Faltam {n} XP para {r} ({m})', trackDone: '{m} completa', xpTo: 'Faltam {n} XP para {r}', moduleDone: 'Trilha completa',
     allXp: '{x} / {m} XP em todas as trilhas', levelBadge: 'Nível {n}: {name}', earned: ' (conquistada)', locked: ' (bloqueada)', trackHead: 'Trilha {m}',
     levelChip: 'Nível {n} · {name}', like: 'Como {x}', openX: 'Abrir {x}', soon: 'Em breve', moduleTitle: 'Trilha {m}',
     notQuite: 'Quase. Confira o nome do comando, os espaços e a ortografia.', needsGit: 'Este passo precisa de um comando Git. Comandos Git começam com “git ”.',
@@ -2195,6 +2578,7 @@ const UI = {
     cursesTitle: 'Maldições comuns', cursesSub: 'Mensagens de erro que você vai encontrar, o que significam e o contrafeitiço.',
     forbTitle: 'Feitiços proibidos', forbSub: 'Coisas que ninguém faz na lojinha da Bruxa Maria.', grEmpty: 'Nenhum feitiço corresponde a esta busca.', selectCmd: 'Selecione o comando e copie',
     howSteps: [
+      ['Comece pela Trilha Inicial', '30 exercícios de resolução de problemas no contexto da loja: arrays, loops, textos e conjuntos. DEV, QA e IA se abrem quando você completa 24 deles (80%). Um exercício resolvido com a solução revelada não conta.'],
       ['Escolha uma trilha', 'Cada trilha é uma jornada: {tracks}. O seu XP e o seu título são contados por trilha.'],
       ['Siga os quatro passos', 'Todo exercício começa com uma mensagem da Bruxa Maria e segue a mesma ordem: a ação, o que é, por que fazemos isso {c}, e o seu exercício.'],
       ['Escreva código ou digite comandos', 'Exercícios de código têm um editor e o botão <b>Rodar testes</b> (ou <code>Ctrl/⌘ + Enter</code>). Exercícios de Git têm um terminal onde você digita cada comando.'],
@@ -2245,7 +2629,8 @@ const HINT_COST = CONFIG.hintCost;
 const STORE_KEY = CONFIG.storageKey;
 const emptyReport = () => '<span class="empty-rep">' + t('emptyReport') + '</span>';
 
-function freshState() { return { name: '', current: null, lastByModule: {}, done: {}, hints: {}, solutions: {}, fails: {}, code: {}, term: {} }; }
+// hints[id]: how many hints were opened (old saves have true = 1). revealed[id]: the solution was seen at least once, so 0 XP for good.
+function freshState() { return { name: '', current: null, lastByModule: {}, done: {}, hints: {}, solutions: {}, revealed: {}, fails: {}, code: {}, term: {} }; }
 function loadState() {
   try {
     const raw = localStorage.getItem(STORE_KEY);
@@ -2264,9 +2649,11 @@ const byId = id => EXERCISES.find(e => e.id === id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 renderShell(); // builds the cards, export checkboxes and footer before events are bound
 
+function hintsOf(ex) { return ex.hints || (ex.hint ? [ex.hint] : []); }
+function hintsUsed(ex) { const h = state.hints[ex.id]; return h === true ? 1 : (h || 0); }
 function earned(ex) {
-  if (!state.done[ex.id] || state.solutions[ex.id]) return 0;
-  return Math.max(0, ex.xp - (state.hints[ex.id] ? HINT_COST : 0));
+  if (!state.done[ex.id] || state.solutions[ex.id] || state.revealed[ex.id]) return 0;
+  return Math.max(0, ex.xp - hintsUsed(ex) * HINT_COST);
 }
 function totalXp() { return EXERCISES.reduce((s, ex) => s + earned(ex), 0); }
 function levelDone(level) { return EXERCISES.filter(e => e.level === level).every(e => state.done[e.id]); }
@@ -2279,6 +2666,9 @@ function moduleExercises(mod) { return moduleLevels(mod).flatMap(l => EXERCISES.
 function levelNumber(level) { return moduleLevels(level.module).indexOf(level) + 1; }
 function moduleXp(mod) { return moduleExercises(mod).reduce((s, e) => s + earned(e), 0); }
 function moduleMax(mod) { return moduleExercises(mod).reduce((s, e) => s + e.xp, 0); }
+// Access: the ACCESS-RULES functions applied to this learner.
+function startProgress() { return startTrackProgress(moduleExercises(START_TRACK_ID), state); }
+function trackOpen(modId) { const m = MODULES.find(x => x.id === modId); return !m || canAccessTrack(m, startProgress()); }
 // A rank's XP is its share of the module's total XP, so ranks stay balanced when you add or remove exercises.
 function moduleRanks(mod) {
   const max = moduleMax(mod);
@@ -2292,12 +2682,25 @@ function rankIn(mod, xp) {
 }
 
 function renderHomeProgress() {
+  const p = startProgress();
   MODULES.forEach(m => {
     const xp = moduleXp(m.id), max = moduleMax(m.id);
     $('prog-text-' + m.id).textContent = xp + ' / ' + max + ' XP';
     $('prog-rank-' + m.id).textContent = xp > 0 ? rankIn(m.id, xp).rank.name : '';
     $('prog-bar-' + m.id).style.width = (max ? Math.round((xp / max) * 100) : 0) + '%';
+    if (m.requires) {
+      const open = canAccessTrack(m, p);
+      $('mod-card-' + m.id).classList.toggle('is-locked', !open);
+      $('lock-badge-' + m.id).hidden = open;
+      $('lock-note-' + m.id).hidden = open;
+      $('lock-note-' + m.id).textContent = open ? '' : t('lockedNote', { r: p.required, t: p.total, n: p.missing });
+    }
   });
+  // The Start Track card: exercises done, the 80% mark and what is missing.
+  $('unlock-count').textContent = t('unlockCount', { d: p.done, t: p.total });
+  $('unlock-percent').textContent = p.percent + '%';
+  $('unlock-bar').style.width = p.percent + '%';
+  $('unlock-text').textContent = p.unlocked ? t('unlockedText') : t('unlockText', { n: p.missing, p: UNLOCK_PERCENT });
 }
 
 function renderHeader() {
@@ -2361,6 +2764,8 @@ function renderExercise() {
   $('ex-meta').innerHTML =
     '<span class="chip">' + esc(t('levelChip', { n: levelNumber(lvl), name: lvl.name })) + '</span>' +
     (ex.hr ? '<span class="chip hr">' + esc(t('like', { x: ex.hr })) + '</span>' : '<span class="chip hr">' + esc(ex.tag) + '</span>') +
+    (ex.conceptTag ? '<span class="chip concept-chip">' + esc(ex.conceptTag) + '</span>' : '') +
+    (ex.reinforces ? '<span class="chip reinforce-chip">' + esc(t('reinforces', { x: ex.reinforces.map(id => '#' + byId(id).order + ' ' + byId(id).title).join(' · ') })) + '</span>' : '') +
     '<span class="chip xp">+' + ex.xp + ' XP</span>';
   $('ex-title').textContent = ex.title;
   $('f-action').innerHTML = '<span class="method m-' + ex.action.method + '">' + ex.action.method + '</span><span class="action-path">' + esc(ex.action.path) + '</span>';
@@ -2439,6 +2844,7 @@ function submitCommand() {
   const step = ex.steps[typed.length];
   const cmd = normalizeCmd($('t-input').value);
   if (!cmd) return;
+  if (!trackOpen(moduleOf(ex))) { showView(); return; }
   if (matchStep(step, cmd)) {
     state.term[ex.id] = typed.concat([cmd]);
     saveState();
@@ -2465,10 +2871,12 @@ function renderHint() {
     box.hidden = false;
     box.innerHTML = ex.type === 'terminal'
       ? t('solTerm') + '<pre>' + ex.solution.map(c => '$ ' + esc(c)).join('\n') + '</pre>'
-      : t('solCode');
-  } else if (state.hints[ex.id]) {
+      : t('solCode') + (moduleOf(ex) === START_TRACK_ID ? ' ' + t('solNoCount', { p: UNLOCK_PERCENT }) : '');
+  } else if (hintsUsed(ex)) {
+    const list = hintsOf(ex).slice(0, hintsUsed(ex));
     box.hidden = false;
-    box.innerHTML = t('hintLbl') + ex.hint;
+    box.innerHTML = list.length === 1 ? t('hintLbl') + list[0]
+      : list.map((h, i) => '<div class="hint-step">' + t('hintN', { n: i + 1, t: hintsOf(ex).length }) + h + '</div>').join('');
   } else {
     box.hidden = true;
   }
@@ -2476,10 +2884,12 @@ function renderHint() {
 
 function updateButtons() {
   const ex = byId(state.current);
-  $('hint-btn').disabled = !!state.hints[ex.id] || !!state.done[ex.id];
+  const total = hintsOf(ex).length, used = hintsUsed(ex);
+  $('hint-btn').disabled = used >= total || !!state.done[ex.id] || !!state.solutions[ex.id];
+  $('hint-cost').textContent = (total > 1 ? Math.min(used + 1, total) + '/' + total + ' · ' : '') + '−' + HINT_COST + ' XP';
   const sb = $('solution-btn');
   sb.disabled = (state.fails[ex.id] || 0) < 2 || !!state.solutions[ex.id] || !!state.done[ex.id];
-  sb.title = sb.disabled && !state.done[ex.id] ? t('solLocked') : t('solOpen');
+  sb.title = sb.disabled && !state.done[ex.id] ? t('solLocked') : (moduleOf(ex) === START_TRACK_ID ? t('solOpenStart', { p: UNLOCK_PERCENT }) : t('solOpen'));
 }
 
 function renderWin() {
@@ -2490,11 +2900,23 @@ function renderWin() {
   const next = list[list.indexOf(ex) + 1];
   const gained = earned(ex);
   const head = ex.type === 'terminal' ? t('allSteps') : t('allPass');
+  const noCount = moduleOf(ex) === START_TRACK_ID && !countsForUnlock(ex, state);
   box.hidden = false;
-  box.innerHTML = '<div class="win"><div><h3>' + head + '</h3><p>' +
-    (gained > 0 ? t('youEarned', { n: gained }) : t('noXp')) +
-    '</p></div>' + (next ? '<button class="btn primary" id="next-btn">' + esc(t('next', { t: next.title })) + '</button>' : '<p>' + esc(t('finished', { m: MODULES.find(m => m.id === moduleOf(ex)).name })) + '</p>') + '</div>';
+  box.innerHTML = '<div class="win' + (noCount ? ' win-nocount' : '') + '"><div><h3>' + head + '</h3><p>' +
+    (noCount ? t('noCount', { p: UNLOCK_PERCENT })
+      : gained > 0 ? t('youEarned', { n: gained })
+      : moduleOf(ex) === START_TRACK_ID && state.revealed[ex.id] ? t('redoDone', { p: UNLOCK_PERCENT }) : t('noXp')) +
+    '</p>' + (noCount ? '<button class="btn" id="redo-btn">' + esc(t('redo')) + '</button>' : '') + '</div>' + (next ? '<button class="btn primary" id="next-btn">' + esc(t('next', { t: next.title })) + '</button>' : '<p>' + esc(t('finished', { m: MODULES.find(m => m.id === moduleOf(ex)).name })) + '</p>') + '</div>';
   if (next) $('next-btn').addEventListener('click', () => selectExercise(next.id));
+  if ($('redo-btn')) $('redo-btn').addEventListener('click', () => redoAlone(ex));
+}
+// Start the exercise again from the starter code. Solved this way it counts for the 80%, still with 0 XP (revealed stays).
+function redoAlone(ex) {
+  delete state.done[ex.id]; delete state.solutions[ex.id]; delete state.fails[ex.id];
+  state.code[ex.id] = ex.starter;
+  saveState();
+  renderHeader(); renderTrack(); renderExercise();
+  toast(t('redoToast'));
 }
 
 function completeExercise(ex) {
@@ -2515,6 +2937,7 @@ function completeExercise(ex) {
 }
 
 function selectExercise(id) {
+  if (!trackOpen(moduleOf(byId(id)))) return; // locked tracks can't be opened (ACCESS-RULES)
   state.current = id;
   state.lastByModule[moduleOf(byId(id))] = id;
   saveState();
@@ -2558,6 +2981,7 @@ async function runInline(payload) {
 async function runTests() {
   const ex = byId(state.current);
   if (ex.type === 'terminal') return;
+  if (!trackOpen(moduleOf(ex))) { showView(); return; }
   const code = $('code').value;
   state.code[ex.id] = code;
   saveState();
@@ -2581,8 +3005,9 @@ function renderReport(ex, res) {
   if (res.error) {
     html += '<div class="r-fail">  ✗ ' + esc(res.error) + '</div>';
   } else {
-    let p = 0, f = 0;
+    let p = 0, f = 0, hp = 0, hf = 0;
     res.results.forEach((r, i) => {
+      if (ex.tests[i] && ex.tests[i].hidden) { if (r.pass) { p++; hp++; } else { f++; hf++; } return; }
       if (r.pass) {
         p++;
         html += '<div class="r-pass">  ✓ ' + esc(r.name) + '</div>';
@@ -2597,6 +3022,10 @@ function renderReport(ex, res) {
         html += '<div class="r-detail">' + esc(detail.trim()) + '</div>';
       }
     });
+    if (hp + hf) {
+      html += '<div class="' + (hf ? 'r-fail' : 'r-pass') + '">  ' + (hf ? '✗' : '✓') + ' ' + esc(t('hiddenTests', { n: hp + hf, p: hp })) + '</div>';
+      if (hf) html += '<div class="r-detail">' + esc(t('hiddenFail', { n: hf })) + '</div>';
+    }
     html += '<div class="r-summary"><span class="r-pass">' + p + ' passing</span>' + (f ? '   <span class="r-fail">' + f + ' failing</span>' : '') + '</div>';
   }
   if (res.logs && res.logs.length) {
@@ -2618,11 +3047,13 @@ $('code').addEventListener('keydown', e => {
 });
 $('code').addEventListener('input', () => { state.code[state.current] = $('code').value; saveState(); });
 $('hint-btn').addEventListener('click', () => {
-  state.hints[state.current] = true; saveState(); renderHint(); updateButtons();
+  const ex = byId(state.current);
+  state.hints[ex.id] = Math.min(hintsUsed(ex) + 1, hintsOf(ex).length); saveState(); renderHint(); updateButtons();
 });
 $('solution-btn').addEventListener('click', () => {
   const ex = byId(state.current);
   state.solutions[ex.id] = true;
+  state.revealed[ex.id] = true;
   if (ex.type !== 'terminal') {
     state.code[ex.id] = ex.solution;
     $('code').value = ex.solution;
@@ -2659,6 +3090,7 @@ bindResetAll();
 
 /* ---------- Routing: #<module id> opens a module, #how-to the guide; anything else shows the module cards ---------- */
 function showView() {
+  $('locked-view').hidden = true;
   const hash = (location.hash || '').replace('#', '');
   const mod = MODULES.find(m => m.id === hash);
   const isHowTo = hash === 'how-to';
@@ -2706,6 +3138,7 @@ function showView() {
     document.title = CONFIG.name;
     return;
   }
+  if (!trackOpen(mod.id)) { renderLocked(mod); return; }
   document.title = CONFIG.name + ': ' + mod.name;
   $('module-title').textContent = t('moduleTitle', { m: mod.name });
   $('module-stack').textContent = mod.stack;
@@ -2716,6 +3149,24 @@ function showView() {
   state.lastByModule[mod.id] = state.current;
   saveState();
   renderAll();
+  window.scrollTo(0, 0);
+}
+// A locked track (DEV, QA or AI before 80% of the Start Track): explain why and show the progress.
+function renderLocked(mod) {
+  const p = startProgress();
+  const start = MODULES.find(m => m.id === START_TRACK_ID);
+  activeModule = null;
+  $('module-view').hidden = true;
+  $('locked-view').hidden = false;
+  $('locked-title').textContent = t('lockedTitle', { m: t('moduleTitle', { m: mod.name }) });
+  $('locked-text').textContent = t('lockedText', { r: p.required, t: p.total, p: UNLOCK_PERCENT, n: p.missing, s: t('moduleTitle', { m: start.name }) });
+  $('locked-count').textContent = t('unlockCount', { d: p.done, t: p.total });
+  $('locked-percent').textContent = p.percent + '%';
+  $('locked-bar').style.width = p.percent + '%';
+  $('locked-mark').style.left = UNLOCK_PERCENT + '%';
+  $('locked-go').textContent = t('lockedGo', { s: t('moduleTitle', { m: start.name }) });
+  renderHeader();
+  document.title = CONFIG.name + ': ' + mod.name + ' 🔒';
   window.scrollTo(0, 0);
 }
 function renderAll() {
@@ -2996,12 +3447,20 @@ function renderShell() {
   note.innerHTML = '<b>This is a template.</b><span>Edit the first script block in the page: <code>CONFIG</code> for the name and links, <code>MODULES</code> and <code>LEVELS</code> for the tracks, <code>GIT_CONTEXT</code> for your repos, and <code>EXERCISES</code> for the content. Every exercise marked EXAMPLE is a placeholder. Set <code>showTemplateNotice: false</code> to hide this box.</span>';
 
   $('home-cards').innerHTML = MODULES.map(m =>
-    '<a class="mod-card" style="--card:' + m.color + '" href="#' + m.id + '">' + cardArt(m.name, m.stack, m.art, m.color) +
+    '<a class="mod-card' + (m.id === START_TRACK_ID ? ' is-start' : '') + '" id="mod-card-' + m.id + '" style="--card:' + m.color + '" href="#' + m.id + '">' +
+    '<div class="mod-card-media">' + cardArt(m.name, m.stack, m.art, m.color) +
+    (m.requires ? '<span class="lock-badge" id="lock-badge-' + m.id + '" hidden>🔒 ' + esc(t('lockedBadge')) + '</span>' : '') + '</div>' +
     '<div class="mod-card-body">' +
+    (m.id === START_TRACK_ID
+      ? '<div class="unlock" data-test="unlock-meter"><div class="mod-progress"><span id="unlock-count"></span><span class="mod-rank" id="unlock-percent"></span></div>' +
+        '<div class="bar unlock-bar"><span id="unlock-bar" style="width:0%"></span><i class="unlock-mark" style="left:' + UNLOCK_PERCENT + '%" title="' + UNLOCK_PERCENT + '%"></i></div>' +
+        '<p class="unlock-text" id="unlock-text"></p></div>'
+      : '') +
+    (m.requires ? '<p class="lock-note" id="lock-note-' + m.id + '" hidden></p>' : '') +
     '<div class="mod-progress"><span id="prog-text-' + m.id + '">0 / 0 XP</span><span class="mod-rank" id="prog-rank-' + m.id + '"></span></div>' +
     '<div class="bar"><span id="prog-bar-' + m.id + '" style="width:0%"></span></div>' +
     '<ul>' + m.bullets.map(b => '<li>' + b + '</li>').join('') + '</ul>' +
-    '<span class="mod-cta">' + esc(t('openX', { x: m.name })) + '</span></div></a>'
+    '<span class="mod-cta">' + esc(t('openX', { x: m.id === START_TRACK_ID ? t('moduleTitle', { m: m.name }) : m.name })) + '</span></div></a>'
   ).join('');
 
   $('resources-block').hidden = !RESOURCES.length;

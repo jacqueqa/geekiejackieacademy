@@ -24,7 +24,7 @@ export function load(blocks, names, extra = {}) {
 
 // The test runner the learners use (the <script id="worker-src"> block), driven without a Web Worker.
 export function workerRunner() {
-  const m = HTML.match(/<script id="worker-src"[^>]*>([\s\S]*?)<\/script>/);
+  const m = HTML.match(/<script[^>]*\bid="worker-src"[^>]*>([\s\S]*?)<\/script>/);
   if (!m) throw new Error('worker-src not found in index.html');
   return function run(payload) {
     return new Promise(resolve => {
