@@ -1585,6 +1585,235 @@ function buildStartTrack(L) {
       L('Start <code>let result = 0</code> and apply <code>result ^= c</code> to every code.', 'Comece com <code>let result = 0</code> e aplique <code>result ^= c</code> a cada código.')],
     solution: 'function unpairedCode(codes) {\n  let result = 0;\n  for (const c of codes) result ^= c;\n  return result;\n}\n',
   }),
+
+  /* ---------- Reinforcement: the same ideas, new problems ---------- */
+  S({
+    n: 21, fn: 'salesRecords', params: 'sales', xp: 15, hr: 'Breaking the Records', reinforces: [8],
+    title: L('Sales records', 'Recordes de vendas'), tag: L('Maximum and minimum', 'Máximo e mínimo'),
+    story: L('I write down the sales of every day. I want to know how many times we beat our best day and how many times we hit a new worst day.',
+      'Anoto as vendas de cada dia. Quero saber quantas vezes batemos o nosso melhor dia e quantas vezes tivemos um novo pior dia.'),
+    what: L('<p>The first day sets both records: it is the best and the worst so far. From then on, a day <b>above</b> the best breaks the best record, and a day <b>below</b> the worst breaks the worst record. A tie breaks nothing.</p>',
+      '<p>O primeiro dia define os dois recordes: ele é o melhor e o pior até agora. A partir daí, um dia <b>acima</b> do melhor quebra o recorde de melhor, e um dia <b>abaixo</b> do pior quebra o recorde de pior. Empate não quebra nada.</p>'),
+    why: L('<p>Like “The tallest candles”, but now you follow two extremes at once and count how often they change.</p>', '<p>Como em “As velas mais altas”, mas agora você acompanha dois extremos ao mesmo tempo e conta quantas vezes eles mudam.</p>'),
+    task: L('Write <code>salesRecords(sales)</code> that returns <code>[bestBreaks, worstBreaks]</code>.', 'Escreva <code>salesRecords(sales)</code>, que devolve <code>[quebrasDoMelhor, quebrasDoPior]</code>.'),
+    input: L('<code>sales</code>: an array of whole numbers, one per day.', '<code>sales</code>: um array de números inteiros, um por dia.'),
+    output: L('An array with 2 numbers.', 'Um array com 2 números.'),
+    constraints: '<code>1 ≤ sales.length ≤ 1000</code>, <code>0 ≤ sales[i] ≤ 100 000 000</code>',
+    concept: L('Keep <code>best</code> and <code>worst</code>, both starting with <code>sales[0]</code>, and loop from the second day.', 'Guarde <code>best</code> e <code>worst</code>, os dois começando com <code>sales[0]</code>, e percorra a partir do segundo dia.'),
+    examples: [
+      { args: [[12, 15, 9, 15, 20, 3]], expected: [2, 2] },
+      { args: [[7, 7, 7]], expected: [0, 0], note: L('ties break nothing', 'empate não quebra nada') },
+    ],
+    hidden: [{ args: [[1, 2, 3, 4, 5]], expected: [4, 0] }, { args: [[5, 4, 3, 2, 1]], expected: [0, 4] }, { args: [[3, 3, 1, 8, 8, 0, 9]], expected: [2, 2] }, { args: [[100]], expected: [0, 0] }],
+    hints: [L('The first day is not a record break: start the loop at index 1.', 'O primeiro dia não conta como quebra: comece o loop no índice 1.'),
+      L('If a day is greater than <code>best</code>, update it and count. Do the same with <code>worst</code> for smaller days.', 'Se um dia for maior que <code>best</code>, atualize e conte. Faça o mesmo com <code>worst</code> para dias menores.')],
+    solution: 'function salesRecords(sales) {\n  let best = sales[0], worst = sales[0], up = 0, down = 0;\n  for (let i = 1; i < sales.length; i++) {\n    if (sales[i] > best) { best = sales[i]; up++; }\n    if (sales[i] < worst) { worst = sales[i]; down++; }\n  }\n  return [up, down];\n}\n',
+  }),
+  S({
+    n: 22, fn: 'lateReservationFee', params: 'pickedUp, due', xp: 15, hr: 'Library Fine', reinforces: [11],
+    title: L('Late reservation fee', 'Taxa de reserva atrasada'), tag: L('Conditionals by ranges', 'Condicionais por faixas'),
+    story: L('Customers can reserve a deck and pick it up later. If they are late, there is a small fee, which grows with the delay.',
+      'As clientes podem reservar um baralho e buscar depois. Se atrasarem, tem uma pequena taxa, que cresce com o atraso.'),
+    what: L('<p>Rule BR-RES-01, in cents: picked up on or before the due date → 0. Late in the <b>same month and year</b> → 15 per day. Late in a later month of the <b>same year</b> → 500 per month (the days don’t matter). Picked up in a <b>later year</b> → 10 000, fixed.</p>',
+      '<p>Regra BR-RES-01, em cêntimos: retirada até a data combinada → 0. Atraso no <b>mesmo mês e ano</b> → 15 por dia. Atraso num mês seguinte do <b>mesmo ano</b> → 500 por mês (os dias não importam). Retirada num <b>ano seguinte</b> → 10 000, fixo.</p>'),
+    why: L('<p>Like the loyalty points, but with ranges: the order of the checks decides the answer. Compare the biggest unit (year) first.</p>', '<p>Como nos pontos de fidelidade, mas com faixas: a ordem das verificações decide a resposta. Compare primeiro a maior unidade (o ano).</p>'),
+    task: L('Write <code>lateReservationFee(pickedUp, due)</code> that returns the fee in cents.', 'Escreva <code>lateReservationFee(pickedUp, due)</code>, que devolve a taxa em cêntimos.'),
+    input: L('<code>pickedUp</code> and <code>due</code>: arrays <code>[day, month, year]</code>.', '<code>pickedUp</code> e <code>due</code>: arrays <code>[dia, mês, ano]</code>.'),
+    output: L('A whole number, in cents.', 'Um número inteiro, em cêntimos.'),
+    constraints: L('Valid dates, years from 2000 to 3000.', 'Datas válidas, anos de 2000 a 3000.'),
+    concept: L('Destructuring reads the parts: <code>const [d1, m1, y1] = pickedUp;</code>', 'A desestruturação lê as partes: <code>const [d1, m1, y1] = pickedUp;</code>'),
+    examples: [
+      { args: [[14, 6, 2026], [10, 6, 2026]], expected: 60, note: L('4 days late', '4 dias de atraso') },
+      { args: [[3, 9, 2026], [28, 7, 2026]], expected: 1000, note: L('2 months late', '2 meses de atraso') },
+      { args: [[1, 1, 2027], [31, 12, 2026]], expected: 10000, note: L('a later year', 'um ano seguinte') },
+    ],
+    hidden: [{ args: [[1, 6, 2026], [10, 6, 2026]], expected: 0 }, { args: [[10, 6, 2026], [10, 6, 2026]], expected: 0 }, { args: [[5, 5, 2025], [1, 1, 2026]], expected: 0 },
+      { args: [[30, 5, 2026], [1, 6, 2026]], expected: 0 }, { args: [[31, 12, 2026], [1, 1, 2026]], expected: 5500 }],
+    hints: [L('Compare the years first, then the months, then the days.', 'Compare primeiro os anos, depois os meses, depois os dias.'),
+      L('An earlier year or month means no fee, even if the day is bigger.', 'Um ano ou mês anterior quer dizer sem taxa, mesmo que o dia seja maior.')],
+    solution: 'function lateReservationFee(pickedUp, due) {\n  const [d1, m1, y1] = pickedUp;\n  const [d2, m2, y2] = due;\n  if (y1 > y2) return 10000;\n  if (y1 < y2) return 0;\n  if (m1 > m2) return 500 * (m1 - m2);\n  if (m1 < m2) return 0;\n  return d1 > d2 ? 15 * (d1 - d2) : 0;\n}\n',
+  }),
+  S({
+    n: 23, fn: 'digitsThatDivide', params: 'orderNumber', xp: 15, hr: 'Find Digits', reinforces: [11],
+    title: L('Lucky order numbers', 'Números de pedido da sorte'), tag: L('Remainder and divisibility', 'Resto e divisibilidade'),
+    story: L('I am a little superstitious: an order number is luckier when its own digits divide it. How many digits do that?',
+      'Sou um pouco supersticiosa: um número de pedido dá mais sorte quando os próprios dígitos dividem ele. Quantos dígitos fazem isso?'),
+    what: L('<p>Look at each digit of the order number. Count the digits that divide the whole number exactly. A 0 never counts (you can’t divide by zero). A repeated digit counts every time it appears.</p>',
+      '<p>Olhe cada dígito do número do pedido. Conte os dígitos que dividem o número inteiro exatamente. O 0 nunca conta (não se divide por zero). Um dígito repetido conta todas as vezes que aparece.</p>'),
+    why: L('<p>Taking a number apart digit by digit and testing divisibility with <code>%</code> is the base of check digits, like the last digit of a card number.</p>',
+      '<p>Separar um número dígito por dígito e testar divisibilidade com <code>%</code> é a base dos dígitos verificadores, como o último dígito de um cartão.</p>'),
+    task: L('Write <code>digitsThatDivide(orderNumber)</code> that returns how many digits divide the number.', 'Escreva <code>digitsThatDivide(orderNumber)</code>, que devolve quantos dígitos dividem o número.'),
+    input: L('<code>orderNumber</code>: a whole number.', '<code>orderNumber</code>: um número inteiro.'),
+    output: L('A whole number.', 'Um número inteiro.'),
+    constraints: '<code>1 ≤ orderNumber ≤ 1 000 000 000</code>',
+    concept: L('<code>n % 10</code> is the last digit and <code>Math.floor(n / 10)</code> removes it. Or use <code>String(n)</code> and read each character.',
+      '<code>n % 10</code> é o último dígito e <code>Math.floor(n / 10)</code> tira ele. Ou use <code>String(n)</code> e leia cada caractere.'),
+    examples: [
+      { args: [1236], expected: 4, note: L('1, 2, 3 and 6 all divide 1236', '1, 2, 3 e 6 dividem 1236') },
+      { args: [1001], expected: 2, note: L('the two 1s; the 0s never count', 'os dois 1; os 0 nunca contam') },
+    ],
+    hidden: [{ args: [7], expected: 1 }, { args: [105], expected: 2 }, { args: [999999], expected: 6 }, { args: [10], expected: 1 }, { args: [113], expected: 2 }],
+    hints: [L('Go through the digits one by one, keeping the original number to divide.', 'Percorra os dígitos um por um, guardando o número original para dividir.'),
+      L('Count a digit <code>d</code> when <code>d !== 0</code> and <code>orderNumber % d === 0</code>.', 'Conte um dígito <code>d</code> quando <code>d !== 0</code> e <code>orderNumber % d === 0</code>.')],
+    solution: 'function digitsThatDivide(orderNumber) {\n  let count = 0;\n  for (const ch of String(orderNumber)) {\n    const d = Number(ch);\n    if (d !== 0 && orderNumber % d === 0) count++;\n  }\n  return count;\n}\n',
+  }),
+  S({
+    n: 24, fn: 'bestCategory', params: 'sales', xp: 15, hr: 'Migratory Birds', reinforces: [13],
+    title: L('The best-selling category', 'A categoria mais vendida'), tag: L('Frequency and tie-break', 'Frequência e desempate'),
+    story: L('Every sale is registered with the id of its category. Which category sold the most this week?', 'Toda venda é registrada com o id da categoria. Qual categoria vendeu mais nesta semana?'),
+    what: L('<p>Category ids: 1 Tarot, 2 Oracles, 3 Accessories, 4 Crystals, 5 Books. Find the id that appears most often. If there is a tie, the <b>smallest</b> id wins.</p>',
+      '<p>Ids das categorias: 1 Tarot, 2 Oráculos, 3 Acessórios, 4 Cristais, 5 Livros. Encontre o id que mais aparece. Se houver empate, ganha o <b>menor</b> id.</p>'),
+    why: L('<p>Like “Crystal earrings in pairs”, you count with a map. Now you also need a clear tie-break rule, which every ranking needs.</p>', '<p>Como em “Brincos de cristal em pares”, você conta com um mapa. Agora também precisa de uma regra clara de desempate, que todo ranking precisa.</p>'),
+    task: L('Write <code>bestCategory(sales)</code> that returns the id of the best-selling category.', 'Escreva <code>bestCategory(sales)</code>, que devolve o id da categoria mais vendida.'),
+    input: L('<code>sales</code>: an array of ids from 1 to 5.', '<code>sales</code>: um array de ids de 1 a 5.'),
+    output: L('One id.', 'Um id.'),
+    constraints: '<code>1 ≤ sales.length ≤ 200 000</code>',
+    concept: L('Count first, then go through the ids 1 to 5 in order and keep the first one with the biggest count: that settles ties.', 'Conte primeiro, depois percorra os ids de 1 a 5 em ordem e fique com o primeiro de maior contagem: isso resolve o empate.'),
+    examples: [
+      { args: [[2, 3, 2, 1, 5, 3]], expected: 2, note: L('2 and 3 tie, 2 is smaller', '2 e 3 empatam, 2 é menor') },
+      { args: [[5, 5, 4, 4, 4]], expected: 4 },
+    ],
+    hidden: [{ args: [[1]], expected: 1 }, { args: [[5, 4, 3, 2, 1]], expected: 1 }, { args: [[3, 3, 5, 5, 5, 2]], expected: 5 }, { args: [[4, 4, 2, 2]], expected: 2 }],
+    hints: [L('Count the sales of each id in an array or object.', 'Conte as vendas de cada id num array ou objeto.'),
+      L('Loop over the ids from 1 to 5 and replace the best only when a count is <b>strictly</b> bigger.', 'Percorra os ids de 1 a 5 e troque o melhor só quando uma contagem for <b>estritamente</b> maior.')],
+    solution: 'function bestCategory(sales) {\n  const count = [0, 0, 0, 0, 0, 0];\n  for (const id of sales) count[id]++;\n  let best = 1;\n  for (let id = 2; id <= 5; id++) {\n    if (count[id] > count[best]) best = id;\n  }\n  return best;\n}\n',
+  }),
+  S({
+    n: 25, fn: 'bestCombo', params: 'budget, decks, candles', xp: 15, hr: 'Electronics Shop', reinforces: [12],
+    title: L('A deck and a candle within budget', 'Um baralho e uma vela no orçamento'), tag: L('Double loops with a limit', 'Loops duplos com limite'),
+    story: L('A customer wants exactly one deck and one candle and has a budget. She wants to spend as much of it as possible without going over.',
+      'Uma cliente quer exatamente um baralho e uma vela e tem um orçamento. Ela quer gastar o máximo possível sem passar dele.'),
+    what: L('<p>Try every deck with every candle. Among the pairs that fit in the budget, return the most expensive total. If no pair fits, return <code>-1</code>.</p>',
+      '<p>Teste cada baralho com cada vela. Entre os pares que cabem no orçamento, devolva o total mais caro. Se nenhum par couber, devolva <code>-1</code>.</p>'),
+    why: L('<p>Like “Bundles that close on the note”, it is a double loop, but now over two different lists and with a limit to respect.</p>', '<p>Como em “Combos que fecham na nota”, é um loop duplo, mas agora sobre duas listas diferentes e com um limite a respeitar.</p>'),
+    task: L('Write <code>bestCombo(budget, decks, candles)</code> that returns the best total or <code>-1</code>.', 'Escreva <code>bestCombo(budget, decks, candles)</code>, que devolve o melhor total ou <code>-1</code>.'),
+    input: L('<code>budget</code>: whole number in cents. <code>decks</code> and <code>candles</code>: arrays of prices in cents.', '<code>budget</code>: número inteiro em cêntimos. <code>decks</code> e <code>candles</code>: arrays de preços em cêntimos.'),
+    output: L('A whole number: the best total, or <code>-1</code>.', 'Um número inteiro: o melhor total, ou <code>-1</code>.'),
+    constraints: '<code>1 ≤ budget ≤ 1 000 000</code>, <code>1 ≤ decks.length, candles.length ≤ 1000</code>',
+    concept: L('Start the answer at <code>-1</code>: if no pair fits, it is already the right answer.', 'Comece a resposta em <code>-1</code>: se nenhum par couber, ela já é a resposta certa.'),
+    examples: [
+      { args: [4000, [3490, 2990, 2200], [850, 790, 1400]], expected: 3840, note: '2990 + 850' },
+      { args: [1000, [2200], [850]], expected: -1 },
+    ],
+    hidden: [{ args: [3000, [2200, 1500], [800, 1500]], expected: 3000 }, { args: [10, [3, 1], [5, 2, 8]], expected: 9 }, { args: [5, [4], [5]], expected: -1 }],
+    hints: [L('One loop over the decks and, inside it, one loop over the candles.', 'Um loop sobre os baralhos e, dentro dele, um loop sobre as velas.'),
+      L('Keep a total only if it is <code>≤ budget</code> and bigger than the best so far.', 'Guarde um total só se ele for <code>≤ budget</code> e maior que o melhor até agora.')],
+    solution: 'function bestCombo(budget, decks, candles) {\n  let best = -1;\n  for (const d of decks) {\n    for (const c of candles) {\n      const total = d + c;\n      if (total <= budget && total > best) best = total;\n    }\n  }\n  return best;\n}\n',
+  }),
+  S({
+    n: 26, fn: 'pagesToTurn', params: 'n, p', xp: 15, hr: 'Drawing Book', reinforces: [10],
+    title: L('The printed catalog', 'O catálogo impresso'), tag: L('Arithmetic and rounding down', 'Aritmética e arredondamento para baixo'),
+    story: L('The printed catalog is thick. A customer asks for the page of a deck: is it faster to start from the front or from the back?',
+      'O catálogo impresso é grosso. Uma cliente pede a página de um baralho: é mais rápido começar pela frente ou por trás?'),
+    what: L('<p>The catalog has pages 1 to <code>n</code>. Page 1 is alone on the right side; after it, each turn shows 2 pages (2–3, 4–5…). The last page may be alone. Count the turns from the front and from the back, and keep the smaller one.</p>',
+      '<p>O catálogo tem as páginas 1 até <code>n</code>. A página 1 fica sozinha do lado direito; depois dela, cada virada mostra 2 páginas (2–3, 4–5…). A última página pode ficar sozinha. Conte as viradas pela frente e por trás, e fique com a menor.</p>'),
+    why: L('<p>Like the 24-hour time, a little arithmetic replaces a lot of code. <code>Math.floor(p / 2)</code> turns a page into its spread.</p>', '<p>Como na hora em 24 horas, um pouco de aritmética substitui muito código. <code>Math.floor(p / 2)</code> transforma uma página na sua dupla de páginas.</p>'),
+    task: L('Write <code>pagesToTurn(n, p)</code> that returns the minimum number of turns to reach page <code>p</code>.', 'Escreva <code>pagesToTurn(n, p)</code>, que devolve o menor número de viradas para chegar à página <code>p</code>.'),
+    input: L('<code>n</code>: number of pages. <code>p</code>: the page wanted.', '<code>n</code>: número de páginas. <code>p</code>: a página desejada.'),
+    output: L('A whole number.', 'Um número inteiro.'),
+    constraints: '<code>1 ≤ p ≤ n ≤ 100 000</code>',
+    concept: L('From the front: <code>Math.floor(p / 2)</code>. From the back: <code>Math.floor(n / 2) - Math.floor(p / 2)</code>.', 'Pela frente: <code>Math.floor(p / 2)</code>. Por trás: <code>Math.floor(n / 2) - Math.floor(p / 2)</code>.'),
+    examples: [
+      { args: [10, 7], expected: 2, note: L('3 from the front, 2 from the back', '3 pela frente, 2 por trás') },
+      { args: [9, 3], expected: 1 },
+    ],
+    hidden: [{ args: [1, 1], expected: 0 }, { args: [6, 6], expected: 0 }, { args: [7, 4], expected: 1 }, { args: [100000, 50000], expected: 25000 }, { args: [6, 5], expected: 1 }],
+    hints: [L('Number the spreads: page <code>p</code> is in spread <code>Math.floor(p / 2)</code>.', 'Numere as duplas de páginas: a página <code>p</code> está na dupla <code>Math.floor(p / 2)</code>.'),
+      L('The last spread is <code>Math.floor(n / 2)</code>. Return the smaller of the two distances with <code>Math.min</code>.', 'A última dupla é <code>Math.floor(n / 2)</code>. Devolva a menor das duas distâncias com <code>Math.min</code>.')],
+    solution: 'function pagesToTurn(n, p) {\n  const front = Math.floor(p / 2);\n  const back = Math.floor(n / 2) - front;\n  return Math.min(front, back);\n}\n',
+  }),
+  S({
+    n: 27, fn: 'commonMinerals', params: 'crystals', xp: 15, hr: 'Gemstones', reinforces: [16, 17],
+    title: L('Minerals in every crystal', 'Minerais em todos os cristais'), tag: L('Sets in every element', 'Conjuntos em todos os elementos'),
+    story: L('Each crystal on the shelf is written as the letters of the minerals inside it. Which minerals are in <b>every</b> crystal?',
+      'Cada cristal da prateleira é escrito com as letras dos minerais que ele tem. Quais minerais estão em <b>todos</b> os cristais?'),
+    what: L('<p>Each letter is one mineral, and a crystal may repeat letters. Count the letters that appear in all the crystals at least once.</p>',
+      '<p>Cada letra é um mineral, e um cristal pode repetir letras. Conte as letras que aparecem pelo menos uma vez em todos os cristais.</p>'),
+    why: L('<p>It joins “The letter sign” (a set of letters) and “Names that share a letter” (intersection), now across many texts.</p>', '<p>Junta “O letreiro de letras” (um conjunto de letras) e “Nomes com uma letra em comum” (interseção), agora em muitos textos.</p>'),
+    task: L('Write <code>commonMinerals(crystals)</code> that returns how many minerals are in every crystal.', 'Escreva <code>commonMinerals(crystals)</code>, que devolve quantos minerais estão em todos os cristais.'),
+    input: L('<code>crystals</code>: an array of lowercase texts.', '<code>crystals</code>: um array de textos em minúsculas.'),
+    output: L('A whole number.', 'Um número inteiro.'),
+    constraints: '<code>1 ≤ crystals.length ≤ 100</code>, <code>1 ≤ crystals[i].length ≤ 100</code>',
+    concept: L('Start with the set of letters of the first crystal and keep only the letters every other crystal also has: <code>[...set].filter(ch => other.includes(ch))</code>.',
+      'Comece com o conjunto de letras do primeiro cristal e fique só com as letras que todos os outros também têm: <code>[...set].filter(ch => other.includes(ch))</code>.'),
+    examples: [
+      { args: [['quartz', 'quartzite']], expected: 6 },
+      { args: [['ab', 'bc', 'cd']], expected: 0 },
+      { args: [['amet', 'tema', 'meta', 'team']], expected: 4 },
+    ],
+    hidden: [{ args: [['aaa']], expected: 1 }, { args: [['abc', 'abc', 'abcd']], expected: 3 }, { args: [['xyz', 'zyx', 'yzx', 'x']], expected: 1 }],
+    hints: [L('Repeated letters inside one crystal don’t matter: turn each crystal into a <code>Set</code>.', 'Letras repetidas dentro de um cristal não importam: transforme cada cristal num <code>Set</code>.'),
+      L('Keep a set of “letters still common” and narrow it down crystal by crystal.', 'Guarde um conjunto de “letras ainda comuns” e vá reduzindo cristal por cristal.')],
+    solution: 'function commonMinerals(crystals) {\n  let common = new Set(crystals[0]);\n  for (const c of crystals.slice(1)) {\n    const here = new Set(c);\n    common = new Set([...common].filter(ch => here.has(ch)));\n  }\n  return common.size;\n}\n',
+  }),
+  S({
+    n: 28, fn: 'cardsToRemove', params: 'row', xp: 15, hr: 'Alternating Characters', reinforces: [18],
+    title: L('Alternating the arcana', 'Alternando os arcanos'), tag: L('Walking through a string', 'Percorrer uma string'),
+    story: L('For a reading I lay cards from the major arcana (A) and the minor arcana (B) in a row, and two of the same kind can’t be side by side.',
+      'Numa leitura coloco cartas dos arcanos maiores (A) e menores (B) em fila, e duas do mesmo tipo não podem ficar lado a lado.'),
+    what: L('<p>The row is a text of <code>A</code> and <code>B</code>. Remove the smallest number of cards so that no two neighbours are the same. Only removals are allowed.</p>',
+      '<p>A fila é um texto de <code>A</code> e <code>B</code>. Remova o menor número de cartas para que nenhuma vizinha seja igual. Só é permitido remover.</p>'),
+    why: L('<p>Like the coded note, you walk through a text character by character. Here each character is compared with the one before it.</p>', '<p>Como no recado cifrado, você percorre um texto caractere por caractere. Aqui cada caractere é comparado com o anterior.</p>'),
+    task: L('Write <code>cardsToRemove(row)</code> that returns the minimum number of cards to remove.', 'Escreva <code>cardsToRemove(row)</code>, que devolve o número mínimo de cartas a remover.'),
+    input: L('<code>row</code>: a text with only <code>A</code> and <code>B</code>.', '<code>row</code>: um texto só com <code>A</code> e <code>B</code>.'),
+    output: L('A whole number.', 'Um número inteiro.'),
+    constraints: '<code>1 ≤ row.length ≤ 100 000</code>',
+    concept: L('Every time <code>row[i] === row[i - 1]</code>, one of them must go.', 'Toda vez que <code>row[i] === row[i - 1]</code>, uma delas precisa sair.'),
+    examples: [
+      { args: ['ABBBAA'], expected: 3 },
+      { args: ['BABA'], expected: 0 },
+    ],
+    hidden: [{ args: ['A'], expected: 0 }, { args: ['AAAAA'], expected: 4 }, { args: ['ABBA'], expected: 1 }, { args: ['BBAABB'], expected: 3 }],
+    hints: [L('Start the loop at index 1 so you can look at the previous card.', 'Comece o loop no índice 1 para poder olhar a carta anterior.'),
+      L('Count how many times a card is equal to the one before it.', 'Conte quantas vezes uma carta é igual à anterior.')],
+    solution: 'function cardsToRemove(row) {\n  let count = 0;\n  for (let i = 1; i < row.length; i++) {\n    if (row[i] === row[i - 1]) count++;\n  }\n  return count;\n}\n',
+  }),
+  S({
+    n: 29, fn: 'corruptedLetters', params: 'signal', xp: 15, hr: 'Mars Exploration', reinforces: [18, 19],
+    title: L('The moon signal', 'O sinal da lua'), tag: L('Comparing text in blocks', 'Comparar texto em blocos'),
+    story: L('The full-moon alert is the word “LUA” repeated many times. Some letters arrived scrambled. How many?',
+      'O aviso de lua cheia é a palavra “LUA” repetida muitas vezes. Algumas letras chegaram trocadas. Quantas?'),
+    what: L('<p>The signal should be <code>LUALUALUA…</code>. Compare each received letter with the one expected at that position and count the differences.</p>',
+      '<p>O sinal deveria ser <code>LUALUALUA…</code>. Compare cada letra recebida com a esperada naquela posição e conte as diferenças.</p>'),
+    why: L('<p>It mixes the coded note (position in a pattern) and the coupon anagrams (counting what doesn’t match). The trick is <code>i % 3</code>: the position inside each block.</p>',
+      '<p>Mistura o recado cifrado (posição num padrão) e os anagramas de cupom (contar o que não bate). O truque é o <code>i % 3</code>: a posição dentro de cada bloco.</p>'),
+    task: L('Write <code>corruptedLetters(signal)</code> that returns how many letters are wrong.', 'Escreva <code>corruptedLetters(signal)</code>, que devolve quantas letras estão erradas.'),
+    input: L('<code>signal</code>: uppercase text whose length is a multiple of 3.', '<code>signal</code>: texto em maiúsculas com tamanho múltiplo de 3.'),
+    output: L('A whole number.', 'Um número inteiro.'),
+    constraints: '<code>3 ≤ signal.length ≤ 99</code>',
+    concept: L('The expected letter at position <code>i</code> is <code>"LUA"[i % 3]</code>.', 'A letra esperada na posição <code>i</code> é <code>"LUA"[i % 3]</code>.'),
+    examples: [
+      { args: ['LUALUA'], expected: 0 },
+      { args: ['LXALUB'], expected: 2 },
+    ],
+    hidden: [{ args: ['AAA'], expected: 2 }, { args: ['LUALUALUA'], expected: 0 }, { args: ['XXXXXX'], expected: 6 }, { args: ['LUBXUA'], expected: 2 }],
+    hints: [L('Loop over every position <code>i</code> of the signal.', 'Percorra cada posição <code>i</code> do sinal.'),
+      L('Count when <code>signal[i] !== "LUA"[i % 3]</code>.', 'Conte quando <code>signal[i] !== "LUA"[i % 3]</code>.')],
+    solution: 'function corruptedLetters(signal) {\n  let wrong = 0;\n  for (let i = 0; i < signal.length; i++) {\n    if (signal[i] !== "LUA"[i % 3]) wrong++;\n  }\n  return wrong;\n}\n',
+  }),
+  S({
+    n: 30, fn: 'maxProducts', params: 'prices, budget', xp: 15, hr: 'Mark and Toys', reinforces: [7],
+    title: L('As many products as possible', 'O máximo de produtos'), tag: L('Sort and add up to a limit', 'Ordenar e somar até o limite'),
+    story: L('A customer wants to take home as many different products as she can with her budget. Which is the most she can buy?',
+      'Uma cliente quer levar o maior número de produtos diferentes que conseguir com o orçamento dela. Quantos ela consegue comprar?'),
+    what: L('<p>Each price is a different product; she buys at most one of each. To get the most items, start with the cheapest ones and stop before going over the budget.</p>',
+      '<p>Cada preço é um produto diferente; ela compra no máximo um de cada. Para levar o maior número de itens, comece pelos mais baratos e pare antes de passar do orçamento.</p>'),
+    why: L('<p>Like the gift kit, a smart observation (cheapest first) avoids trying every combination. Sorting is often the first step of a good solution.</p>', '<p>Como no kit de presente, uma observação esperta (os mais baratos primeiro) evita testar todas as combinações. Ordenar costuma ser o primeiro passo de uma boa solução.</p>'),
+    task: L('Write <code>maxProducts(prices, budget)</code> that returns how many products she can buy.', 'Escreva <code>maxProducts(prices, budget)</code>, que devolve quantos produtos ela consegue comprar.'),
+    input: L('<code>prices</code>: an array of prices in cents. <code>budget</code>: whole number in cents.', '<code>prices</code>: um array de preços em cêntimos. <code>budget</code>: número inteiro em cêntimos.'),
+    output: L('A whole number.', 'Um número inteiro.'),
+    constraints: '<code>1 ≤ prices.length ≤ 100 000</code>, <code>1 ≤ prices[i], budget ≤ 1 000 000 000</code>',
+    concept: L('<code>[...prices].sort((a, b) => a - b)</code> sorts numbers from smallest to largest. Without <code>(a, b) => a - b</code>, JavaScript sorts as text: 10 comes before 9!',
+      '<code>[...prices].sort((a, b) => a - b)</code> ordena números do menor para o maior. Sem <code>(a, b) => a - b</code>, o JavaScript ordena como texto: 10 vem antes de 9!'),
+    examples: [
+      { args: [[3490, 850, 2200, 550, 1400, 990], 5000], expected: 4, note: '550 + 850 + 990 + 1400' },
+      { args: [[1000], 999], expected: 0 },
+    ],
+    hidden: [{ args: [[1, 1, 1], 3], expected: 3 }, { args: [[5, 4, 3, 2, 1], 7], expected: 3 }, { args: [[100, 200], 300], expected: 2 }, { args: [[7], 7], expected: 1 }, { args: [[9, 10, 1000], 19], expected: 2 }],
+    hints: [L('Sort the prices from cheapest to most expensive.', 'Ordene os preços do mais barato para o mais caro.'),
+      L('Add them one by one and stop as soon as the next one would go over the budget.', 'Some um por um e pare assim que o próximo passaria do orçamento.')],
+    solution: 'function maxProducts(prices, budget) {\n  const sorted = [...prices].sort((a, b) => a - b);\n  let spent = 0, count = 0;\n  for (const p of sorted) {\n    if (spent + p > budget) break;\n    spent += p;\n    count++;\n  }\n  return count;\n}\n',
+  }),
   ];
 
   return { module, ranks, levels, exercises };
@@ -2358,6 +2587,13 @@ RULEBOOK = {
       ],
     },
     {
+      id: 'reservation', code: 'RES', name: L('Reservations', 'Reservas'), icon: '📅',
+      what: L('Products a customer reserves and picks up at the shop later.', 'Produtos que a cliente reserva e busca na loja depois.'),
+      rules: [
+        { id: 'BR-RES-01', text: L('A reservation picked up after its due date pays a fee, in cents: 15 per day late in the same month and year; 500 per month late in the same year; 10 000 if picked up in a later year. On time or early: no fee.', 'Uma reserva retirada depois da data combinada paga uma taxa, em cêntimos: 15 por dia de atraso no mesmo mês e ano; 500 por mês de atraso no mesmo ano; 10 000 se for retirada num ano seguinte. No prazo ou antes: sem taxa.'), ex: ['s22'] },
+      ],
+    },
+    {
       id: 'auth', code: 'AUTH', name: L('Accounts and login', 'Contas e login'), icon: '🔑',
       what: L('How customers sign up, log in and stay logged in. Try every rule in the mock shop.', 'Como as clientes criam conta, entram e continuam logadas. Teste cada regra na lojinha.'),
       link: ['shop/#/login', L('Open the shop’s login →', 'Abrir o login da lojinha →')],
@@ -2708,7 +2944,7 @@ const UI = {
     drawerTitle: 'My work', drawerSub: 'Your progress as a Markdown file, to keep or to share with your lead.', tracks: 'Tracks', include: 'Include',
     incCode: 'My code and commands', incTodo: 'Exercises not started', preview: 'Preview', copy: 'Copy', copied: 'Copied', download: 'Download .md', close: 'Close',
     startTrack: 'Start with the Start Track',
-    lockedBadge: 'Locked', lockedNote: 'Complete {r} of the {t} Start Track exercises to open it. {n} to go.',
+    lockedBadge: 'Locked', lockedNote: 'Complete {r} of the {t} Start Track exercises to open it. {f}.', missN: '{n} to go', miss1: '1 to go',
     unlockCount: '{d} / {t} exercises', unlockText: '{n} more to reach {p}% and open DEV, QA and AI.', unlockedText: 'DEV, QA and AI are open. Keep going to finish the track!',
     lockedTitle: 'The {m} is still locked', lockedText: 'DEV, QA and AI open when you complete {r} of the {t} exercises ({p}%) of the {s}. You are {n} away. Exercises solved with the revealed solution don’t count.',
     lockedGo: 'Go to the {s} →',
@@ -2780,9 +3016,9 @@ const UI = {
     drawerTitle: 'Meu trabalho', drawerSub: 'O seu progresso como um arquivo Markdown, para guardar ou mostrar para a sua liderança.', tracks: 'Trilhas', include: 'Incluir',
     incCode: 'Meu código e comandos', incTodo: 'Exercícios não começados', preview: 'Prévia', copy: 'Copiar', copied: 'Copiado', download: 'Baixar .md', close: 'Fechar',
     startTrack: 'Comece pela Trilha Inicial',
-    lockedBadge: 'Bloqueada', lockedNote: 'Complete {r} dos {t} exercícios da Trilha Inicial para abrir. Faltam {n}.',
-    unlockCount: '{d} / {t} exercícios', unlockText: 'Faltam {n} para chegar a {p}% e abrir DEV, QA e IA.', unlockedText: 'DEV, QA e IA estão abertas. Continue até terminar a trilha!',
-    lockedTitle: 'A {m} ainda está bloqueada', lockedText: 'DEV, QA e IA se abrem quando você completa {r} dos {t} exercícios ({p}%) da {s}. Faltam {n}. Exercícios resolvidos com a solução revelada não contam.',
+    lockedBadge: 'Bloqueada', lockedNote: 'Complete {r} dos {t} exercícios da Trilha Inicial para abrir. {f}.', missN: 'Faltam {n}', miss1: 'Falta 1',
+    unlockCount: '{d} / {t} exercícios', unlockText: '{f} para chegar a {p}% e abrir DEV, QA e IA.', unlockedText: 'DEV, QA e IA estão abertas. Continue até terminar a trilha!',
+    lockedTitle: 'A {m} ainda está bloqueada', lockedText: 'DEV, QA e IA se abrem quando você completa {r} dos {t} exercícios ({p}%) da {s}. {f}. Exercícios resolvidos com a solução revelada não contam.',
     lockedGo: 'Ir para a {s} →',
     reinforces: 'Reforça {x}', hintN: '<b>Dica {n} de {t}.</b> ',
     solNoCount: 'Resolvido com a solução, este exercício dá 0 XP e <b>não</b> conta para os {p}%.',
@@ -2916,6 +3152,7 @@ function levelNumber(level) { return moduleLevels(level.module).indexOf(level) +
 function moduleXp(mod) { return moduleExercises(mod).reduce((s, e) => s + earned(e), 0); }
 function moduleMax(mod) { return moduleExercises(mod).reduce((s, e) => s + e.xp, 0); }
 // Access: the ACCESS-RULES functions applied to this learner.
+const missingText = p => p.missing === 1 ? t('miss1') : t('missN', { n: p.missing });
 function startProgress() { return startTrackProgress(moduleExercises(START_TRACK_ID), state); }
 function trackOpen(modId) { const m = MODULES.find(x => x.id === modId); return !m || canAccessTrack(m, startProgress()); }
 // A rank's XP is its share of the module's total XP, so ranks stay balanced when you add or remove exercises.
@@ -2942,14 +3179,14 @@ function renderHomeProgress() {
       $('mod-card-' + m.id).classList.toggle('is-locked', !open);
       $('lock-badge-' + m.id).hidden = open;
       $('lock-note-' + m.id).hidden = open;
-      $('lock-note-' + m.id).textContent = open ? '' : t('lockedNote', { r: p.required, t: p.total, n: p.missing });
+      $('lock-note-' + m.id).textContent = open ? '' : t('lockedNote', { r: p.required, t: p.total, n: p.missing, f: missingText(p) });
     }
   });
   // The Start Track card: exercises done, the 80% mark and what is missing.
   $('unlock-count').textContent = t('unlockCount', { d: p.done, t: p.total });
   $('unlock-percent').textContent = p.percent + '%';
   $('unlock-bar').style.width = p.percent + '%';
-  $('unlock-text').textContent = p.unlocked ? t('unlockedText') : t('unlockText', { n: p.missing, p: UNLOCK_PERCENT });
+  $('unlock-text').textContent = p.unlocked ? t('unlockedText') : t('unlockText', { n: p.missing, p: UNLOCK_PERCENT, f: missingText(p) });
 }
 
 function renderHeader() {
@@ -3408,7 +3645,7 @@ function renderLocked(mod) {
   $('module-view').hidden = true;
   $('locked-view').hidden = false;
   $('locked-title').textContent = t('lockedTitle', { m: t('moduleTitle', { m: mod.name }) });
-  $('locked-text').textContent = t('lockedText', { r: p.required, t: p.total, p: UNLOCK_PERCENT, n: p.missing, s: t('moduleTitle', { m: start.name }) });
+  $('locked-text').textContent = t('lockedText', { r: p.required, t: p.total, p: UNLOCK_PERCENT, n: p.missing, f: missingText(p), s: t('moduleTitle', { m: start.name }) });
   $('locked-count').textContent = t('unlockCount', { d: p.done, t: p.total });
   $('locked-percent').textContent = p.percent + '%';
   $('locked-bar').style.width = p.percent + '%';
