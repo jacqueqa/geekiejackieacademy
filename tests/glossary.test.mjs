@@ -164,7 +164,7 @@ test('every category has an English name', () => {
 test('in English, terms are sorted with localeCompare("en")', () => {
   const sorted = plain(G.glossSort(G.GLOSSARY, 'en').map(g => G.glossText(g, 'en').term));
   assert.deepEqual(sorted, [...sorted].sort((a, b) => a.localeCompare(b, 'en')));
-  assert.equal(sorted[0], 'AI Model');
+  assert.equal(sorted[0], 'Acceptance Criteria');
 });
 
 test('English search uses the English texts and ignores case', () => {

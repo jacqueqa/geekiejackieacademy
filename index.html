@@ -650,6 +650,30 @@ pre.cat-json { margin: 0; background: var(--code-bg); color: var(--code-ink); bo
 .lc-arrow { color: var(--muted); }
 .lc-side { font-size: 13.5px; color: var(--muted); display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .rb-empty { color: var(--muted); text-align: center; padding: 30px 0; }
+/* The guide on top of the Rulebook: six numbered steps */
+.rb-guide { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--sakura); border-radius: 20px; padding: 0; }
+.rb-guide > summary { cursor: pointer; list-style: none; padding: 16px 22px; font-family: var(--font-display); font-size: 20px; font-weight: 600; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.rb-guide > summary::-webkit-details-marker { display: none; }
+.rb-guide > summary::after { content: "▾"; margin-left: auto; color: var(--muted); transition: transform .15s ease; }
+.rb-guide[open] > summary::after { transform: rotate(180deg); }
+.rb-guide-hint { font-family: var(--font-body); font-size: 13px; font-weight: 400; color: var(--muted); }
+.rb-steps { list-style: none; margin: 0; padding: 0 22px 22px; display: flex; flex-direction: column; gap: 14px; counter-reset: rbstep; }
+.rb-step { position: relative; padding: 14px 16px 14px 60px; border-radius: 14px; background: var(--bg); border: 1px solid var(--line); counter-increment: rbstep; }
+.rb-step::before { content: counter(rbstep); position: absolute; left: 16px; top: 14px; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-family: var(--font-display); background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent); }
+.rb-step h4 { font-size: 18px; margin: 2px 0 6px; }
+.rb-step p, .rb-step li { color: var(--ink); font-size: 15px; line-height: 1.55; }
+.rb-step p { margin: 0 0 8px; }
+.rb-step ul { margin: 0 0 8px; padding-left: 20px; }
+.rb-step .rb-say { margin: 6px 0 4px; padding: 10px 14px; border-radius: 10px; background: var(--code-bg); color: var(--code-ink); font-family: var(--font-mono); font-size: 13px; white-space: pre-wrap; }
+.rb-step .rb-note { color: var(--muted); font-size: 13.5px; }
+.rb-flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 6px 0 8px; }
+.rb-flow span { padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 13px; }
+.rb-flow b { color: var(--muted); font-weight: 400; }
+.rb-rules-title { font-size: 24px; margin-top: 6px; }
+.rb-tech { border: 1px dashed var(--line); border-radius: 12px; padding: 0 14px; }
+.rb-tech > summary { cursor: pointer; padding: 10px 0; color: var(--muted); font-size: 13.5px; font-weight: 600; }
+.rb-tech[open] { padding-bottom: 12px; }
+.rule-ex-label { font-size: 12px; color: var(--muted); align-self: center; }
 .ex-rules { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
 .rule-link { background: var(--bg); border: 1px solid var(--line); color: var(--sakura); font-family: var(--font-mono); font-size: 12px; border-radius: 999px; padding: 2px 10px; }
 .rule-link:hover { border-color: var(--sakura); }
@@ -1193,6 +1217,13 @@ body { zoom: var(--ui-scale, 1); }
       <h2 data-i18n="rbTitle">📜 The Shop Rulebook</h2>
       <p id="rb-intro"></p>
     </div>
+    <!-- For beginners: what a rulebook is, why and how to use it, requirements, acceptance criteria and the product team.
+         It opens and closes, and remembers it (state.folds['rb-guide']). -->
+    <details class="rb-guide" id="rb-guide">
+      <summary><span data-i18n="rbGuideTitle">Before you start: what is a rulebook?</span> <span class="rb-guide-hint" data-i18n="rbGuideHint">6 short steps</span></summary>
+      <ol class="rb-steps" id="rb-steps"></ol>
+    </details>
+    <h3 class="rb-rules-title" id="rb-rules-title" data-i18n="rbRulesTitle">The shop’s rules</h3>
     <div class="rb-tools">
       <input class="rb-search" id="rb-search" type="search" placeholder="Search a rule, a field or an id like BR-ORD-03" data-i18n-ph="rbSearch" aria-label="Search the rulebook">
       <div class="rb-row" id="rb-filters"></div>
@@ -3071,8 +3102,29 @@ function canSell(product, quantity) {
 /* ---------- 7. The Shop Rulebook (page #rulebook) ----------
    "ex" lists the exercises that use the rule; rules with no exercise yet are ideas for new content. */
 RULEBOOK = {
-  intro: L('Every rule the shop runs on. The exercises in all three tracks are built from these rules: DEV implements them, QA tests them, and AI checks that the oracle respects them.',
-    'Todas as regras com que a loja funciona. Os exercícios das três trilhas nascem destas regras: DEV implementa, QA testa e IA confere se o oráculo as respeita.'),
+  intro: L('Every rule the shop runs on, in plain words. The whole team uses it: product writes the rules, Back End and Front End build them, QA tests them, Data reads them in the numbers and AI checks that the oracle respects them.',
+    'Todas as regras com que a loja funciona, em palavras simples. O time inteiro usa: produto escreve as regras, Back End e Front End constroem, QA testa, Dados enxerga nos números e IA confere se o oráculo as respeita.'),
+  // The guide on top of the page, for people who never worked with requirements: [icon, title, html].
+  guide: [
+    ['📜', L('What is a rulebook?', 'O que é um rulebook?'),
+      L('<p>A <b>rulebook</b> (book of rules) puts in one place every rule the system must respect, written in plain words, with no code. Each rule has a code, so everyone talks about the same thing.</p><div class="rb-say">BR-SHP-03 · Shipping is free for orders of €50 or more, after the discount.</div><p class="rb-note">BR = business rule · SHP = shipping · 03 = the third rule of that area.</p>',
+        '<p>Um <b>rulebook</b> (livro de regras) junta num lugar só todas as regras que o sistema precisa respeitar, escritas em palavras simples, sem código. Cada regra tem um código, para todo mundo falar da mesma coisa.</p><div class="rb-say">BR-SHP-03 · O frete é grátis para pedidos de €50 ou mais, depois do desconto.</div><p class="rb-note">BR = business rule (regra de negócio) · SHP = shipping (frete) · 03 = a terceira regra dessa área.</p>')],
+    ['🎯', L('Why use one?', 'Por que usar um?'),
+      L('<p>Without a rulebook, each person keeps the rules in their head, and each one understands them differently. With it:</p><ul><li>product, developers, QA and AI read the same sentence;</li><li>a doubt becomes a question about one rule, not an argument;</li><li>when a rule changes, everyone knows what changed.</li></ul><p class="rb-note">Example: “free shipping over €50”. Does an order of exactly €50 pay shipping? BR-SHP-03 answers: no, €50 is already free.</p>',
+        '<p>Sem um rulebook, cada pessoa guarda as regras na cabeça, e cada uma entende de um jeito. Com ele:</p><ul><li>produto, devs, QA e IA leem a mesma frase;</li><li>uma dúvida vira uma pergunta sobre uma regra, não uma discussão;</li><li>quando uma regra muda, todo mundo sabe o que mudou.</li></ul><p class="rb-note">Exemplo: “frete grátis acima de €50”. Um pedido de exatamente €50 paga frete? A BR-SHP-03 responde: não, €50 já é grátis.</p>')],
+    ['🧭', L('How to use this rulebook', 'Como usar este rulebook'),
+      L('<ul><li>Find the rule by its <b>area</b> (Products, Orders, Coupons…) or with the <b>search</b>.</li><li>Read the rule and note its <b>code</b>.</li><li>Next to each rule you see the <b>exercises</b> that use it: click to practise.</li><li>Quote the code when you write a test, a bug report or a commit: <i>“BR-SHP-03 fails with €50.00”</i>.</li></ul>',
+        '<ul><li>Encontre a regra pela <b>área</b> (Produtos, Pedidos, Cupons…) ou pela <b>busca</b>.</li><li>Leia a regra e anote o <b>código</b> dela.</li><li>Ao lado de cada regra aparecem os <b>exercícios</b> que a usam: clique para praticar.</li><li>Cite o código quando escrever um teste, um bug report ou um commit: <i>“BR-SHP-03 falha com €50,00”</i>.</li></ul>')],
+    ['📝', L('Requirements', 'Requisitos'),
+      L('<p>A <b>requirement</b> says what the system must do, or how it must be. Business rules are one kind of requirement.</p><ul><li><b>Functional:</b> what the system does. <i>The customer can use a coupon at checkout.</i></li><li><b>Non-functional:</b> how well it does it. <i>Checkout opens in under 2 seconds; the page works with a screen reader.</i></li></ul><p>Requirements often arrive as a <b>user story</b>:</p><div class="rb-say">As a customer, I want to use a coupon at checkout, so that I pay less.</div><p class="rb-note">As &lt;who&gt;, I want &lt;what&gt;, so that &lt;why&gt;.</p>',
+        '<p>Um <b>requisito</b> diz o que o sistema precisa fazer, ou como ele precisa ser. As regras de negócio são um tipo de requisito.</p><ul><li><b>Funcional:</b> o que o sistema faz. <i>A cliente pode usar um cupom no checkout.</i></li><li><b>Não funcional:</b> o quão bem ele faz. <i>O checkout abre em menos de 2 segundos; a página funciona com leitor de tela.</i></li></ul><p>Muitas vezes o requisito chega como uma <b>user story</b> (história de usuário):</p><div class="rb-say">Como cliente, quero usar um cupom no checkout, para pagar menos.</div><p class="rb-note">Como &lt;quem&gt;, quero &lt;o quê&gt;, para &lt;por quê&gt;.</p>')],
+    ['✅', L('Acceptance criteria', 'Critérios de aceite'),
+      L('<p><b>Acceptance criteria</b> say when a story is done. They are concrete examples you can test. A popular format is <b>Given / When / Then</b>:</p><div class="rb-say">Given a cart of €50.00\nWhen the customer places the order\nThen shipping is €0.00 (BR-SHP-03)\n\nGiven a cart of €49.99\nWhen the customer places the order\nThen shipping is €4.90</div><p>Developers use the criteria to know what to build, and QA turns each one into tests.</p>',
+        '<p>Os <b>critérios de aceite</b> dizem quando uma história está pronta. São exemplos concretos, que dá para testar. Um formato muito usado é <b>Dado / Quando / Então</b>:</p><div class="rb-say">Dado um carrinho de €50,00\nQuando a cliente fecha o pedido\nEntão o frete é €0,00 (BR-SHP-03)\n\nDado um carrinho de €49,99\nQuando a cliente fecha o pedido\nEntão o frete é €4,90</div><p>Quem desenvolve usa os critérios para saber o que construir, e o QA transforma cada um em testes.</p>')],
+    ['👩‍💼', L('The product team’s work', 'O trabalho da equipe de produto'),
+      L('<p>The <b>product team</b> (Product Owner, Product Manager) understands the customers’ problems and decides what to build and why: it talks to the people who use the shop, writes the stories and their acceptance criteria, keeps the rules up to date and sets the priority of each task.</p><div class="rb-flow"><span>💡 Idea or problem</span><b>→</b><span>📝 Requirement</span><b>→</b><span>✅ Story + acceptance criteria</span><b>→</b><span>📜 Rule in the rulebook</span><b>→</b><span>⚙️ Back End and Front End build</span><b>→</b><span>🔍 QA tests</span><b>→</b><span>🚀 Live</span></div><p class="rb-note">Nobody does it alone: QA and developers help product find missing or unclear rules before any code is written.</p>',
+        '<p>A <b>equipe de produto</b> (Product Owner, Product Manager) entende os problemas das clientes e decide o que construir e por quê: conversa com quem usa a loja, escreve as histórias e os critérios de aceite, mantém as regras atualizadas e define a prioridade de cada tarefa.</p><div class="rb-flow"><span>💡 Ideia ou problema</span><b>→</b><span>📝 Requisito</span><b>→</b><span>✅ História + critérios de aceite</span><b>→</b><span>📜 Regra no rulebook</span><b>→</b><span>⚙️ Back End e Front End constroem</span><b>→</b><span>🔍 QA testa</span><b>→</b><span>🚀 No ar</span></div><p class="rb-note">Ninguém faz isso sozinho: QA e devs ajudam o produto a achar regras faltando ou confusas antes de qualquer código.</p>')],
+  ],
   areas: [
     {
       id: 'product', code: 'PRD', name: L('Products', 'Produtos'), icon: '🃏',
@@ -3657,7 +3709,8 @@ const UI = {
     expBusy: 'Another download prompt is still open. Close it and try again.', expFail: 'The download did not work here. Use Copy and paste into a new .md file.',
     expSelected: 'Text selected. Press Ctrl/⌘ + C to copy.', expCopied: 'Copied. Paste it into a new .md file or a ticket.',
     rulesInEx: '📜 Shop rules in this exercise: ', done: 'Done',
-    rbTitle: '📜 The Shop Rulebook', rbSearch: 'Search a rule, a field or an id like BR-ORD-03', rbStats: '{n} rules · {u} used in exercises · {i} ideas for new exercises',
+    rbTitle: '📜 The Shop Rulebook', rbSearch: 'Search a rule, a word or a code like BR-ORD-03', rbStats: '{n} rules in {a} areas',
+    rbGuideTitle: 'Before you start: what is a rulebook?', rbGuideHint: '6 short steps', rbRulesTitle: 'The shop’s rules', rbTech: 'Data fields (for those who will code)', rbUsedIn: 'Practise in:',
     rbAll: 'All rules', rbUsed: 'In exercises', rbIdeas: 'No exercise yet', fields: 'Fields', field: 'Field', type: 'Type', meaning: 'Meaning', rules: 'Rules',
     lifecycle: 'Order lifecycle', exampleLbl: 'Example', noExYet: '✦ No exercise yet', rbEmpty: 'No rule matches this search.',
     catTitle: '🛍️ Product catalog', catSearch: 'Search a name, a SKU like TAR-001 or a description', catStats: '{n} products · {c} categories · total stock {s} units · {o} sold out',
@@ -3771,7 +3824,8 @@ const UI = {
     expBusy: 'Ainda há outra janela de download aberta. Feche-a e tente de novo.', expFail: 'O download não funcionou aqui. Use Copiar e cole num arquivo .md novo.',
     expSelected: 'Texto selecionado. Aperte Ctrl/⌘ + C para copiar.', expCopied: 'Copiado. Cole num arquivo .md novo ou num ticket.',
     rulesInEx: '📜 Regras da loja neste exercício: ', done: 'Feito',
-    rbTitle: '📜 Regras da Loja', rbSearch: 'Busque uma regra, um campo ou um id como BR-ORD-03', rbStats: '{n} regras · {u} usadas em exercícios · {i} ideias para exercícios novos',
+    rbTitle: '📜 Regras da Loja', rbSearch: 'Busque uma regra, uma palavra ou um código como BR-ORD-03', rbStats: '{n} regras em {a} áreas',
+    rbGuideTitle: 'Antes de começar: o que é um rulebook?', rbGuideHint: '6 passos rápidos', rbRulesTitle: 'As regras da loja', rbTech: 'Campos dos dados (para quem vai programar)', rbUsedIn: 'Pratique em:',
     rbAll: 'Todas as regras', rbUsed: 'Nos exercícios', rbIdeas: 'Sem exercício ainda', fields: 'Campos', field: 'Campo', type: 'Tipo', meaning: 'Significado', rules: 'Regras',
     lifecycle: 'Ciclo de vida do pedido', exampleLbl: 'Exemplo', noExYet: '✦ Sem exercício ainda', rbEmpty: 'Nenhuma regra corresponde a esta busca.',
     catTitle: '🛍️ Catálogo de produtos', catSearch: 'Busque um nome, um SKU como TAR-001 ou uma descrição', catStats: '{n} produtos · {c} categorias · estoque total de {s} unidades · {o} esgotado(s)',
@@ -5917,30 +5971,32 @@ function renderRulebook() {
   const rules = allRules();
   const used = rules.filter(r => r.ex.length).length;
   $('rb-intro').textContent = RULEBOOK.intro;
-  $('rb-stats').textContent = t('rbStats', { n: rules.length, u: used, i: rules.length - used });
-  const filters = [['all', t('rbAll')], ['used', t('rbUsed')], ['ideas', t('rbIdeas')]];
-  $('rb-filters').innerHTML = filters.map(f => '<button class="rb-chip' + (rbFilter === f[0] ? ' on' : '') + '" data-filter="' + f[0] + '">' + f[1] + '</button>').join('') +
-    '<span class="rb-sep" aria-hidden="true"></span>' +
+  $('rb-stats').textContent = t('rbStats', { n: rules.length, a: RULEBOOK.areas.length });
+  // the guide: open the first time, then as the learner left it
+  $('rb-steps').innerHTML = RULEBOOK.guide.map(g => '<li class="rb-step"><h4>' + g[0] + ' ' + esc(g[1]) + '</h4>' + g[2] + '</li>').join('');
+  $('rb-guide').open = !(state.folds && state.folds['rb-guide']);
+  // only the areas: the "used / no exercise yet" filters were for the people who write the academy
+  $('rb-filters').innerHTML =
     RULEBOOK.areas.map(a => '<button class="rb-chip" data-jump="' + a.id + '">' + a.icon + ' ' + esc(a.name) + '</button>').join('');
   $('rb-body').innerHTML = RULEBOOK.areas.map(a => {
     let h = '<section class="rb-area" id="area-' + a.id + '"><div class="rb-area-head"><div class="rb-icon" aria-hidden="true">' + a.icon + '</div><div><h3>' + esc(a.name) + '</h3><p>' + esc(a.what) + '</p></div><span class="rb-code">BR-' + a.code + '</span></div>';
-    if (a.fields) h += '<div class="rb-sub">' + t('fields') + '</div><div class="table-wrap"><table class="cmd-table"><thead><tr><th>' + t('field') + '</th><th>' + t('type') + '</th><th>' + t('meaning') + '</th></tr></thead><tbody>' +
-      a.fields.map(f => '<tr><td><code>' + f[0] + '</code></td><td>' + esc(f[1]) + '</td><td>' + f[2] + '</td></tr>').join('') + '</tbody></table></div>';
+    if (a.fields) h += '<details class="rb-tech"><summary>' + esc(t('rbTech')) + '</summary><div class="table-wrap"><table class="cmd-table"><thead><tr><th>' + t('field') + '</th><th>' + t('type') + '</th><th>' + t('meaning') + '</th></tr></thead><tbody>' +
+      a.fields.map(f => '<tr><td><code>' + f[0] + '</code></td><td>' + esc(f[1]) + '</td><td>' + f[2] + '</td></tr>').join('') + '</tbody></table></div>' +
+      (a.example ? '<div class="rb-sub">' + t('exampleLbl') + '</div><pre class="rb-example">' + esc(a.example) + '</pre>' : '') + '</details>';
     h += '<div class="rb-sub">' + t('rules') + '</div><div class="rules">' + a.rules.map(r =>
       '<div class="rule" id="rule-' + r.id + '" data-used="' + (r.ex.length ? 1 : 0) + '"><span class="rule-id">' + r.id + '</span><div class="rule-text">' + r.text + '</div><div class="rule-ex">' +
-      (r.ex.length ? r.ex.map(exLink).join('') : '<span class="rule-none">' + t('noExYet') + '</span>') + '</div></div>').join('') + '</div>';
+      (r.ex.length ? '<span class="rule-ex-label">' + esc(t('rbUsedIn')) + '</span>' + r.ex.map(exLink).join('') : '') + '</div></div>').join('') + '</div>';
     if (a.lifecycle) {
       const L = RULEBOOK.lifecycle;
       h += '<div class="rb-sub">' + t('lifecycle') + '</div><div class="lifecycle"><div class="lc-main">' +
         L.states.map(s => '<span class="lc-state">' + s + '</span>').join('<span class="lc-arrow" aria-hidden="true">→</span>') + '</div>' +
         L.side.map(s => '<div class="lc-side"><span class="lc-state">' + s[0] + '</span><span class="lc-arrow">→</span><span class="lc-state end">' + s[1] + '</span><span>' + esc(s[2]) + '</span></div>').join('') + '</div>';
     }
-    if (a.example) h += '<div class="rb-sub">' + t('exampleLbl') + '</div><pre class="rb-example">' + esc(a.example) + '</pre>';
+    if (a.example && !a.fields) h += '<div class="rb-sub">' + t('exampleLbl') + '</div><pre class="rb-example">' + esc(a.example) + '</pre>';
     if (a.link) h += '<a class="rb-chip" style="align-self:flex-start" href="' + a.link[0] + '">' + esc(a.link[1]) + '</a>';
     return h + '</section>';
   }).join('') + '<p class="rb-empty" id="rb-empty" hidden>' + t('rbEmpty') + '</p>';
   $('rb-body').querySelectorAll('[data-goto]').forEach(b => b.addEventListener('click', () => goToExercise(b.dataset.goto)));
-  $('rb-filters').querySelectorAll('[data-filter]').forEach(b => b.addEventListener('click', () => { rbFilter = b.dataset.filter; renderRulebook(); }));
   $('rb-filters').querySelectorAll('[data-jump]').forEach(b => b.addEventListener('click', () => {
     const el = $('area-' + b.dataset.jump); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }));
@@ -5966,6 +6022,7 @@ function applyRulebookFilter() {
   $('rb-empty').hidden = shown > 0;
 }
 $('rb-search').addEventListener('input', applyRulebookFilter);
+$('rb-guide').addEventListener('toggle', () => { state.folds = state.folds || {}; state.folds['rb-guide'] = !$('rb-guide').open; saveState(); });
 function flashRule(id) {
   rbFilter = 'all'; $('rb-search').value = ''; applyRulebookFilter();
   document.querySelectorAll('#rb-filters [data-filter]').forEach(b => b.classList.toggle('on', b.dataset.filter === 'all'));
