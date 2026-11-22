@@ -526,4 +526,44 @@ var GLOSSARY = [
       definition: "Splitting a big task into steps, each prompt using the answer of the step before. Each part becomes easier to check.",
     },
   },
+  {
+    term: 'Regra de negócio', abbr: 'business rule', category: 'Fundamentos', tracks: ['start', 'dev', 'qa'],
+    definition: 'Uma regra da empresa que o sistema precisa respeitar, escrita em palavras simples. Na lojinha, cada uma tem um código, como BR-SHP-03.',
+    example: '// BR-SHP-03: o frete é grátis para pedidos de €50 ou mais,\n// depois do desconto.',
+    en: {
+      term: "Business Rule",
+      definition: "A rule of the company that the system must respect, written in plain words. In the shop, each one has a code, like BR-SHP-03.",
+      example: "// BR-SHP-03: shipping is free for orders of €50 or more,\n// after the discount.",
+    },
+  },
+  {
+    term: 'Requisito', abbr: 'requirement', category: 'Fundamentos', tracks: ['qa', 'dev'],
+    definition: 'O que o sistema precisa fazer (requisito funcional) ou como ele precisa ser (não funcional, como velocidade e acessibilidade).',
+    example: '// funcional:     a cliente pode usar um cupom no checkout\n// não funcional: o checkout abre em menos de 2 segundos',
+    en: {
+      term: "Requirement",
+      definition: "What the system must do (functional requirement) or how it must be (non-functional, like speed and accessibility).",
+      example: "// functional:     the customer can use a coupon at checkout\n// non-functional: checkout opens in under 2 seconds",
+    },
+  },
+  {
+    term: 'User story', abbr: 'história de usuário', category: 'Fundamentos', tracks: ['qa', 'dev'],
+    definition: 'Um jeito curto de escrever um requisito do ponto de vista de quem usa: como quem, quero o quê, para quê.',
+    example: '// Como cliente, quero usar um cupom no checkout,\n// para pagar menos.',
+    en: {
+      term: "User Story",
+      definition: "A short way of writing a requirement from the user’s point of view: as who, I want what, so that why.",
+      example: "// As a customer, I want to use a coupon at checkout,\n// so that I pay less.",
+    },
+  },
+  {
+    term: 'Critério de aceite', abbr: 'acceptance criteria', category: 'Qualidade e testes', tracks: ['qa', 'dev'],
+    definition: 'Exemplos concretos que dizem quando uma história está pronta. Muitas vezes são escritos como Dado, Quando, Então, e viram testes.',
+    example: '// Dado um carrinho de €50,00\n// Quando a cliente fecha o pedido\n// Então o frete é €0,00',
+    en: {
+      term: "Acceptance Criteria",
+      definition: "Concrete examples that say when a story is done. They are often written as Given, When, Then, and become tests.",
+      example: "// Given a cart of €50.00\n// When the customer places the order\n// Then shipping is €0.00",
+    },
+  },
 ];
