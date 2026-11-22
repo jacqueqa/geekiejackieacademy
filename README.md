@@ -2,13 +2,14 @@
 
 **Learn. Build. Test. Evolve.**
 
-▶️ **[Abrir a academia / Open the academy](https://jacqueqa.github.io/geekiejackieacademy/)**
+
+<img width="70" height="70" alt="Geekie Jackie e Gato Pixel Art" src="https://github.com/user-attachments/assets/d7954a91-8154-44fb-9a84-25f68948b8a0" /> <p> **[Abrir a academia / Open the academy](https://jacqueqa.github.io/geekiejackieacademy/)**
 
 🇧🇷 [Português](#-português) · 🇬🇧 [English](#-english)
 
 ---
 
-## 🇧🇷 Português
+## Português
 
 ### O que é a academia?
 
@@ -94,7 +95,7 @@ Para criar exercícios, mudar textos ou rodar os testes automatizados, veja o [g
 
 ---
 
-## 🇬🇧 English
+## English
 
 ### What is the academy?
 
