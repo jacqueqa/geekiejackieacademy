@@ -4723,7 +4723,7 @@ function crachaTrack() {
   const m = cur ? moduleOf(cur) : START_TRACK_ID;
   return MODULES.find(x => x.id === m && trackOpen(x.id)) || MODULES.find(x => x.id === START_TRACK_ID);
 }
-const PENNANTS = { dev: 'assets/pennant-dev.webp', qa: 'assets/pennant-qa.webp', ai: 'assets/pennant-ai.webp' };
+const PENNANTS = { start: 'assets/pennant-start.webp', dev: 'assets/pennant-dev.webp', qa: 'assets/pennant-qa.webp', ai: 'assets/pennant-ai.webp' };
 function renderCracha() {
   const box = $('cracha'); if (!box || !ACH) return;
   const facts = badgeFacts();
@@ -4743,7 +4743,7 @@ function renderCracha() {
   const firstOpen = lvState.findIndex(x => x.done < x.total);
   const from = Math.max(0, Math.min((firstOpen < 0 ? lvState.length : firstOpen) - 1, lvState.length - 4));
   const shown = lvState.slice(from, from + 4);
-  const trackImg = PENNANTS[mod.id] || badgeImg(ACH.list.find(a => a.id === 'problem-solving'));
+  const trackImg = PENNANTS[mod.id] || PENNANTS.start;
   // the last 3 badges earned (state.badges keeps the order they were earned in)
   const recent = Object.keys(state.badges || {}).map(id => ACH.list.find(a => a.id === id)).filter(a => a && !a.soon).slice(-3).reverse();
   const earnedCount = Object.keys(state.badges || {}).filter(id => ACH.list.some(a => a.id === id && !a.soon)).length;
