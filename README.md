@@ -15,9 +15,11 @@ Você acaba de ser contratado como estagiário de tecnologia na lojinha de tarot
 | Trilha | O que se aprende |
 |---|---|
 | **Inicial** | Lógica em português, com caixinhas e diagramas, sem escrever código: 40 exercícios (pré-requisito das outras) |
-| **DEV** | Git, objetos, loops, condicionais e regras de negócio em JavaScript, mais 30 desafios de algoritmos |
+| **Back End** | Git, objetos, loops, condicionais e regras de negócio em JavaScript, mais 30 desafios de algoritmos (era a trilha DEV; o id continua `dev`) |
+| **Front End** | Git, HTML e acessibilidade, CSS (seletores, cascata, caixa, flexbox) e JavaScript que monta a vitrine a partir dos dados |
 | **QA** | Git, asserções com Chai `expect()`, dados ruins e valores-limite |
 | **IA** | Git, prompts montados a partir de dados, alucinações e revisão de código gerado por IA |
+| **Dados** | Git, contar, somar e tirar médias dos pedidos, agrupar por categoria e por dia em JavaScript, ler SQL e escolher o gráfico certo |
 
 Todas as trilhas usam o mesmo universo: os produtos, pedidos, cupons e regras da lojinha.
 
@@ -64,7 +66,7 @@ Na página inicial, a seção **Comece por aqui** tem o cartão do guia (imagem 
 
 ### Como usar
 
-É uma página, `index.html`, mais dois arquivos de dados, `start-track.js` (Trilha Inicial) e `glossary.js` (glossário), sem nada para instalar. Abra no navegador ou publique com o GitHub Pages. O progresso fica salvo no navegador de quem usa.
+É uma página, `index.html`, mais os arquivos de dados `start-track.js` (Trilha Inicial), `new-tracks.js` (Front End e Dados), `glossary.js` (glossário) e `design-principles.js`, sem nada para instalar. Abra no navegador ou publique com o GitHub Pages. O progresso fica salvo no navegador de quem usa.
 
 ### Como editar o conteúdo
 
@@ -103,9 +105,11 @@ You have just been hired as a tech intern at **Bruxa Maria’s** little tarot an
 | Track | What you learn |
 |---|---|
 | **Start** | Logic in plain language, with boxes and diagrams, no code to write: 40 exercises (prerequisite of the others) |
-| **DEV** | Git, objects, loops, conditionals and business rules in JavaScript, plus 30 algorithm challenges |
+| **Back End** | Git, objects, loops, conditionals and business rules in JavaScript, plus 30 algorithm challenges (it was the DEV track; the id is still `dev`) |
+| **Front End** | Git, HTML and accessibility, CSS (selectors, cascade, box model, flexbox) and JavaScript that builds the shop window from data |
 | **QA** | Git, Chai `expect()` assertions, bad data and boundary values |
 | **AI** | Git, prompts built from data, hallucinations and reviewing AI-generated code |
+| **Data** | Git, counting, summing and averaging orders, grouping by category and by day in JavaScript, reading SQL and picking the right chart |
 
 Every track shares the same world: the shop’s products, orders, coupons and rules.
 
@@ -152,7 +156,7 @@ On the home page, the **Start here** section has the guide card (the magic shop 
 
 ### How to use it
 
-It is one page, `index.html`, plus two data files, `start-track.js` (Start Track) and `glossary.js` (glossary), with nothing to install. Open it in a browser or publish it with GitHub Pages. Progress is saved in each learner’s browser.
+It is one page, `index.html`, plus the data files `start-track.js` (Start Track), `new-tracks.js` (Front End and Data), `glossary.js` (glossary) and `design-principles.js`, with nothing to install. Open it in a browser or publish it with GitHub Pages. Progress is saved in each learner’s browser.
 
 ### How to edit the content
 
