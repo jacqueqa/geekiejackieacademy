@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { load } from './load.mjs';
 
 const G = load(['file:glossary.js', 'GLOSSARY-LOGIC'],
-  ['GLOSSARY', 'GLOSSARY_CATEGORIES', 'glossNormalize', 'glossSort', 'glossFilter', 'glossLetters', 'glossLetter', 'glossGroups', 'glossSlug']);
+  ['GLOSSARY', 'GLOSSARY_CATEGORIES', 'GLOSSARY_CATEGORIES_EN', 'glossText', 'glossNormalize', 'glossSort', 'glossFilter', 'glossLetters', 'glossLetter', 'glossGroups', 'glossSlug']);
 // Arrays made inside the sandbox come from another realm; copy them so deepEqual compares only the values.
 const plain = v => JSON.parse(JSON.stringify(v));
 const terms = list => plain(list.map(g => g.term));
@@ -128,5 +128,57 @@ test('groups by letter keep the alphabetical order', () => {
   const groups = plain(G.glossGroups(G.GLOSSARY));
   assert.deepEqual(groups.map(g => g.letter), [...new Set(groups.map(g => g.letter))], 'each letter once');
   assert.deepEqual(groups.map(g => g.letter), [...groups.map(g => g.letter)].sort());
+  assert.equal(groups.reduce((n, g) => n + g.terms.length, 0), G.GLOSSARY.length);
+});
+
+/* ---------- English ---------- */
+const EN = { lang: 'en' };
+const findEn = (query, opts = {}) => plain(G.glossFilter(G.GLOSSARY, { query, ...opts, ...EN }).map(g => G.glossText(g, 'en').term));
+
+test('every term has an English version with the required fields', () => {
+  for (const g of G.GLOSSARY) {
+    assert.ok(g.en && g.en.term && g.en.term.trim(), g.term + ': en.term');
+    assert.ok(g.en.definition && g.en.definition.trim(), g.term + ': en.definition');
+    const sentences = g.en.definition.split(/[.!?](?=\s|$)/).filter(s => s.trim()).length;
+    assert.ok(sentences >= 1 && sentences <= 3, g.term + ': en.definition has ' + sentences + ' sentences');
+    if (g.en.abbr !== undefined) assert.ok(g.en.abbr.trim(), g.term + ': en.abbr is empty');
+  }
+  const seen = new Set(G.GLOSSARY.map(g => G.glossNormalize(g.en.term)));
+  assert.equal(seen.size, G.GLOSSARY.length, 'no duplicate English terms');
+});
+
+test('English examples have no Portuguese left in them', () => {
+  const pt = /\b(não|você|para|cada|venda|vendemos|baralhos|pedido|cliente|loja|lojinha|Esgotado|depois|antes|regra|Certo|Erro)\b/i;
+  for (const g of G.GLOSSARY) {
+    const ex = G.glossText(g, 'en').example;
+    const found = ex ? ex.match(pt) : null;
+    assert.equal(found, null, g.term + ': the English example still has Portuguese: ' + (found && found[0]));
+  }
+});
+
+test('every category has an English name', () => {
+  for (const c of G.GLOSSARY_CATEGORIES) assert.ok(G.GLOSSARY_CATEGORIES_EN[c], c);
+});
+
+test('in English, terms are sorted with localeCompare("en")', () => {
+  const sorted = plain(G.glossSort(G.GLOSSARY, 'en').map(g => G.glossText(g, 'en').term));
+  assert.deepEqual(sorted, [...sorted].sort((a, b) => a.localeCompare(b, 'en')));
+  assert.equal(sorted[0], 'AI Model');
+});
+
+test('English search uses the English texts and ignores case', () => {
+  assert.ok(findEn('function').includes('Function'));
+  assert.deepEqual(findEn('FUNCTION'), findEn('function'));
+  assert.ok(findEn('recipe').includes('Algorithm'), 'a word of the English definition');
+  assert.ok(findEn('qa').includes('Quality Assurance'), 'the acronym');
+  assert.deepEqual(findEn('funcao'), [], 'Portuguese words are not searched in English');
+  assert.deepEqual(findEn('xyzzy'), []);
+});
+
+test('in English the A–Z bar uses the English terms', () => {
+  const on = (lang) => plain(G.glossLetters(G.GLOSSARY, lang)).filter(x => x.enabled).map(x => x.letter);
+  assert.ok(on('en').includes('Q'), '"Quality Assurance" is under Q in English');
+  assert.ok(!on('pt').includes('Q'), 'and under G ("Garantia de Qualidade") in Portuguese');
+  const groups = plain(G.glossGroups(G.GLOSSARY, 'en'));
   assert.equal(groups.reduce((n, g) => n + g.terms.length, 0), G.GLOSSARY.length);
 });
