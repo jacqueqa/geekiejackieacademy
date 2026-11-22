@@ -541,7 +541,9 @@ pre.cat-json { margin: 0; background: var(--code-bg); color: var(--code-ink); bo
 .unlock-mark { position: absolute; top: -5px; bottom: -5px; width: 3px; margin-left: -1px; border-radius: 2px; background: var(--ink); box-shadow: 0 0 0 2px var(--surface); }
 .unlock-text { font-size: 13.5px; color: var(--muted); }
 .lock-badge { position: absolute; top: 12px; right: 12px; z-index: 2; padding: 5px 11px; border-radius: 99px; background: var(--fail-soft); border: 1px solid var(--fail); color: #FFD2D2; font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
-.mod-card.is-locked .mod-art { filter: grayscale(.75) brightness(.55); }
+.mod-card.is-locked .mod-art, .mod-card.is-locked .mod-card-media img { filter: grayscale(.75) brightness(.55); }
+.mod-card.is-locked .mod-card-body { opacity: .75; }
+.mod-card.is-locked .guide-pill { opacity: .7; }
 .mod-card.is-locked .mod-cta { color: var(--muted); }
 .lock-note { font-size: 13.5px; color: var(--ink); background: var(--bg); border: 1px dashed var(--fail); border-radius: 10px; padding: 8px 10px; }
 .locked-view { max-width: 640px; margin: 0 auto; padding-top: 16px; display: flex; flex-direction: column; gap: 14px; }
@@ -3241,7 +3243,7 @@ const UI = {
     lgDecCases: 'The question is right, but some test case isn’t. Follow the flowchart with the numbers of each row.', lgWrong: '{r} of {t} right. The ones in red need another look.',
     startHere: 'Start here', guidePill: 'Start here', guideTitle: 'How the academy works',
     guideLead: 'You were just hired at Bruxa Maria’s little tarot shop. Before the first exercise, read the guide: tracks, XP, hints and the rules of the game.',
-    guideText: 'Start with the Start Track. When you complete 80% of it, the DEV, QA and AI tracks appear here.',
+    guideText: 'Start with the Start Track. When you complete 80% of it, the DEV, QA and AI tracks open.',
     guideTags: ['Start Track', 'Unlock at 80%', 'Hints and solutions', 'Glossary', 'The mock shop'], guideCta: 'Read the guide →',
     shopAlt: 'Pixel art of Bruxa Maria’s tarot shop, with the witch, Geekie Jackie, a friend and two cats at the door',
     howIntro: 'Everything you need to know before your first exercise at Bruxa Maria’s shop.', howGo: 'Start the Start Track →',
@@ -3259,7 +3261,7 @@ const UI = {
     cursesTitle: 'Common curses', cursesSub: 'Error messages you will meet, what they mean and the counter-spell.',
     forbTitle: 'Forbidden spells', forbSub: 'Things nobody casts at Bruxa Maria’s shop.', grEmpty: 'No spell matches this search.', selectCmd: 'Select the command and copy it',
     howSteps: [
-      ['Start with the Start Track', '40 logic exercises set in the shop, in plain language, with boxes, flowcharts and step-by-step tables: no code to write. You go from algorithms and variables to conditions, loops, recipes, tests and the tools of the trade, and every exercise lets you peek at the same idea in JavaScript. Complete 32 of them (80%), reinforcement included, and DEV, QA and AI appear on the home page.'],
+      ['Start with the Start Track', '40 logic exercises set in the shop, in plain language, with boxes, flowcharts and step-by-step tables: no code to write. You go from algorithms and variables to conditions, loops, recipes, tests and the tools of the trade, and every exercise lets you peek at the same idea in JavaScript. Complete 32 of them (80%), reinforcement included, and DEV, QA and AI open; until then their cards show a lock.'],
       ['Then pick DEV, QA or AI', 'Each track is one journey and starts with Git: cloning the repo, opening a branch and sending your work. DEV also has 30 algorithm challenges in JavaScript, the same ideas of the Start Track now written in code. Your XP and rank are counted per track.'],
       ['Follow the four steps', 'Every exercise starts with a message from Bruxa Maria and reads the same way: the action, what it is, why we do it at {c}, and your exercise.'],
       ['Write code or type commands', 'In DEV, QA and AI, code exercises have an editor and a <b>Run tests</b> button (or <code>Ctrl/⌘ + Enter</code>). Some tests are hidden, like on an online judge: think about empty lists, ties and very large values. Git exercises have a terminal where you type each command.'],
@@ -3336,7 +3338,7 @@ const UI = {
     lgDecCases: 'A pergunta está certa, mas algum caso de teste não. Siga o fluxograma com os números de cada linha.', lgWrong: '{r} de {t} certas. As que estão em vermelho precisam de outra olhada.',
     startHere: 'Comece por aqui', guidePill: 'Comece por aqui', guideTitle: 'Como funciona a academia',
     guideLead: 'Você acabou de ser contratado na lojinha de tarot da Bruxa Maria. Antes do primeiro exercício, leia o guia: trilhas, XP, dicas e as regras do jogo.',
-    guideText: 'Comece pela Trilha Inicial. Quando você completar 80% dela, as trilhas DEV, QA e IA aparecem aqui.',
+    guideText: 'Comece pela Trilha Inicial. Quando você completar 80% dela, as trilhas DEV, QA e IA se abrem.',
     guideTags: ['Trilha Inicial', 'Desbloqueio com 80%', 'Dicas e soluções', 'Glossário', 'A lojinha'], guideCta: 'Ler o guia →',
     shopAlt: 'Pixel art da loja de tarot A Bruxa Maria, com a bruxa, a Geekie Jackie, um amigo e dois gatos na porta',
     howIntro: 'Tudo o que você precisa saber antes do primeiro exercício na lojinha da Bruxa Maria.', howGo: 'Começar a Trilha Inicial →',
@@ -3354,7 +3356,7 @@ const UI = {
     cursesTitle: 'Maldições comuns', cursesSub: 'Mensagens de erro que você vai encontrar, o que significam e o contrafeitiço.',
     forbTitle: 'Feitiços proibidos', forbSub: 'Coisas que ninguém faz na lojinha da Bruxa Maria.', grEmpty: 'Nenhum feitiço corresponde a esta busca.', selectCmd: 'Selecione o comando e copie',
     howSteps: [
-      ['Comece pela Trilha Inicial', '40 exercícios de lógica no contexto da loja, em português, com caixinhas, fluxogramas e tabelas passo a passo: sem código para escrever. Você vai de algoritmos e variáveis até condições, repetições, receitas, testes e as ferramentas do dia a dia, e em todo exercício dá para espiar a mesma ideia em JavaScript. Complete 32 deles (80%), os de reforço incluídos, e as trilhas DEV, QA e IA aparecem na página inicial.'],
+      ['Comece pela Trilha Inicial', '40 exercícios de lógica no contexto da loja, em português, com caixinhas, fluxogramas e tabelas passo a passo: sem código para escrever. Você vai de algoritmos e variáveis até condições, repetições, receitas, testes e as ferramentas do dia a dia, e em todo exercício dá para espiar a mesma ideia em JavaScript. Complete 32 deles (80%), os de reforço incluídos, e as trilhas DEV, QA e IA se abrem; até lá os cartões delas aparecem com um cadeado.'],
       ['Depois escolha DEV, QA ou IA', 'Cada trilha é uma jornada e começa com Git: clonar o repositório, abrir uma branch e enviar o seu trabalho. A DEV também tem 30 desafios de algoritmos em JavaScript, as mesmas ideias da Trilha Inicial agora escritas em código. O seu XP e o seu título são contados por trilha.'],
       ['Siga os quatro passos', 'Todo exercício começa com uma mensagem da Bruxa Maria e segue a mesma ordem: a ação, o que é, por que fazemos isso {c}, e o seu exercício.'],
       ['Escreva código ou digite comandos', 'Em DEV, QA e IA, os exercícios de código têm um editor e o botão <b>Rodar testes</b> (ou <code>Ctrl/⌘ + Enter</code>). Alguns testes são ocultos, como num juiz online: pense em listas vazias, empates e valores muito grandes. Exercícios de Git têm um terminal onde você digita cada comando.'],
@@ -3597,7 +3599,7 @@ function renderHomeProgress() {
     $('prog-bar-' + m.id).style.width = (max ? Math.round((xp / max) * 100) : 0) + '%';
     if (m.requires) {
       const open = trackOpen(m.id);
-      $('mod-card-' + m.id).hidden = !open; // locked tracks don't show on the home page; a direct link still explains the lock
+      // Locked tracks stay on the home page, faded, with a lock badge; clicking opens the page that explains the lock.
       $('mod-card-' + m.id).classList.toggle('is-locked', !open);
       $('lock-badge-' + m.id).hidden = open;
       $('lock-note-' + m.id).hidden = open;
@@ -4546,7 +4548,7 @@ function renderShell() {
   note.hidden = !CONFIG.showTemplateNotice;
   note.innerHTML = '<b>This is a template.</b><span>Edit the first script block in the page: <code>CONFIG</code> for the name and links, <code>MODULES</code> and <code>LEVELS</code> for the tracks, <code>GIT_CONTEXT</code> for your repos, and <code>EXERCISES</code> for the content. Every exercise marked EXAMPLE is a placeholder. Set <code>showTemplateNotice: false</code> to hide this box.</span>';
 
-  // "Start here": the guide card opens the how-to page, then the Start Track. DEV, QA and AI appear once they unlock.
+  // "Start here": the guide card opens the how-to page, then the Start Track. DEV, QA and AI show faded with a lock until they open.
   const guide = '<a class="mod-card is-start guide-card" id="guide-card" href="#how-to" style="--card:var(--sakura)" data-test="guide-card">' +
     '<div class="mod-card-media guide-media"><img src="assets/magic-shop.webp" width="1536" height="1024" loading="lazy" alt="' + esc(t('shopAlt')) + '" data-i18n-alt="shopAlt"></div>' +
     '<div class="mod-card-body guide-body"><span class="guide-pill">' + esc(t('guidePill')) + '</span>' +
