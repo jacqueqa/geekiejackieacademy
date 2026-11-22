@@ -1411,6 +1411,7 @@ body { zoom: var(--ui-scale, 1); }
 <script src="start-track.js"></script>
 <script src="new-tracks.js"></script>
 <script src="qa-track.js"></script>
+<script src="ai-track.js"></script>
 <script type="text/plain" id="worker-src">
 function sortKeys(v) {
   if (Array.isArray(v)) return v.map(sortKeys);
@@ -2439,9 +2440,9 @@ MODULES = [
   {
     id: 'ai', name: L('AI', 'IA'), image: 'assets/track-ai.webp',
     imageAlt: L('Pixel art: Geekie Jackie with a friendly robot assistant, and a blackboard about models, prompts, APIs and integration', 'Pixel art: a Geekie Jackie com um robozinho assistente, e um quadro sobre modelos, prompts, APIs e integração'),
-    stack: L('Artificial Intelligence · Prompts & review', 'Inteligência Artificial · Prompts e revisão'), color: 'var(--lavender-hi)',
+    stack: L('AI Literacy & Practical Intelligence', 'Letramento em IA e Inteligência Prática'), color: 'var(--lavender-hi)',
     art: 'const prompt = <b>`Describe "${name}"`</b>;\n// the oracle answered…\nfindHallucinatedSkus(<b>answer</b>, catalog);\n// Make intelligence useful.',
-    bullets: [L('Prompts built from data', 'Prompts montados a partir de dados'), L('Spot hallucinations and fix AI code', 'Encontrar alucinações e corrigir código de IA')],
+    bullets: [L('How LLMs work: tokens, context and limits', 'Como LLMs funcionam: tokens, contexto e limites'), L('Prompts with the CRAFT framework', 'Prompts com o framework CRAFT'), L('Spot hallucinations and fix AI code', 'Encontrar alucinações e corrigir código de IA')],
   },
 ];
 
@@ -2543,8 +2544,8 @@ LEVELS = [
   { id: 2, module: 'dev', name: L('Understanding the Magic', 'Entendendo a Magia'), topic: L('Loops and conditionals', 'Loops e condicionais'), badge: '✦' },
   { id: 31, module: 'qa', name: L('Testing Tools & Automation', 'Ferramentas de Teste e Automação'), topic: L('Assertions with Chai expect()', 'Asserções com Chai expect()'), badge: 'exp' }, // QA module 07 (it was “The Quality Spell”)
   { id: 32, module: 'qa', name: L('Test Design & Techniques', 'Design e Técnicas de Teste'), topic: L('Bad data and boundary values', 'Dados ruins e valores-limite'), badge: '🐞' }, // QA module 04 (it was “Hunt the Bugs”)
-  { id: 41, module: 'ai', name: L('Ask the Oracle', 'Consulte o Oráculo'), topic: L('Prompts from data', 'Prompts a partir de dados'), badge: '🔮' },
-  { id: 42, module: 'ai', name: L('Spot the Hallucination', 'Descubra a Alucinação'), topic: L('Review what AI gives you', 'Revise o que a IA entrega'), badge: '👁' },
+  { id: 41, module: 'ai', name: L('Prompt Engineering & Context Design', 'Engenharia de Prompt e Design de Contexto'), topic: L('CRAFT, techniques and prompts from data', 'CRAFT, técnicas e prompts a partir de dados'), badge: '🔮' }, // AI module 02 (it was “Ask the Oracle”)
+  { id: 42, module: 'ai', name: L('AI Quality Control — Fighting AI Slop', 'Controle de Qualidade de IA: Combatendo o AI Slop'), topic: L('Review what AI gives you', 'Revise o que a IA entrega'), badge: '👁' }, // AI module 03 (it was “Spot the Hallucination”)
 ];
 
 const ASSERT_HEAD = [L('Assertion', 'Asserção'), L('Passes when', 'Passa quando')];
@@ -3543,6 +3544,21 @@ EXERCISES.push(...ALGO.exercises);
   LEVELS.push(...rest, ...qa);
 }
 
+// AI (ai-track.js): the new exercises go before the old ones of the same level (concepts first),
+// and the AI levels follow AI_LEVEL_ORDER (01 → 07).
+{
+  const AI = buildAiTrack(L);
+  LEVELS.push(...AI.levels);
+  for (const ex of AI.exercises) {
+    const firstOld = EXERCISES.findIndex(e => e.level === ex.level && !/^ai\d/.test(e.id));
+    if (firstOld < 0) EXERCISES.push(ex); else EXERCISES.splice(firstOld, 0, ex);
+  }
+  const ai = LEVELS.filter(l => l.module === 'ai').sort((a, b) => AI_LEVEL_ORDER.indexOf(a.id) - AI_LEVEL_ORDER.indexOf(b.id));
+  const rest = LEVELS.filter(l => l.module !== 'ai');
+  LEVELS.length = 0;
+  LEVELS.push(...rest, ...ai);
+}
+
 // The Start Track (logic, start-track.js) comes first. DEV, QA and AI recommend 60% of it (see ACCESS-RULES).
 const START = buildStartTrack(L);
 MODULES.forEach(m => { m.requires = START.module.id; });
@@ -3590,7 +3606,7 @@ const UI = {
     gateFrontend: 'Hey, {name}! In the Front End track you build what the customer sees: HTML, CSS and JavaScript on the shop window. The ideal is to have done at least {p}% of the {s} first, and you have {now}%. Do you want to start the Front End track now?',
     gateData: 'Hey, {name}! In the Data track you read the shop’s orders: you count, sum, group, read SQL and pick the right chart. The ideal is to have done at least {p}% of the {s} first, and you have {now}%. Do you want to start the Data track now?',
     gateQa: 'Hey, {name}! In the QA track you learn to think and work as a QA: understand the product, read requirements, design tests, find and report bugs. The ideal is to have done at least {p}% of the {s} first, and you have {now}%. Do you want to start the QA track now?',
-    gateAi: 'Hey, {name}! In the AI track you build prompts from the shop’s data and review what the AI gives back. The ideal is to have done at least {p}% of the {s} first, and you have {now}%. Do you want to start the AI track now?',
+    gateAi: 'Hey, {name}! In the AI track you learn how AI works, write prompts with the CRAFT framework and never accept the first answer without checking it. The ideal is to have done at least {p}% of the {s} first, and you have {now}%. Do you want to start the AI track now?',
     lockedTitle: 'Start the {m} before the Start Track?', lockedText: 'Hey, {name}! You haven’t finished the {s} yet: you did {d} of its {t} exercises, and it is the logic foundation of the {m}. Are you sure you want to start the {m} now?',
     lockedGo: 'No, back to the {s}', earlyYes: 'Yes, start the {m}', earlyDone: 'The {m} is open. Good luck!', gjFriend: 'apprentice', gjAlt: 'Pixel art: Geekie Jackie at her desk, looking at you seriously',
     reinforces: 'Reinforces {x}', hintN: '<b>Hint {n} of {t}.</b> ',
@@ -3704,7 +3720,7 @@ const UI = {
     gateFrontend: 'Ei, {name}! Na trilha Front End você constrói o que a cliente vê: HTML, CSS e JavaScript na vitrine da loja. O ideal é ter feito pelo menos {p}% da {s} antes, e você está com {now}%. Quer começar a trilha Front End agora?',
     gateData: 'Ei, {name}! Na trilha de Dados você lê os pedidos da loja: conta, soma, agrupa, lê SQL e escolhe o gráfico certo. O ideal é ter feito pelo menos {p}% da {s} antes, e você está com {now}%. Quer começar a trilha de Dados agora?',
     gateQa: 'Ei, {name}! Na trilha QA você aprende a pensar e trabalhar como QA: entender o produto, ler requisitos, desenhar testes, achar e relatar bugs. O ideal é ter feito pelo menos {p}% da {s} antes, e você está com {now}%. Quer começar a trilha QA agora?',
-    gateAi: 'Ei, {name}! Na trilha IA você monta prompts a partir dos dados da loja e revisa o que a IA entrega. O ideal é ter feito pelo menos {p}% da {s} antes, e você está com {now}%. Quer começar a trilha IA agora?',
+    gateAi: 'Ei, {name}! Na trilha IA você entende como a IA funciona, escreve prompts com o framework CRAFT e nunca aceita a primeira resposta sem conferir. O ideal é ter feito pelo menos {p}% da {s} antes, e você está com {now}%. Quer começar a trilha IA agora?',
     lockedTitle: 'Começar a {m} antes da Trilha Inicial?', lockedText: 'Ei, {name}! Você ainda não terminou a {s}: fez {d} dos {t} exercícios, e ela é a base de lógica para a {m}. Tem certeza que quer começar a {m} agora?',
     lockedGo: 'Não, voltar para a {s}', earlyYes: 'Sim, quero começar a {m}', earlyDone: 'A {m} está liberada. Boa sorte!', gjFriend: 'aprendiz', gjAlt: 'Pixel art: a Geekie Jackie na mesa dela, olhando séria para você',
     reinforces: 'Reforça {x}', hintN: '<b>Dica {n} de {t}.</b> ',
@@ -3875,7 +3891,7 @@ function buildAchievements(L) {
       B('topics', 'challenge-list', 'Challenge List', 'Lista de Desafios', 'Finish all 30 algorithm challenges of the Back End track.', 'Termine os 30 desafios de algoritmos da trilha Back End.', f => lv(f, [201, 202, 203, 204])),
       B('topics', 'testing', 'Testing', 'Testes', 'Finish the QA level “Testing Tools & Automation”.', 'Termine o nível da QA “Ferramentas de Teste e Automação”.', f => lv(f, [31])),
       B('topics', 'bug-hunter', 'Bug Hunter', 'Caça-Bugs', 'Finish the QA level “Test Design & Techniques”.', 'Termine o nível da QA “Design e Técnicas de Teste”.', f => lv(f, [32])),
-      B('topics', 'ai-prompts', 'AI (LLMs/Prompts)', 'IA (LLMs/Prompts)', 'Finish the AI levels “Ask the Oracle” and “Spot the Hallucination”.', 'Termine os níveis da IA “Consulte o Oráculo” e “Descubra a Alucinação”.', f => lv(f, [41, 42])),
+      B('topics', 'ai-prompts', 'AI (LLMs/Prompts)', 'IA (LLMs/Prompts)', 'Finish the AI levels “Prompt Engineering & Context Design” and “AI Quality Control”.', 'Termine os níveis da IA “Engenharia de Prompt e Design de Contexto” e “Controle de Qualidade de IA”.', f => lv(f, [41, 42])),
 
       soon('apis', 'APIs', 'APIs', 'Finish the API exercises (new exercises).', 'Termine os exercícios de API (exercícios novos).'),
       soon('automation', 'Automation', 'Automação', 'Finish the test automation exercises (new exercises).', 'Termine os exercícios de automação de testes (exercícios novos).'),
