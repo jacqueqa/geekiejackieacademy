@@ -448,4 +448,82 @@ var GLOSSARY = [
       definition: "The team’s agreement on what “done” means. It usually includes acceptance criteria checked, tests passing and code reviewed.",
     },
   },
+  {
+    term: 'LLM', abbr: 'Large Language Model (grande modelo de linguagem)', category: 'Ferramentas', tracks: ['ai'],
+    definition: 'Um modelo de IA treinado com muito texto, que escreve prevendo o próximo pedaço de texto (token), de novo e de novo. É o que existe por trás de assistentes como ChatGPT, Claude e Gemini.',
+    en: {
+      term: "LLM", abbr: "Large Language Model",
+      definition: "An AI model trained on huge amounts of text, which writes by predicting the next piece of text (token), again and again. It is what powers assistants like ChatGPT, Claude and Gemini.",
+    },
+  },
+  {
+    term: 'IA generativa', abbr: 'generative AI', category: 'Ferramentas', tracks: ['ai'],
+    definition: 'IA que cria conteúdo novo, como texto, imagens, áudio ou código, a partir de um pedido.',
+    en: {
+      term: "Generative AI",
+      definition: "AI that creates new content, like text, images, audio or code, from a request.",
+    },
+  },
+  {
+    term: 'Token', category: 'Ferramentas', tracks: ['ai'],
+    definition: 'O pedaço de texto com que um modelo de linguagem trabalha: pode ser uma palavra inteira, um pedaço de palavra ou um sinal. Limites e custos de IA costumam ser contados em tokens.',
+    example: '// "Tarot"     → pode ser 1 token\n// "Lenormand" → pode ser 2 ou 3 tokens',
+    en: {
+      term: "Token",
+      definition: "The piece of text a language model works with: a whole word, part of a word or a symbol. AI limits and costs are usually counted in tokens.",
+      example: '// "Tarot"     → may be 1 token\n// "Lenormand" → may be 2 or 3 tokens',
+    },
+  },
+  {
+    term: 'Janela de contexto', abbr: 'context window', category: 'Ferramentas', tracks: ['ai'],
+    definition: 'Quanto texto, em tokens, o modelo consegue considerar de uma vez: as instruções, os arquivos, a conversa inteira e a própria resposta.',
+    en: {
+      term: "Context Window",
+      definition: "How much text, in tokens, the model can take into account at once: the instructions, the files, the whole conversation and its own answer.",
+    },
+  },
+  {
+    term: 'Alucinação', abbr: 'hallucination', category: 'Qualidade e testes', tracks: ['ai', 'qa'],
+    definition: 'Quando a IA inventa algo que parece verdadeiro, mas não é: um produto, um número, uma citação. Por isso toda resposta importante precisa ser conferida.',
+    example: '// A IA recomenda o produto TAR-777,\n// mas esse SKU não existe no catálogo.',
+    en: {
+      term: "Hallucination",
+      definition: "When the AI invents something that sounds true but isn’t: a product, a number, a quote. That is why every important answer must be checked.",
+      example: "// The AI recommends product TAR-777,\n// but that SKU isn’t in the catalog.",
+    },
+  },
+  {
+    term: 'Viés', abbr: 'bias', category: 'Qualidade e testes', tracks: ['ai', 'qa'],
+    definition: 'Uma tendência injusta ou repetitiva que a IA aprende com os textos do treino, como descrever sempre a mesma “cliente ideal” e deixar gente de fora.',
+    en: {
+      term: "Bias",
+      definition: "An unfair or repetitive tendency the AI learns from its training texts, like always describing the same “ideal customer” and leaving people out.",
+    },
+  },
+  {
+    term: 'CRAFT', abbr: 'Context, Role, Action, Format, Target', category: 'Ferramentas', tracks: ['ai'],
+    definition: 'O modelo da academia para montar prompts: contexto (o cenário), papel (quem a IA deve ser), ação (o que fazer), formato (como responder) e alvo e restrições (o resultado esperado e os limites).',
+    en: {
+      term: "CRAFT", abbr: "Context, Role, Action, Format, Target",
+      definition: "The academy’s model for building prompts: context (the scenario), role (who the AI should be), action (what to do), format (how to answer) and target and constraints (the expected result and the limits).",
+    },
+  },
+  {
+    term: 'Few-shot prompting', abbr: 'prompt com exemplos', category: 'Ferramentas', tracks: ['ai'],
+    definition: 'Mostrar alguns exemplos do que você quer dentro do prompt, para o modelo seguir o mesmo padrão.',
+    example: '// TAR-001 → Baralho clássico de 78 cartas.\n// LEN-001 → Baralho de 36 cartas.\n// CAN-001 →',
+    en: {
+      term: "Few-shot Prompting",
+      definition: "Showing a few examples of what you want inside the prompt, so the model follows the same pattern.",
+      example: "// TAR-001 → Classic 78-card deck.\n// LEN-001 → 36-card deck.\n// CAN-001 →",
+    },
+  },
+  {
+    term: 'Prompt chaining', abbr: 'prompts em etapas', category: 'Ferramentas', tracks: ['ai'],
+    definition: 'Dividir uma tarefa grande em etapas, cada prompt usando a resposta da etapa anterior. Fica mais fácil conferir cada parte.',
+    en: {
+      term: "Prompt Chaining",
+      definition: "Splitting a big task into steps, each prompt using the answer of the step before. Each part becomes easier to check.",
+    },
+  },
 ];
