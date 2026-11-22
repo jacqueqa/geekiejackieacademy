@@ -560,7 +560,6 @@ dl.io dd { margin: 0; }
 .win #redo-btn { margin-top: 10px; }
 
 /* Glossary */
-.gl-lang-note { font-size: 13.5px; color: var(--xp); }
 .gl-az { display: flex; flex-wrap: wrap; gap: 4px; }
 .gl-letter-btn { min-width: 32px; height: 32px; padding: 0 6px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink);
   font-family: var(--font-display); font-weight: 700; font-size: 14px; }
@@ -685,7 +684,6 @@ body { zoom: var(--ui-scale, 1); }
       <div class="rb-stats" id="gl-stats"></div>
       <h2 data-i18n="glTitle">📚 Programming glossary</h2>
       <p id="gl-intro"></p>
-      <p class="gl-lang-note" id="gl-lang-note" hidden></p>
     </div>
     <div class="rb-tools">
       <label class="visually-hidden" for="gl-search" data-i18n="glSearchLbl">Search the glossary</label>
@@ -3052,7 +3050,6 @@ const UI = {
     notInCat: 'Not in the catalog', notInCatSub: 'Records that look like products but must never reach the shelf.',
     glossaryLink: 'Glossary', glTitle: '📚 Programming glossary', glSearchLbl: 'Search the glossary',
     glIntro: 'Programming words explained simply, with examples from the shop. Search, jump to a letter or filter by category and track.',
-    glPtOnly: 'For now the definitions are in Portuguese.',
     glSearch: 'Search a term, an acronym or a word like “loop”', glAz: 'Jump to a letter', glCatLbl: 'Filter by category', glTrackLbl: 'Filter by track',
     glStats: '{n} terms · {c} categories', glAllCats: 'All categories', glAllTracks: 'All tracks', glJump: 'Go to letter {l}',
     glCountAll: '{n} terms', glCount: '{n} of {t} terms', glOpenAll: 'Open all', glCloseAll: 'Close all',
@@ -3132,7 +3129,6 @@ const UI = {
     notInCat: 'Fora do catálogo', notInCatSub: 'Registros que parecem produtos, mas nunca podem chegar à prateleira.',
     glossaryLink: 'Glossário', glTitle: '📚 Glossário de programação', glSearchLbl: 'Buscar no glossário',
     glIntro: 'Palavras de programação explicadas de um jeito simples, com exemplos da lojinha. Busque, pule para uma letra ou filtre por categoria e trilha.',
-    glPtOnly: '',
     glSearch: 'Busque um termo, uma sigla ou uma palavra como “função”', glAz: 'Pular para uma letra', glCatLbl: 'Filtrar por categoria', glTrackLbl: 'Filtrar por trilha',
     glStats: '{n} termos · {c} categorias', glAllCats: 'Todas as categorias', glAllTracks: 'Todas as trilhas', glJump: 'Ir para a letra {l}',
     glCountAll: '{n} termos', glCount: '{n} de {t} termos', glOpenAll: 'Abrir todos', glCloseAll: 'Fechar todos',
@@ -3193,31 +3189,44 @@ function canAccessTrack(module, progress) { return !module.requires || progress.
 /* ACCESS-RULES:END */
 
 /* GLOSSARY-LOGIC:BEGIN
-   Search, filters and A–Z of the glossary (the terms live in glossary.js). Pure functions, tested in tests/. */
+   Search, filters and A–Z of the glossary (the terms live in glossary.js). Pure functions, tested in tests/.
+   `lang` is 'pt' (default) or 'en': English uses the `en` texts of each term. */
 const GLOSS_AZ = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 // Lowercase without accents, so "funcao", "FUNÇÃO" and "Função" all match.
 function glossNormalize(s) { return String(s == null ? '' : s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
-function glossSort(list) { return list.slice().sort((a, b) => a.term.localeCompare(b.term, 'pt')); }
+// The texts of a term in one language. In English, a missing example falls back to the Portuguese one (code only).
+function glossText(g, lang) {
+  const en = lang === 'en' && g.en;
+  if (!en) return { term: g.term, abbr: g.abbr, definition: g.definition, example: g.example };
+  return { term: en.term, abbr: en.abbr, definition: en.definition, example: en.example !== undefined ? en.example : g.example };
+}
+function glossLang(lang) { return lang === 'en' ? 'en' : 'pt'; }
+function glossSort(list, lang) {
+  const l = glossLang(lang);
+  return list.slice().sort((a, b) => glossText(a, l).term.localeCompare(glossText(b, l).term, l));
+}
 function glossLetter(term) { const c = glossNormalize(term).charAt(0).toUpperCase(); return GLOSS_AZ.includes(c) ? c : '#'; }
 function glossSlug(term) { return glossNormalize(term).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
-// opts: { query, category, track }. Searches the term, the acronym and the definition.
+// opts: { query, category, track, lang }. Searches the term, the acronym and the definition in that language.
 function glossFilter(list, opts) {
   const o = opts || {};
   const q = glossNormalize(o.query).trim();
-  return glossSort(list).filter(g =>
-    (!o.category || g.category === o.category) &&
-    (!o.track || (g.tracks || []).includes(o.track)) &&
-    (!q || [g.term, g.abbr, g.definition].some(f => glossNormalize(f).includes(q))));
+  return glossSort(list, o.lang).filter(g => {
+    const x = glossText(g, glossLang(o.lang));
+    return (!o.category || g.category === o.category) &&
+      (!o.track || (g.tracks || []).includes(o.track)) &&
+      (!q || [x.term, x.abbr, x.definition].some(f => glossNormalize(f).includes(q)));
+  });
 }
 // Every letter A–Z, enabled only when at least one term of the list starts with it.
-function glossLetters(list) {
-  const have = new Set(list.map(g => glossLetter(g.term)));
+function glossLetters(list, lang) {
+  const have = new Set(list.map(g => glossLetter(glossText(g, glossLang(lang)).term)));
   return GLOSS_AZ.map(letter => ({ letter, enabled: have.has(letter) }));
 }
-function glossGroups(list) {
+function glossGroups(list, lang) {
   const groups = [];
-  glossSort(list).forEach(g => {
-    const letter = glossLetter(g.term), last = groups[groups.length - 1];
+  glossSort(list, lang).forEach(g => {
+    const letter = glossLetter(glossText(g, glossLang(lang)).term), last = groups[groups.length - 1];
     if (last && last.letter === letter) last.terms.push(g); else groups.push({ letter, terms: [g] });
   });
   return groups;
@@ -4171,17 +4180,16 @@ function applyGrimoireFilter() {
 $('gr-search').addEventListener('input', applyGrimoireFilter);
 
 /* ---------- Glossary (terms in glossary.js, search in GLOSSARY-LOGIC) ---------- */
-const glossUI = { query: '', category: '', track: '', open: new Set() };
+const glossUI = { query: '', category: '', track: '', open: new Set(), get lang() { return LANG; } };
 function glossData() { return typeof GLOSSARY !== 'undefined' && Array.isArray(GLOSSARY) ? GLOSSARY : []; }
 function glossCategories() { return typeof GLOSSARY_CATEGORIES !== 'undefined' ? GLOSSARY_CATEGORIES : []; }
+function glossCategoryLabel(c) { return LANG === 'en' && typeof GLOSSARY_CATEGORIES_EN !== 'undefined' && GLOSSARY_CATEGORIES_EN[c] ? GLOSSARY_CATEGORIES_EN[c] : c; }
 function glossTrackName(m) { return m.id === START_TRACK_ID ? t('moduleTitle', { m: m.name }) : m.name; }
 function renderGlossary() {
   const chip = (attr, val, label, on) => '<button type="button" class="rb-chip' + (on ? ' on' : '') + '" data-' + attr + '="' + esc(val) + '" aria-pressed="' + on + '">' + esc(label) + '</button>';
   $('gl-intro').textContent = t('glIntro');
-  $('gl-lang-note').hidden = LANG === 'pt';
-  $('gl-lang-note').textContent = t('glPtOnly');
   $('gl-stats').textContent = t('glStats', { n: glossData().length, c: glossCategories().length });
-  $('gl-cats').innerHTML = chip('cat', '', t('glAllCats'), !glossUI.category) + glossCategories().map(c => chip('cat', c, c, glossUI.category === c)).join('');
+  $('gl-cats').innerHTML = chip('cat', '', t('glAllCats'), !glossUI.category) + glossCategories().map(c => chip('cat', c, glossCategoryLabel(c), glossUI.category === c)).join('');
   $('gl-tracks').innerHTML = chip('track', '', t('glAllTracks'), !glossUI.track) + MODULES.map(m => chip('track', m.id, glossTrackName(m), glossUI.track === m.id)).join('');
   if ($('gl-search').value !== glossUI.query) $('gl-search').value = glossUI.query;
   renderGlossaryList();
@@ -4196,7 +4204,7 @@ function renderGlossaryAllButton(list) {
 function renderGlossaryList() {
   const all = glossData();
   const list = glossFilter(all, glossUI);
-  $('gl-az').innerHTML = glossLetters(list).map(x =>
+  $('gl-az').innerHTML = glossLetters(list, LANG).map(x =>
     '<button type="button" class="gl-letter-btn" data-letter="' + x.letter + '"' + (x.enabled ? '' : ' disabled') + ' aria-label="' + esc(t('glJump', { l: x.letter })) + '">' + x.letter + '</button>').join('');
   $('gl-count').textContent = list.length === all.length ? t('glCountAll', { n: list.length }) : t('glCount', { n: list.length, t: all.length });
   renderGlossaryAllButton(list);
@@ -4209,21 +4217,22 @@ function renderGlossaryList() {
     $('gl-clear').addEventListener('click', clearGlossary);
     return;
   }
-  $('gl-body').innerHTML = glossGroups(list).map(g =>
+  $('gl-body').innerHTML = glossGroups(list, LANG).map(g =>
     '<section class="gl-group" id="gl-letter-' + g.letter + '" aria-labelledby="gl-h-' + g.letter + '">' +
     '<h3 class="gl-group-head" id="gl-h-' + g.letter + '" tabindex="-1">' + g.letter + '</h3>' +
     g.terms.map(glossItem).join('') + '</section>').join('');
 }
 function glossItem(g) {
-  const slug = glossSlug(g.term), open = glossUI.open.has(slug);
+  const slug = glossSlug(g.term), open = glossUI.open.has(slug); // ids come from the Portuguese term, so they don't change with the language
+  const x = glossText(g, LANG);
   const tracks = (g.tracks || []).map(id => MODULES.find(m => m.id === id)).filter(Boolean);
   return '<div class="gl-item' + (open ? ' open' : '') + '" data-test="gl-item">' +
     '<h4 class="gl-item-h"><button type="button" class="gl-toggle" id="gl-b-' + slug + '" data-slug="' + slug + '" aria-expanded="' + open + '" aria-controls="gl-p-' + slug + '">' +
-    '<span class="gl-names"><span class="gl-term">' + esc(g.term) + '</span>' + (g.abbr ? '<span class="gl-abbr">' + esc(g.abbr) + '</span>' : '') + '</span>' +
-    '<span class="gl-cat">' + esc(g.category) + '</span><span class="gl-chevron" aria-hidden="true">›</span></button></h4>' +
+    '<span class="gl-names"><span class="gl-term">' + esc(x.term) + '</span>' + (x.abbr ? '<span class="gl-abbr">' + esc(x.abbr) + '</span>' : '') + '</span>' +
+    '<span class="gl-cat">' + esc(glossCategoryLabel(g.category)) + '</span><span class="gl-chevron" aria-hidden="true">›</span></button></h4>' +
     '<div class="gl-panel" id="gl-p-' + slug + '" role="region" aria-labelledby="gl-b-' + slug + '"' + (open ? '' : ' hidden') + '>' +
-    '<p>' + esc(g.definition) + '</p>' +
-    (g.example ? '<div class="rb-sub">' + esc(t('glExample')) + '</div><pre class="rb-example"><code>' + esc(g.example) + '</code></pre>' : '') +
+    '<p>' + esc(x.definition) + '</p>' +
+    (x.example ? '<div class="rb-sub">' + esc(t('glExample')) + '</div><pre class="rb-example"><code>' + esc(x.example) + '</code></pre>' : '') +
     (tracks.length ? '<div class="gl-tracks"><span class="rb-sub">' + esc(t('glTracks')) + '</span>' +
       tracks.map(m => '<a class="rb-chip" href="#' + m.id + '">' + esc(glossTrackName(m)) + '</a>').join('') + '</div>' : '') +
     '</div></div>';
