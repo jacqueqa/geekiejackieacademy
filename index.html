@@ -387,6 +387,12 @@ pre.t-out { margin: 0; font-size: 12.5px; color: var(--muted); white-space: pre-
 .export-group legend { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 600; margin-bottom: 8px; padding: 0; }
 .export-group label { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
 .export-group input { accent-color: var(--accent); width: 16px; height: 16px; }
+.export-resume { color: var(--muted); font-size: 13px; margin-top: 6px; }
+.import-dialog { width: min(520px, calc(100vw - 32px)); }
+.import-body { padding: 14px 20px 20px; display: flex; flex-direction: column; gap: 14px; }
+.import-warn { color: var(--xp); font-size: 14px; }
+.import-body .actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+#import-summary { color: var(--ink); }
 .export-status { font-size: 13px; color: var(--muted); min-height: 1em; flex: 1; min-width: 0; }
 .export-status.ok { color: var(--pass); }
 .export-status.warn { color: var(--xp); }
@@ -1182,6 +1188,8 @@ body { zoom: var(--ui-scale, 1); }
       <span class="foot-sep" aria-hidden="true">·</span>
       <button class="link-btn" id="export-btn" aria-expanded="false" aria-controls="export-panel" data-i18n="myWork">My work (.md)</button>
       <span class="foot-sep" aria-hidden="true">·</span>
+      <button class="link-btn" id="import-link" type="button" data-i18n="importBtn">Import progress</button>
+      <span class="foot-sep" aria-hidden="true">·</span>
       <span class="confirm-row" id="reset-area"><button class="link-btn" id="reset-all">Reset all progress</button></span>
     </span>
   </div>
@@ -1189,6 +1197,23 @@ body { zoom: var(--ui-scale, 1); }
 </div>
 
 <div class="drawer-backdrop" id="export-backdrop" hidden></div>
+<input type="file" id="import-file" accept=".md,.markdown,.txt,text/markdown,text/plain" hidden>
+<dialog class="avatar-dialog import-dialog" id="import-dialog" aria-labelledby="import-title" aria-describedby="import-summary import-warn">
+  <div class="drawer-head">
+    <div>
+      <h3 id="import-title" data-i18n="importBtn">Import progress</h3>
+      <p id="import-summary"></p>
+    </div>
+    <button class="btn drawer-close" id="import-close" type="button" aria-label="Close" data-i18n-aria="close">✕</button>
+  </div>
+  <div class="import-body">
+    <p class="import-warn" id="import-warn" data-i18n="impWarn">The progress saved in this browser will be replaced by the one in the file. This can’t be undone.</p>
+    <div class="actions">
+      <button class="btn" id="import-cancel" type="button" data-i18n="cancel">Cancel</button>
+      <button class="btn primary" id="import-confirm" type="button" data-i18n="impConfirm">Replace my progress</button>
+    </div>
+  </div>
+</dialog>
 <dialog class="avatar-dialog" id="avatar-dialog" aria-labelledby="avatar-title">
   <div class="drawer-head">
     <div>
@@ -1205,6 +1230,7 @@ body { zoom: var(--ui-scale, 1); }
     <div>
       <h3 id="export-title" data-i18n="drawerTitle">My work</h3>
       <p data-i18n="drawerSub">Your progress as a Markdown file, to keep or to share with your lead.</p>
+      <p class="export-resume" data-i18n="expResume">The file also keeps your full progress: use “Import progress” to continue in another browser or computer.</p>
     </div>
     <button class="btn drawer-close" id="export-cancel" aria-label="Close" data-i18n-aria="close">✕</button>
   </div>
@@ -1229,6 +1255,7 @@ body { zoom: var(--ui-scale, 1); }
   <div class="drawer-foot">
     <p class="export-status" id="export-status" role="status" aria-live="polite"></p>
     <div class="actions">
+      <button class="btn" id="import-btn" type="button" data-i18n="importBtn">Import progress</button>
       <button class="btn" id="export-copy" data-i18n="copy">Copy</button>
       <button class="btn primary" id="export-download" data-i18n="download">Download .md</button>
     </div>
@@ -3361,6 +3388,9 @@ buildContent();
 const UI = {
   en: {
     rank: 'Rank', apprenticeName: '+ Add your name', changeName: 'Change your name', yourName: 'Your name', save: 'Save',
+    importBtn: 'Import progress', impSummary: '{n} · {d} exercises done · {b} badges · exported on {e}', impNoName: 'No name', impWarn: 'The progress saved in this browser will be replaced by the one in the file. This can’t be undone.', impConfirm: 'Replace my progress', impDone: 'Progress imported. Welcome back!',
+    impNone: 'This file has no saved progress. Download it again from “My work” in the academy and try once more.', impBad: 'The saved progress in this file is damaged and can’t be read.', impNewer: 'This file comes from a newer version of the academy. Reload the page and try again.', impBig: 'This file is too big to be an export of the academy.', impRead: 'The file could not be read.',
+    expResume: 'The file also keeps your full progress: use “Import progress” to continue in another browser or computer.',
     crTitle: 'Your academy badge', crTrack: 'Current track', crProgress: 'Track progress', crRank: 'Current title', crAch: 'Achievements', crLv: 'Level {n}', crXpAria: '{x} of {m} XP to the next title', crOpenTrack: 'Open the {m} track', crSeeAch: 'See all achievements', crDoneAria: 'done', crNowAria: 'current level',
     achLink: 'Achievements', achLinkAria: 'Achievements: {n} of {t} badges', achTitle: '🏅 Achievements', achIntro: 'Every badge you can earn in the academy. Earned badges are in colour; the others show what to do to get them.',
     achCount: '{n} of {t} badges earned', achAcademyTitle: 'Your academy title', achXp: '{x} of {m} XP in the academy', achNext: '{n} XP to {r}', achTop: 'You reached the highest title!',
@@ -3461,6 +3491,9 @@ const UI = {
   },
   pt: {
     rank: 'Título', apprenticeName: '+ Adicione seu nome', changeName: 'Mudar seu nome', yourName: 'Seu nome', save: 'Salvar',
+    importBtn: 'Importar progresso', impSummary: '{n} · {d} exercícios feitos · {b} medalhas · exportado em {e}', impNoName: 'Sem nome', impWarn: 'O progresso salvo neste navegador será substituído pelo do arquivo. Não dá para desfazer.', impConfirm: 'Substituir meu progresso', impDone: 'Progresso importado. Que bom ter você de volta!',
+    impNone: 'Este arquivo não tem progresso salvo. Baixe de novo em “Meu trabalho” na academia e tente outra vez.', impBad: 'O progresso salvo neste arquivo está danificado e não dá para ler.', impNewer: 'Este arquivo é de uma versão mais nova da academia. Recarregue a página e tente de novo.', impBig: 'Este arquivo é grande demais para ser uma exportação da academia.', impRead: 'Não deu para ler o arquivo.',
+    expResume: 'O arquivo também guarda seu progresso completo: use “Importar progresso” para continuar em outro navegador ou computador.',
     crTitle: 'Seu crachá da academia', crTrack: 'Trilha atual', crProgress: 'Progresso da trilha', crRank: 'Título atual', crAch: 'Conquistas', crLv: 'Nível {n}', crXpAria: '{x} de {m} XP para o próximo título', crOpenTrack: 'Abrir a trilha {m}', crSeeAch: 'Ver todas as conquistas', crDoneAria: 'concluído', crNowAria: 'nível atual',
     achLink: 'Conquistas', achLinkAria: 'Conquistas: {n} de {t} medalhas', achTitle: '🏅 Conquistas', achIntro: 'Todas as medalhas que dá para ganhar na academia. As conquistadas aparecem coloridas; as outras mostram o que fazer para ganhar.',
     achCount: '{n} de {t} medalhas conquistadas', achAcademyTitle: 'Seu título na academia', achXp: '{x} de {m} XP na academia', achNext: 'Faltam {n} XP para {r}', achTop: 'Você chegou ao título mais alto!',
@@ -3706,6 +3739,64 @@ function academyTitle(list, facts) {
 }
 /* ACHIEVEMENTS:END */
 
+/* SAVE-FILE:BEGIN
+   The "My work" .md ends with a hidden block (an HTML comment) holding the whole progress, so
+   "Import progress" can restore it in any browser. Pure functions, tested in tests/save-file.test.mjs.
+   The JSON goes in base64 so code typed by the learner (which may contain "-->") can't break the comment.
+   Version 1. A newer version is refused with a clear message instead of being half-read. */
+function saveToBase64(str) {
+  const bytes = new TextEncoder().encode(str);
+  let bin = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+function saveFromBase64(b64) {
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+}
+function saveBlock(st, dateText) {
+  const payload = JSON.stringify({ app: 'geekie-jackie-academy', v: 1, exported: dateText, state: st });
+  return '<!-- geekie-jackie-save v1\n' +
+    'Your full progress, for Import progress. Do not edit this block. / Seu progresso completo, para Importar progresso. Não edite este bloco.\n' +
+    saveToBase64(payload).replace(/.{1,76}/g, '$&\n') + '-->\n';
+}
+// { ok: true, state, exported } or { ok: false, error: 'none' | 'bad' | 'newer' }
+function readSaveBlock(text) {
+  const m = /<!--\s*geekie-jackie-save v(\d+)\s*\r?\n([\s\S]*?)-->/.exec(String(text || ''));
+  if (!m) return { ok: false, error: 'none' };
+  if (Number(m[1]) > 1) return { ok: false, error: 'newer' };
+  const b64 = m[2].split(/\r?\n/).map(l => l.trim()).filter(l => /^[A-Za-z0-9+/=]+$/.test(l)).join('');
+  try {
+    const data = JSON.parse(saveFromBase64(b64));
+    if (!data || data.app !== 'geekie-jackie-academy' || !data.state || typeof data.state !== 'object' || Array.isArray(data.state)) return { ok: false, error: 'bad' };
+    return { ok: true, state: data.state, exported: typeof data.exported === 'string' ? data.exported : '' };
+  } catch (e) { return { ok: false, error: 'bad' }; }
+}
+// Keeps only the known fields of a fresh state, each with the right type (a file may be old or edited by hand).
+function cleanSave(raw, fresh) {
+  const out = fresh;
+  Object.keys(fresh).forEach(k => {
+    const v = raw[k], f = fresh[k];
+    if (v === undefined) return;
+    if (f !== null && typeof f === 'object') { if (v && typeof v === 'object' && !Array.isArray(v)) out[k] = v; }
+    else if (typeof f === 'string') { if (typeof v === 'string') out[k] = v; }
+    else if (typeof f === 'number') { if (typeof v === 'number' && isFinite(v)) out[k] = v; }
+    else if (f === null) { if (v === null || typeof v === 'string' || (typeof v === 'number' && isFinite(v))) out[k] = v; }
+  });
+  out.name = out.name.slice(0, 40);
+  return out;
+}
+function saveSummary(st) {
+  return {
+    name: (st.name || '').trim(),
+    done: Object.keys(st.done || {}).filter(k => st.done[k]).length,
+    badges: Object.keys(st.badges || {}).length,
+  };
+}
+/* SAVE-FILE:END */
+
 /* LOGIC-CHECK:BEGIN
    Answers of the Start Track exercises (start-track.js). Pure functions, tested in tests/start-track.test.mjs.
    An answer is a small object saved in state.logic[id]:
@@ -3835,7 +3926,7 @@ const STORE_KEY = CONFIG.storageKey;
 const emptyReport = () => '<span class="empty-rep">' + t('emptyReport') + '</span>';
 
 // hints[id]: how many hints were opened (old saves have true = 1). revealed[id]: the solution was seen at least once, so 0 XP for good.
-function freshState() { return { badges: {}, days: {}, visited: {}, run: 0, bestRun: 0, logic: {}, folds: {}, name: '', avatar: null, current: null, lastByModule: {}, done: {}, hints: {}, solutions: {}, revealed: {}, fails: {}, code: {}, term: {} }; }
+function freshState() { return { grimoireTrack: null, badges: {}, days: {}, visited: {}, run: 0, bestRun: 0, logic: {}, folds: {}, name: '', avatar: null, current: null, lastByModule: {}, done: {}, hints: {}, solutions: {}, revealed: {}, fails: {}, code: {}, term: {} }; }
 function loadState() {
   try {
     const raw = localStorage.getItem(STORE_KEY);
@@ -4340,10 +4431,13 @@ function selectExercise(id) {
 
 // Toasts wait in line, so a new badge doesn't hide the XP message. img: an optional small picture.
 const toastQueue = [];
-function toast(msg, img) {
-  if (toastQueue.some(x => x.msg === msg)) return;
+let toastTimer = null;
+// urgent: an error the learner must see now; it replaces whatever is waiting
+function toast(msg, img, urgent) {
+  if (urgent) { toastQueue.length = 0; clearTimeout(toastTimer); }
+  else if (toastQueue.some(x => x.msg === msg)) return;
   toastQueue.push({ msg, img });
-  if (toastQueue.length === 1) nextToast();
+  if (urgent || toastQueue.length === 1) nextToast();
 }
 function nextToast() {
   const item = toastQueue[0];
@@ -4351,9 +4445,9 @@ function nextToast() {
   const el = $('toast');
   el.innerHTML = (item.img ? '<img src="' + esc(item.img) + '" alt="">' : '') + '<span>' + esc(item.msg) + '</span>';
   el.classList.add('show');
-  setTimeout(() => {
+  toastTimer = setTimeout(() => {
     el.classList.remove('show');
-    setTimeout(() => { toastQueue.shift(); nextToast(); }, 260);
+    toastTimer = setTimeout(() => { toastQueue.shift(); nextToast(); }, 260);
   }, toastQueue.length > 1 ? 2400 : 3200);
 }
 
@@ -4889,7 +4983,9 @@ function buildMarkdown(mods, withCode, withTodo) {
     });
   });
   lines.push('');
-  return { text: lines.join('\n'), dateText };
+  const report = lines.join('\n');
+  // the hidden block always carries the whole progress, whatever tracks the report shows
+  return { text: report + '\n' + saveBlock(state, dateText), report, dateText };
 }
 function exportFilename(dateText) {
   const slug = (state.name || '').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
@@ -4972,7 +5068,7 @@ function refreshExport() {
     return;
   }
   exportMd = buildMarkdown(mods, $('exp-code').checked, $('exp-todo').checked);
-  $('export-preview').innerHTML = renderMarkdown(exportMd.text);
+  $('export-preview').innerHTML = renderMarkdown(exportMd.report);
   $('export-text').value = exportMd.text;
 }
 function showExportTab(tab) {
@@ -5040,6 +5136,53 @@ $('export-modules').addEventListener('change', () => { setExportStatus(''); refr
 $('tab-preview').addEventListener('click', () => showExportTab('preview'));
 $('tab-md').addEventListener('click', () => showExportTab('md'));
 $('export-download').addEventListener('click', downloadExport);
+/* ---------- Import progress (the hidden block of the My work .md) ---------- */
+let pendingImport = null, importTrigger = null;
+function startImport(e) { importTrigger = e.currentTarget; $('import-file').value = ''; $('import-file').click(); }
+$('import-btn').addEventListener('click', startImport);
+$('import-link').addEventListener('click', startImport);
+function importError(key) {
+  toast(t(key), null, true);
+  if (!$('export-panel').hidden) setExportStatus(t(key), 'warn');
+}
+$('import-file').addEventListener('change', async () => {
+  const file = $('import-file').files && $('import-file').files[0];
+  $('import-file').value = ''; // so picking the same file again fires change
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { importError('impBig'); return; }
+  let text;
+  try { text = await file.text(); } catch (e) { importError('impRead'); return; }
+  const res = readSaveBlock(text);
+  if (!res.ok) { importError(res.error === 'newer' ? 'impNewer' : res.error === 'bad' ? 'impBad' : 'impNone'); return; }
+  pendingImport = res;
+  const sum = saveSummary(res.state);
+  let when = res.exported;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(when)) { const [y, m, d] = when.split('-').map(Number); when = new Date(y, m - 1, d).toLocaleDateString(LANG === 'pt' ? 'pt-BR' : 'en-GB'); }
+  $('import-summary').textContent = t('impSummary', { n: sum.name || t('impNoName'), d: sum.done, b: sum.badges, e: when || '?' });
+  const dlg = $('import-dialog');
+  if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
+  $('import-cancel').focus();
+});
+function closeImport() {
+  const dlg = $('import-dialog');
+  if (dlg.open) { if (typeof dlg.close === 'function') dlg.close(); else dlg.removeAttribute('open'); }
+}
+$('import-dialog').addEventListener('close', () => { pendingImport = null; if (importTrigger && importTrigger.offsetParent !== null) importTrigger.focus(); });
+$('import-cancel').addEventListener('click', closeImport);
+$('import-close').addEventListener('click', closeImport);
+$('import-confirm').addEventListener('click', () => {
+  if (!pendingImport) { closeImport(); return; }
+  state = cleanSave(pendingImport.state, freshState());
+  saveState();
+  importTrigger = null;
+  closeImport();
+  if (!$('export-panel').hidden) closeExport();
+  renderName();
+  showView();
+  checkBadges();
+  toast(t('impDone'), null, true);
+});
+
 $('export-copy').addEventListener('click', () => {
   if (!exportMd) { setExportStatus(t('expChoose'), 'warn'); return; }
   const fallbackSelect = () => {
