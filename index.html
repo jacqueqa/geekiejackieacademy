@@ -149,7 +149,7 @@ button { font: inherit; cursor: pointer; }
 .avatar-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .avatar-btn.empty { width: 56px; height: 56px; border: 2px dashed var(--accent); border-radius: 50%; color: var(--accent); font-size: 24px; line-height: 1; }
 .avatar-btn.empty:hover { background: var(--accent-soft); }
-.avatar-dialog { border: 1px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--ink); padding: 0; width: min(640px, calc(100vw - 32px)); max-height: calc(100vh - 32px); }
+.avatar-dialog { border: 1px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--ink); padding: 0; width: min(640px, calc(100vw / var(--ui-scale, 1) - 32px)); max-height: calc(100vh / var(--ui-scale, 1) - 32px); }
 .avatar-dialog::backdrop { background: rgba(0, 0, 0, 0.55); }
 .avatar-dialog .drawer-head { border-bottom: 1px solid var(--line); }
 .avatar-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; padding: 16px 20px 20px; }
@@ -393,41 +393,34 @@ pre.t-out { margin: 0; font-size: 12.5px; color: var(--muted); white-space: pre-
 .dp-hero img { display: block; width: 100%; height: auto; }
 /* the banner of the art, cleared: x 612-1076, y 721-838 of 1670 x 942 */
 .dp-hero-title { position: absolute; left: 36.6%; top: 76.5%; width: 27.8%; height: 12.4%; margin: 0; display: grid; place-items: center; text-align: center;
-  font-family: var(--font-display); font-weight: 700; font-size: 2.35cqw; line-height: 1.04; text-transform: uppercase; letter-spacing: .02em; color: #2B1745; }
+  font-family: var(--font-display); font-weight: 700; font-size: 2.9cqw; line-height: 1.04; text-transform: uppercase; letter-spacing: .02em; color: #2B1745; }
 .dp-intro { color: var(--muted); max-width: 70ch; margin: 0 auto; text-align: center; }
 /* the map: a medallion in the middle, linked to four cards (SOLID, DRY / KISS, YAGNI) */
-.dp-map { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(150px, 200px) minmax(0, 1fr); grid-template-areas: "c1 mid c2" "c3 mid c4"; gap: 26px 34px; align-items: center; padding: 8px 0 12px; }
+.dp-map { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.8fr) minmax(0, 1fr); grid-template-areas: "c1 mid c2" "c3 mid c4"; gap: 26px 34px; align-items: center; padding: 8px 0 12px; }
 .dp-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
 .dp-lines line { stroke-width: 3; stroke-linecap: round; opacity: .8; }
 .dp-lines circle { opacity: .95; }
-.dp-center { grid-area: mid; position: relative; z-index: 1; aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; text-align: center; padding: 18px;
-  background: radial-gradient(circle at 35% 30%, #FFF6C8, #F2D879); color: #3A2150; border: 4px solid #E8A33D; box-shadow: 0 6px 0 rgba(0,0,0,.4), 0 0 0 6px rgba(232,163,61,.18);
-  font-family: var(--font-display); font-weight: 700; font-size: 15px; line-height: 1.2; text-transform: uppercase; letter-spacing: .02em; }
-.dp-card { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 10px; padding: 10px 10px 14px; border-radius: 20px; cursor: pointer; text-align: left; color: var(--ink); font: inherit;
+.dp-center { grid-area: mid; position: relative; z-index: 1; align-self: center; }
+.dp-center.dp-hero { box-shadow: 0 10px 30px rgba(0,0,0,.45), 0 0 0 4px rgba(232,163,61,.25); }
+.dp-card { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 10px; padding: 10px; border-radius: 20px; cursor: pointer; text-align: left; color: var(--ink); font: inherit;
   background: color-mix(in srgb, var(--c) 14%, var(--surface)); border: 3px solid var(--c); box-shadow: 0 6px 0 rgba(0,0,0,.45); transition: transform .15s ease, box-shadow .15s ease; }
 .dp-card:hover, .dp-card:focus-visible { transform: translateY(-3px); box-shadow: 0 9px 0 rgba(0,0,0,.45), 0 0 0 4px color-mix(in srgb, var(--c) 35%, transparent); }
 .dp-card:focus-visible { outline: none; }
 .dp-card img { display: block; width: 100%; height: auto; aspect-ratio: 1670 / 942; object-fit: cover; border-radius: 13px; }
-.dp-card-text { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; padding: 0 6px; }
-.dp-card-text strong { font-family: var(--font-display); font-size: 22px; letter-spacing: .06em; color: var(--c); }
-.dp-card-text span { color: var(--ink); font-size: 14px; }
-.dp-card-text em { flex-basis: 100%; font-style: normal; color: var(--muted); font-size: 12.5px; }
 .dp-card[data-area="c1"] { grid-area: c1; } .dp-card[data-area="c2"] { grid-area: c2; } .dp-card[data-area="c3"] { grid-area: c3; } .dp-card[data-area="c4"] { grid-area: c4; }
 @media (max-width: 760px) {
   .dp-map { grid-template-columns: minmax(0, 1fr); grid-template-areas: "mid" "c1" "c2" "c3" "c4"; gap: 18px; }
   .dp-lines { display: none; }
-  .dp-center { width: 150px; justify-self: center; font-size: 13px; }
-  .dp-hero-title { font-size: 2.6cqw; }
 }
 
 /* ---------- Quest / status window: the project's window style ----------
    Chamfered corners (clip-path), a gold frame, a lilac header band, hatch stripes, and a see-through
    purple body with blur so it doesn't feel heavy. */
-.quest { border: 0; padding: 0; background: transparent; color: #F3E8FF; width: min(820px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); overflow: visible; }
+.quest { border: 0; padding: 0; background: transparent; color: #F3E8FF; width: min(820px, calc(100vw / var(--ui-scale, 1) - 24px)); max-height: calc(100dvh / var(--ui-scale, 1) - 24px); overflow: visible; } /* / --ui-scale: the body is zoomed on big screens */
 .quest::backdrop { background: rgba(12, 4, 28, .62); backdrop-filter: blur(3px); }
 .quest-frame { --cut: 22px; position: relative; padding: 3px; background: linear-gradient(135deg, #F6C85F, #E8A33D 40%, #F6C85F 60%, #C9862A);
   clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 calc(100% - var(--cut)), 0 var(--cut)); }
-.quest-inner { --cut: 20px; position: relative; max-height: calc(100dvh - 30px); overflow: auto; overscroll-behavior: contain;
+.quest-inner { --cut: 20px; position: relative; max-height: calc(100dvh / var(--ui-scale, 1) - 30px); overflow: auto; overscroll-behavior: contain;
   background: rgba(36, 14, 64, .84); backdrop-filter: blur(10px);
   clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 calc(100% - var(--cut)), 0 var(--cut)); }
 .quest-inner::after { content: ""; display: block; height: 8px; width: 46%; /* hatch stripes at the end of the content, never over the text */
@@ -790,7 +783,33 @@ pre.cat-json { margin: 0; background: var(--code-bg); color: var(--code-ink); bo
 .mod-card.is-locked .guide-pill { opacity: .7; }
 .mod-card.is-locked .mod-cta { color: var(--muted); }
 .lock-note { font-size: 13.5px; color: var(--ink); background: var(--bg); border: 1px dashed var(--fail); border-radius: 10px; padding: 8px 10px; }
-.locked-view { max-width: 640px; margin: 0 auto; padding-top: 16px; display: flex; flex-direction: column; gap: 14px; }
+.locked-view { width: 100%; max-width: 1000px; margin: 0 auto; padding-top: 16px; display: flex; flex-direction: column; gap: 14px; }
+/* the whole scene fits the screen height (header and back link take ~300px), so the question is never below the fold */
+.gj-scene { width: 100%; max-width: calc((100dvh / var(--ui-scale, 1) - 300px) * 1.78); margin-inline: auto; }
+.gj-scene { position: relative; container-type: inline-size; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+.gj-art img { display: block; width: 100%; height: auto; }
+/* --bx/--by/--bw/--bh: where the empty dialog box is in the art (defaults: geekie-desk.webp) */
+.gj-box { position: absolute; left: var(--bx, 25.2%); top: var(--by, 76%); width: var(--bw, 70.4%); height: var(--bh, 17.6%); display: flex; flex-direction: column; justify-content: space-between; color: #3A2150; text-align: left; }
+.gj-name { display: none; }
+.gj-box p { margin: 0; font-size: 1.45cqw; line-height: 1.38; color: #3A2150; }
+.gj-box p b { color: #7A2E8E; }
+.gj-choices { display: flex; justify-content: flex-end; gap: 1.2cqw; flex-wrap: wrap; }
+.gj-btn { font: inherit; font-family: var(--font-display); font-size: 1.3cqw; font-weight: 600; padding: .45cqw 1.3cqw; border-radius: .7cqw; border: .2cqw solid #7A4A12; background: #FFF6E8; color: #3A2150; cursor: pointer; text-decoration: none; box-shadow: 0 .25cqw 0 #C98A2E; }
+.gj-btn:hover { background: #FFE9C7; }
+.gj-btn.yes { background: linear-gradient(#8E4FD0, #6B34A8); color: #fff; border-color: #3E1A66; box-shadow: 0 .25cqw 0 #3E1A66; }
+.gj-btn.yes:hover { background: linear-gradient(#9C5EDD, #7A3FBA); }
+.gj-btn:focus-visible { outline: 2px solid #E8A33D; outline-offset: 2px; }
+.locked-progress { max-width: 640px; width: 100%; margin: 4px auto 0; }
+@media (max-width: 720px) {
+  /* the art is too small for text here: crop it above its dialog box and draw the box under it */
+  .gj-scene { container-type: normal; overflow: visible; box-shadow: none; max-width: none; }
+  .gj-art { aspect-ratio: var(--gj-crop, 1672 / 716); overflow: hidden; border-radius: 14px 14px 0 0; } /* keeps the art's own name plate */
+  .gj-box { position: static; width: auto; height: auto; gap: 12px; background: #FDEBD6; border: 3px solid #E8A33D; border-top: 0; box-shadow: 0 0 0 3px #4B2378 inset; border-radius: 0 0 14px 14px; padding: 14px 16px 16px; }
+  .gj-box p { font-size: 15px; }
+  .gj-choices { flex-direction: column-reverse; gap: 8px; }
+  .gj-btn { font-size: 15px; padding: 10px 14px; border-width: 2px; border-radius: 10px; text-align: center; box-shadow: 0 3px 0 #C98A2E; }
+  .gj-btn.yes { box-shadow: 0 3px 0 #3E1A66; }
+}
 .locked-card { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 28px; display: flex; flex-direction: column; gap: 14px; text-align: center; }
 .locked-card .unlock { text-align: left; }
 .locked-icon { font-size: 40px; }
@@ -1059,12 +1078,21 @@ body { zoom: var(--ui-scale, 1); }
 
   <section class="rulebook design" id="design-view" hidden data-test="design-view">
     <a class="back-link" href="#" data-i18n="allTracks">← Homepage</a>
-    <div class="dp-hero">
-      <img src="assets/design/grimoire.webp" width="1670" height="942" alt="" data-i18n-alt="dpHeroAlt">
-      <h2 class="dp-hero-title" data-i18n="dpTitle">Code design principles</h2>
+    <!-- Before the page: Geekie Jackie asks if the learner wants this extra content (assets/geekie-loading.webp) -->
+    <div class="gj-scene dp-gate" id="dp-gate" hidden style="--bx: 15.4%; --by: 80.6%; --bw: 71.4%; --bh: 14.2%; --gj-crop: 1671 / 748">
+      <div class="gj-art"><img src="assets/geekie-loading.webp" width="1671" height="941" alt="" data-i18n-alt="gjLoadAlt"></div>
+      <div class="gj-box" role="group" aria-labelledby="dp-gate-text">
+        <p id="dp-gate-text" data-i18n="dpGateText">This extra content is ideal for those already on the DEV track or who already know some code. Do you want to continue?</p>
+        <div class="gj-choices">
+          <a class="gj-btn" href="#" id="dp-gate-no" data-i18n="gateNo">No</a>
+          <button class="gj-btn yes" type="button" id="dp-gate-yes" data-i18n="gateYes">Yes</button>
+        </div>
+      </div>
     </div>
+    <div id="dp-content">
     <p class="dp-intro" data-i18n="dpIntro">Four ideas that make code easier to read, test and change. Open a card to see each one with an example from the shop.</p>
     <div class="dp-map" id="dp-map"></div>
+    </div>
   </section>
 
   <section class="rulebook achievements" id="achievements-view" hidden data-test="achievements-view">
@@ -1175,15 +1203,23 @@ body { zoom: var(--ui-scale, 1); }
 
   <section class="locked-view" id="locked-view" hidden data-test="locked-view">
     <a class="back-link" href="#" data-i18n="allTracks">← Homepage</a>
-    <div class="locked-card">
-      <div class="locked-icon" aria-hidden="true">🔒</div>
-      <h2 id="locked-title"></h2>
-      <p id="locked-text"></p>
-      <div class="unlock">
-        <div class="mod-progress"><span id="locked-count"></span><span class="mod-rank" id="locked-percent"></span></div>
-        <div class="bar unlock-bar"><span id="locked-bar" style="width:0%"></span><i class="unlock-mark" id="locked-mark"></i></div>
+    <!-- Geekie Jackie asks if the learner is sure about starting this track before the Start Track. The art is
+         assets/geekie-desk.webp (1672 x 941); the text sits in its empty dialog box, placed in % and sized in cqw. -->
+    <div class="gj-scene">
+      <div class="gj-art"><img src="assets/geekie-desk.webp" width="1672" height="941" alt="" data-i18n-alt="gjAlt"></div>
+      <div class="gj-box" role="group" aria-labelledby="locked-title">
+        <h2 class="visually-hidden" id="locked-title"></h2>
+        <div class="gj-name" aria-hidden="true">Geekie Jackie</div>
+        <p id="locked-text"></p>
+        <div class="gj-choices">
+          <a class="gj-btn" href="#start" id="locked-go"></a>
+          <button class="gj-btn yes" type="button" id="early-yes"></button>
+        </div>
       </div>
-      <a class="btn primary" href="#start" id="locked-go"></a>
+    </div>
+    <div class="unlock locked-progress">
+      <div class="mod-progress"><span id="locked-count"></span><span class="mod-rank" id="locked-percent"></span></div>
+      <div class="bar unlock-bar"><span id="locked-bar" style="width:0%"></span><i class="unlock-mark" id="locked-mark"></i></div>
     </div>
   </section>
 
@@ -3496,7 +3532,9 @@ buildContent();
 const UI = {
   en: {
     rank: 'Rank', apprenticeName: '+ Add your name', changeName: 'Change your name', yourName: 'Your name', save: 'Save',
-    dpTitle: 'Code design principles', dpLink: 'Code design principles', dpIntro: 'Four ideas that make code easier to read, test and change. Open a card to see each one with an example from the shop.', dpCenter: 'Software design principles',
+    dpGateText: 'This extra content is ideal for those already on the DEV track or who already know some code. Do you want to continue?', gateYes: 'Yes', gateNo: 'No',
+    gjLoadAlt: 'Pixel art: Geekie Jackie smiles with a mug of coffee at her desk, on a rainy night, while the computer loads',
+    dpTitle: 'Code design principles', dpLink: 'Code design principles', dpIntro: 'Four ideas that make code easier to read, test and change. Open a card to see each one with an example from the shop.',
     dpHeroAlt: 'Pixel art: Geekie Jackie holds a glowing grimoire, next to books named Clean code, Better apps and Happier devs', dpOpen: 'Open the {n} window', dpKicker: 'Design principle', dpWhat: 'What it is', dpWhy: 'Why it matters', dpSmell: 'Warning sign',
     dpShop: 'In the shop', dpBefore: '❌ Before', dpAfter: '✅ After', dpTracks: 'Tracks', dpRules: 'Shop rules', dpLetters: 'The five letters', dpPrev: '← {n}', dpNext: '{n} →', dpNoData: 'The design principles file (design-principles.js) did not load.',
     importBtn: 'Import progress', impSummary: '{n} · {d} exercises done · {b} badges · exported on {e}', impNoName: 'No name', impWarn: 'The progress saved in this browser will be replaced by the one in the file. This can’t be undone.', impConfirm: 'Replace my progress', impDone: 'Progress imported. Welcome back!',
@@ -3517,10 +3555,10 @@ const UI = {
     drawerTitle: 'My work', drawerSub: 'Your progress as a Markdown file, to keep or to share with your lead.', tracks: 'Tracks', include: 'Include',
     incCode: 'My code and commands', incTodo: 'Exercises not started', preview: 'Preview', copy: 'Copy', copied: 'Copied', download: 'Download .md', close: 'Close',
     startTrack: 'Start with the Start Track',
-    lockedBadge: 'Locked', lockedNote: 'Complete {r} of the {t} Start Track exercises to open it. {f}.', missN: '{n} to go', miss1: '1 to go',
+    lockedBadge: 'After the Start Track', lockedNote: 'Best after {r} of the {t} Start Track exercises: {f}. You can also start it now.', missN: '{n} to go', miss1: '1 to go',
     unlockCount: '{d} / {t} exercises', unlockText: '{n} more to reach {p}% and open DEV, QA and AI.', unlockedText: 'DEV, QA and AI are open. Keep going to finish the track!',
-    lockedTitle: 'The {m} is still locked', lockedText: 'DEV, QA and AI open when you complete {r} of the {t} exercises ({p}%) of the {s}. You are {n} away. Exercises solved with the revealed solution don’t count.',
-    lockedGo: 'Go to the {s} →',
+    lockedTitle: 'Start the {m} before the Start Track?', lockedText: 'Hey, {name}! You haven’t finished the {s} yet: you did {d} of its {t} exercises, and it is the logic foundation of the {m}. Are you sure you want to start the {m} now?',
+    lockedGo: 'No, back to the {s}', earlyYes: 'Yes, start the {m}', earlyDone: 'The {m} is open. Good luck!', gjFriend: 'apprentice', gjAlt: 'Pixel art: Geekie Jackie at her desk, looking at you seriously',
     reinforces: 'Reinforces {x}', hintN: '<b>Hint {n} of {t}.</b> ',
     solNoCount: 'Solved with the solution, this exercise gives 0 XP and does <b>not</b> count toward the {p}%.',
     solOpenStart: 'Show the solution. You get 0 XP and the exercise does not count toward the {p}% until you solve it again on your own.',
@@ -3602,7 +3640,9 @@ const UI = {
   },
   pt: {
     rank: 'Título', apprenticeName: '+ Adicione seu nome', changeName: 'Mudar seu nome', yourName: 'Seu nome', save: 'Salvar',
-    dpTitle: 'Princípios de design de código', dpLink: 'Princípios de design de código', dpIntro: 'Quatro ideias que deixam o código mais fácil de ler, testar e mudar. Abra um cartão para ver cada uma com um exemplo da lojinha.', dpCenter: 'Princípios do design de software',
+    dpGateText: 'Este conteúdo de reforço é ideal para quem já está na trilha DEV ou já tem algum conhecimento de código. Quer continuar?', gateYes: 'Sim', gateNo: 'Não',
+    gjLoadAlt: 'Pixel art: a Geekie Jackie sorri com uma caneca de café na mesa dela, numa noite de chuva, enquanto o computador carrega',
+    dpTitle: 'Princípios de design de código', dpLink: 'Princípios de design de código', dpIntro: 'Quatro ideias que deixam o código mais fácil de ler, testar e mudar. Abra um cartão para ver cada uma com um exemplo da lojinha.',
     dpHeroAlt: 'Pixel art: a Geekie Jackie segura um grimório brilhante, ao lado de livros chamados Clean code, Better apps e Happier devs', dpOpen: 'Abrir a janela do {n}', dpKicker: 'Princípio de design', dpWhat: 'O que é', dpWhy: 'Por que importa', dpSmell: 'Sinal de alerta',
     dpShop: 'Na lojinha', dpBefore: '❌ Antes', dpAfter: '✅ Depois', dpTracks: 'Trilhas', dpRules: 'Regras da loja', dpLetters: 'As cinco letras', dpPrev: '← {n}', dpNext: '{n} →', dpNoData: 'O arquivo dos princípios de design (design-principles.js) não carregou.',
     importBtn: 'Importar progresso', impSummary: '{n} · {d} exercícios feitos · {b} medalhas · exportado em {e}', impNoName: 'Sem nome', impWarn: 'O progresso salvo neste navegador será substituído pelo do arquivo. Não dá para desfazer.', impConfirm: 'Substituir meu progresso', impDone: 'Progresso importado. Que bom ter você de volta!',
@@ -3623,10 +3663,10 @@ const UI = {
     drawerTitle: 'Meu trabalho', drawerSub: 'O seu progresso como um arquivo Markdown, para guardar ou mostrar para a sua liderança.', tracks: 'Trilhas', include: 'Incluir',
     incCode: 'Meu código e comandos', incTodo: 'Exercícios não começados', preview: 'Prévia', copy: 'Copiar', copied: 'Copiado', download: 'Baixar .md', close: 'Fechar',
     startTrack: 'Comece pela Trilha Inicial',
-    lockedBadge: 'Bloqueada', lockedNote: 'Complete {r} dos {t} exercícios da Trilha Inicial para abrir. {f}.', missN: 'Faltam {n}', miss1: 'Falta 1',
+    lockedBadge: 'Depois da Trilha Inicial', lockedNote: 'Melhor depois de {r} dos {t} exercícios da Trilha Inicial. {f}, mas também dá para começar agora.', missN: 'Faltam {n}', miss1: 'Falta 1',
     unlockCount: '{d} / {t} exercícios', unlockText: '{f} para chegar a {p}% e abrir DEV, QA e IA.', unlockedText: 'DEV, QA e IA estão abertas. Continue até terminar a trilha!',
-    lockedTitle: 'A {m} ainda está bloqueada', lockedText: 'DEV, QA e IA se abrem quando você completa {r} dos {t} exercícios ({p}%) da {s}. {f}. Exercícios resolvidos com a solução revelada não contam.',
-    lockedGo: 'Ir para a {s} →',
+    lockedTitle: 'Começar a {m} antes da Trilha Inicial?', lockedText: 'Ei, {name}! Você ainda não terminou a {s}: fez {d} dos {t} exercícios, e ela é a base de lógica para a {m}. Tem certeza que quer começar a {m} agora?',
+    lockedGo: 'Não, voltar para a {s}', earlyYes: 'Sim, quero começar a {m}', earlyDone: 'A {m} está liberada. Boa sorte!', gjFriend: 'aprendiz', gjAlt: 'Pixel art: a Geekie Jackie na mesa dela, olhando séria para você',
     reinforces: 'Reforça {x}', hintN: '<b>Dica {n} de {t}.</b> ',
     solNoCount: 'Resolvido com a solução, este exercício dá 0 XP e <b>não</b> conta para os {p}%.',
     solOpenStart: 'Mostrar a solução. Você ganha 0 XP e o exercício não conta para os {p}% até você resolver de novo sozinho.',
@@ -3722,7 +3762,9 @@ function t(key, vars) {
    Who can open which track. Pure functions (no DOM, no storage) so they are tested in tests/
    and can move to the backend later. Until then they run in the browser only.
    - DEV, QA and AI have `requires: 'start'`: they open once the learner completes 80% of the Start Track.
-   - An exercise solved after revealing the solution gives 0 XP and does not count toward the 80%. */
+   - An exercise solved after revealing the solution gives 0 XP and does not count toward the 80%.
+   - A learner may also open a track early: the page asks if they are sure, and the choice is kept
+     per track (state.earlyAccess). `early` below is that choice. */
 const START_TRACK_ID = 'start';
 const UNLOCK_PERCENT = 80;
 function countsForUnlock(ex, st) { return !!(st.done && st.done[ex.id]) && !(st.solutions && st.solutions[ex.id]); }
@@ -3737,7 +3779,7 @@ function startTrackProgress(exercises, st) {
     unlocked: total > 0 && done >= required,
   };
 }
-function canAccessTrack(module, progress) { return !module.requires || progress.unlocked; }
+function canAccessTrack(module, progress, early) { return !module.requires || progress.unlocked || !!early; }
 /* ACCESS-RULES:END */
 
 /* ACHIEVEMENTS:BEGIN
@@ -4040,7 +4082,7 @@ const STORE_KEY = CONFIG.storageKey;
 const emptyReport = () => '<span class="empty-rep">' + t('emptyReport') + '</span>';
 
 // hints[id]: how many hints were opened (old saves have true = 1). revealed[id]: the solution was seen at least once, so 0 XP for good.
-function freshState() { return { grimoireTrack: null, badges: {}, days: {}, visited: {}, run: 0, bestRun: 0, logic: {}, folds: {}, name: '', avatar: null, current: null, lastByModule: {}, done: {}, hints: {}, solutions: {}, revealed: {}, fails: {}, code: {}, term: {} }; }
+function freshState() { return { earlyAccess: {}, grimoireTrack: null, badges: {}, days: {}, visited: {}, run: 0, bestRun: 0, logic: {}, folds: {}, name: '', avatar: null, current: null, lastByModule: {}, done: {}, hints: {}, solutions: {}, revealed: {}, fails: {}, code: {}, term: {} }; }
 function loadState() {
   try {
     const raw = localStorage.getItem(STORE_KEY);
@@ -4082,8 +4124,10 @@ function startProgress() { return startTrackProgress(moduleExercises(START_TRACK
 function trackOpen(modId) {
   if (CONFIG.unlockAllTracks) return true; // TEMPORARY preview (see CONFIG)
   const m = MODULES.find(x => x.id === modId);
-  return !m || canAccessTrack(m, startProgress());
+  return !m || canAccessTrack(m, startProgress(), !!(state.earlyAccess && state.earlyAccess[modId]));
 }
+// The 80% rule alone, without the early access (the "Unlock the DEV track" badges follow this one).
+function trackUnlockedByRule(modId) { const m = MODULES.find(x => x.id === modId); return !m || canAccessTrack(m, startProgress()); }
 // A rank's XP is its share of the module's total XP, so ranks stay balanced when you add or remove exercises.
 function moduleRanks(mod) {
   const max = moduleMax(mod);
@@ -4723,11 +4767,16 @@ function showView() {
   if (isDesign) {
     activeModule = null;
     ['home-view', 'rulebook-view', 'howto-view', 'module-view', 'catalog-view', 'grimoire-view', 'glossary-view', 'achievements-view'].forEach(id => { $(id).hidden = true; });
-    renderHeader(); renderDesign();
+    const ok = designGateOk();
+    $('dp-gate').hidden = ok;
+    $('dp-content').hidden = !ok;
+    renderHeader();
+    if (ok) renderDesign();
     document.title = CONFIG.name + ': ' + t('dpTitle');
     window.scrollTo(0, 0);
     const pid = hash.slice('design/'.length);
-    if (pid) openDesign(pid, false);
+    if (pid && ok) openDesign(pid, false);
+    pendingDesign = ok ? null : pid || null; // a #design/<id> link opens its window after "Yes"
     return;
   }
   if ($('dp-dialog').open) $('dp-dialog').close();
@@ -4816,16 +4865,28 @@ function renderLocked(mod) {
   $('module-view').hidden = true;
   $('locked-view').hidden = false;
   $('locked-title').textContent = t('lockedTitle', { m: t('moduleTitle', { m: mod.name }) });
-  $('locked-text').textContent = t('lockedText', { r: p.required, t: p.total, p: UNLOCK_PERCENT, n: p.missing, f: missingText(p), s: t('moduleTitle', { m: start.name }) });
+  const trackName = t('moduleTitle', { m: mod.name }), startName = t('moduleTitle', { m: start.name });
+  $('locked-text').textContent = t('lockedText', { name: (state.name || '').trim() || t('gjFriend'), d: p.done, t: p.total, s: startName, m: trackName });
+  $('early-yes').textContent = t('earlyYes', { m: trackName });
+  $('early-yes').dataset.track = mod.id;
   $('locked-count').textContent = t('unlockCount', { d: p.done, t: p.total });
   $('locked-percent').textContent = p.percent + '%';
   $('locked-bar').style.width = p.percent + '%';
   $('locked-mark').style.left = UNLOCK_PERCENT + '%';
-  $('locked-go').textContent = t('lockedGo', { s: t('moduleTitle', { m: start.name }) });
+  $('locked-go').textContent = t('lockedGo', { s: startName });
   renderHeader();
   document.title = CONFIG.name + ': ' + mod.name + ' 🔒';
   window.scrollTo(0, 0);
 }
+$('early-yes').addEventListener('click', () => {
+  const id = $('early-yes').dataset.track, mod = MODULES.find(m => m.id === id);
+  if (!mod) return;
+  state.earlyAccess = state.earlyAccess || {};
+  state.earlyAccess[id] = dayKey(new Date());
+  saveState();
+  showView();
+  toast(t('earlyDone', { m: t('moduleTitle', { m: mod.name }) }));
+});
 function renderAll() {
   if (!activeModule) { renderHeader(); renderHomeProgress(); return; }
   renderHeader(); renderTrack(); renderExercise();
@@ -4890,7 +4951,7 @@ function badgeFacts() {
   const { xp, max } = academyXp();
   return achievementFacts({
     levels: LEVELS, exercises: EXERCISES, modules: MODULES.map(m => m.id), state, xp, maxXp: max,
-    unlocked: { dev: trackOpen('dev'), qa: trackOpen('qa'), ai: trackOpen('ai') },
+    unlocked: { dev: trackUnlockedByRule('dev'), qa: trackUnlockedByRule('qa'), ai: trackUnlockedByRule('ai') },
   });
 }
 // Saves the badges earned since the last check (with the date) and announces them.
@@ -5489,6 +5550,20 @@ document.querySelectorAll('.fold-toggle').forEach(btn => btn.addEventListener('c
 }));
 
 /* ---------- Code design principles (data in design-principles.js) ---------- */
+// Before the page, Geekie Jackie asks if the learner wants this extra content. "Yes" is kept for the
+// browser session, so moving around the site doesn't ask again; "No" goes back to the home page.
+const DESIGN_GATE_KEY = 'geekie-jackie-design-ok';
+let pendingDesign = null;
+function designGateOk() { try { return sessionStorage.getItem(DESIGN_GATE_KEY) === '1'; } catch (e) { return false; } }
+$('dp-gate-yes').addEventListener('click', () => {
+  try { sessionStorage.setItem(DESIGN_GATE_KEY, '1'); } catch (e) {}
+  $('dp-gate').hidden = true;
+  $('dp-content').hidden = false;
+  renderDesign();
+  const pid = pendingDesign; pendingDesign = null;
+  if (pid) openDesign(pid, false);
+  else { const first = $('dp-map').querySelector('[data-principle]'); if (first) first.focus({ preventScroll: true }); }
+});
 function designData() { return typeof DESIGN_PRINCIPLES !== 'undefined' && Array.isArray(DESIGN_PRINCIPLES) ? DESIGN_PRINCIPLES : []; }
 // The text of a principle (or of one SOLID letter) in the current language.
 function dpT(x, field) { return LANG === 'en' && x.en && x.en[field] != null ? x.en[field] : x[field]; }
@@ -5498,14 +5573,14 @@ function renderDesign() {
   const map = $('dp-map');
   if (!list.length) { map.innerHTML = '<p class="dp-intro">' + esc(t('dpNoData')) + '</p>'; return; }
   // lines from the medallion to each card, with a dot at the card end (like the sketch)
-  const ends = [[30, 26], [70, 26], [30, 74], [70, 74]];
+  const ends = [[24, 26], [76, 26], [24, 74], [76, 74]];
   const lines = '<svg class="dp-lines" aria-hidden="true">' + list.slice(0, 4).map((pr, i) =>
     '<line x1="50%" y1="50%" x2="' + ends[i][0] + '%" y2="' + ends[i][1] + '%" stroke="' + pr.color + '"/>' +
-    '<circle cx="' + (50 + (ends[i][0] - 50) * 0.36) + '%" cy="' + (50 + (ends[i][1] - 50) * 0.36) + '%" r="6" fill="' + pr.color + '"/>').join('') + '</svg>';
-  map.innerHTML = lines + '<div class="dp-center">' + esc(t('dpCenter')) + '</div>' + list.map((pr, i) =>
+    '<circle cx="' + ends[i][0] + '%" cy="' + ends[i][1] + '%" r="6" fill="' + pr.color + '"/>').join('') + '</svg>';
+  map.innerHTML = lines + '<div class="dp-center dp-hero"><img src="assets/design/grimoire.webp" width="1670" height="942" alt="' + esc(t('dpHeroAlt')) + '">' +
+    '<h2 class="dp-hero-title">' + esc(t('dpTitle')) + '</h2></div>' + list.map((pr, i) =>
     '<button type="button" class="dp-card" data-area="' + (DP_AREAS[i] || '') + '" data-principle="' + pr.id + '" style="--c:' + pr.color + '" aria-haspopup="dialog" aria-label="' + esc(t('dpOpen', { n: pr.name })) + '">' +
-      '<img src="' + pr.image + '" width="1200" height="676" loading="lazy" alt="">' +
-      '<span class="dp-card-text"><strong>' + esc(pr.name) + '</strong><span>' + esc(dpT(pr, 'title')) + '</span><em>' + esc(pr.full) + '</em></span></button>').join('');
+      '<img src="' + pr.image + '" width="1200" height="676" loading="lazy" alt="">' + '</button>').join(''); // only the art: the name is in aria-label
   map.querySelectorAll('[data-principle]').forEach(b => b.addEventListener('click', () => openDesign(b.dataset.principle, true)));
 }
 function dpCode(before, after) {
