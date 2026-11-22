@@ -570,6 +570,93 @@ pre.cat-json { margin: 0; background: var(--code-bg); color: var(--code-ink); bo
 /* Header, top to bottom: 1) the banner (home page only)  2) learner name (left) and rank/XP (right)  3) logo and tagline */
 .top .hero { grid-column: 1 / -1; grid-row: 1; max-width: none; width: 100%; height: auto; margin: 0; aspect-ratio: 2172 / 724; object-fit: cover; }
 .wrap:has(> #home-view[hidden]) .top .hero { display: none; }
+/* Home: the badge card (crachá) replaces the name, rank and XP of the header; only the language switch stays */
+.wrap:has(> #home-view:not([hidden])) .top .qa-name,
+.wrap:has(> #home-view:not([hidden])) .top .player > :not(.lang-switch) { display: none; }
+.wrap:has(> #home-view:not([hidden])) .top .player { padding-top: 0; }
+#home-view { padding-top: 12px; }
+#home-view > .story + .home-intro { margin-top: 30px; }
+/* The art is assets/cracha.webp (2014 x 781). Every slot is placed in % of it and its text in cqw,
+   so the whole card scales like an image. Phones get a stacked card instead (see the media query). */
+.cracha { position: relative; width: 100%; aspect-ratio: 2014 / 781; background: url(assets/cracha.webp) center / 100% 100% no-repeat; container-type: inline-size; color: #F3E8FF; font-family: var(--font-display); }
+.cr-slot { position: absolute; display: flex; align-items: center; min-width: 0; margin: 0; }
+.cr-label { font-size: 1.65cqw; font-weight: 600; white-space: nowrap; text-shadow: 0 .15cqw 0 rgba(0,0,0,.35); }
+.cr-avatar { left: 6.85%; top: 21.1%; width: 17.3%; height: 46%; justify-content: center; }
+.cr-avatar button { height: 100%; aspect-ratio: 210 / 240; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 1cqw; display: grid; place-items: center; }
+.cr-avatar img { height: 100%; width: auto; display: block; filter: drop-shadow(0 .3cqw .6cqw rgba(0,0,0,.45)); transition: transform .15s ease; }
+.cr-avatar button:hover img, .cr-avatar button:focus-visible img { transform: scale(1.04); }
+.cr-avatar button.empty { width: 70%; height: auto; aspect-ratio: 1; border: .3cqw dashed #F7A8FF; border-radius: 50%; color: #F7A8FF; font-size: 5cqw; line-height: 1; }
+.cr-avatar button.empty:hover { background: rgba(247,168,255,.12); }
+.cracha button:focus-visible, .cracha a:focus-visible { outline: 2px solid #F7A8FF; outline-offset: 3px; }
+.cr-name { left: 25.6%; top: 23.6%; width: 24.4%; height: 15.4%; }
+.cr-name button { background: none; border: 0; padding: 0; color: #fff; font: inherit; font-size: var(--nfs, 3.1cqw); font-weight: 600; cursor: pointer; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; text-shadow: 0 .2cqw 0 rgba(0,0,0,.4); }
+.cr-name button.empty { color: #F7A8FF; font-size: 2.2cqw; }
+.cr-name button .name-edit-icon { font-size: 1.4cqw; color: #C4B3D6; }
+.cr-name form { display: flex; gap: .6cqw; width: 100%; }
+.cr-name input { flex: 1; min-width: 0; font: inherit; font-size: 1.7cqw; padding: .4cqw .8cqw; border-radius: .6cqw; border: 1px solid #B07CF0; background: #2a1450; color: #fff; }
+.cr-name form .btn { font-size: 1.4cqw; padding: .4cqw 1cqw; }
+.cr-lv { left: 27.2%; top: 50.2%; width: 2.6%; height: 9%; justify-content: center; font-size: 2.7cqw; font-weight: 700; color: #fff; text-shadow: 0 .15cqw 0 rgba(0,0,0,.45); }
+.cr-xp { left: 31.8%; top: 46%; width: 18.1%; height: 6.4%; justify-content: flex-end; font-size: 1.75cqw; font-weight: 600; color: #fff; white-space: nowrap; }
+.cr-xp b { color: var(--xp); font-weight: 600; margin-left: .4cqw; }
+.cr-xp .cr-lv-inline { display: none; }
+.cr-xpbar { left: 31.9%; top: 53.4%; width: 18%; height: 5.4%; border: .25cqw solid #B07CF0; border-radius: .7cqw; background: #24113F; padding: .3cqw; }
+.cr-xpbar span { display: block; height: 100%; border-radius: .4cqw; background: repeating-linear-gradient(90deg, transparent 0 3.2cqw, rgba(120,70,0,.55) 3.2cqw 3.45cqw), linear-gradient(#FFE58A, #F6B92E); box-shadow: inset 0 -.25cqw 0 rgba(160,90,0,.45); min-width: 0; }
+.cr-track-label { left: 55.9%; top: 26.6%; width: 9.2%; height: 6.4%; }
+.cr-track { left: 54.2%; top: 34.4%; width: 9.4%; height: 28.6%; justify-content: center; border-radius: 1cqw; }
+.cr-track img { max-height: 100%; max-width: 100%; width: auto; height: auto; filter: drop-shadow(0 .3cqw .5cqw rgba(0,0,0,.45)); transition: transform .15s ease; }
+.cr-track:hover img { transform: translateY(-.3cqw); }
+.cr-prog-label { left: 69.9%; top: 24.6%; width: 14.6%; height: 6.8%; }
+.cr-progbar { left: 67.1%; top: 32.8%; width: 19%; height: 5.4%; gap: .3cqw; align-items: stretch; border: .25cqw solid #B07CF0; border-radius: .8cqw; background: #24113F; padding: .3cqw; }
+.cr-progbar i { flex: 1; border-radius: .4cqw; background: rgba(255,255,255,.06); overflow: hidden; display: flex; }
+.cr-progbar i b { display: block; height: 100%; background: linear-gradient(#FFC4FF, #E57CF2); box-shadow: inset 0 -.25cqw 0 rgba(140,40,150,.4); }
+.cr-pct { left: 87.2%; top: 31.6%; width: 6%; height: 7.6%; justify-content: center; font-size: 2.6cqw; font-weight: 700; color: var(--xp); text-shadow: 0 .2cqw 0 rgba(90,40,0,.6); }
+.cr-check { left: 67.6%; top: 41.4%; width: 16.4%; height: 23.4%; flex-direction: column; justify-content: space-between; align-items: stretch; list-style: none; padding: 0; }
+.cr-check li { display: flex; align-items: center; gap: .8cqw; font-size: 1.4cqw; min-width: 0; }
+.cr-check li span:last-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.cr-box { flex: none; width: 1.55cqw; height: 1.55cqw; border: .2cqw solid #B07CF0; border-radius: .3cqw; display: grid; place-items: center; font-size: 1.1cqw; color: #fff; line-height: 1; }
+.cr-check li.done .cr-box { background: #3FBF5A; border-color: #A6F0B2; }
+.cr-check li.now span:last-child { color: #fff; font-weight: 600; }
+.cr-check li:not(.done):not(.now) { color: #C4B3D6; }
+.cr-title-label { left: 27.9%; top: 70.2%; width: 9.2%; height: 6.4%; }
+.cr-title { left: 27.7%; top: 79%; width: 10.1%; height: 7.4%; justify-content: center; font-size: var(--tfs, 2cqw); font-weight: 600; color: #fff; white-space: nowrap; text-shadow: 0 .15cqw 0 rgba(0,0,0,.4); }
+.cr-ach-label { left: 49.9%; top: 69.6%; width: 11%; height: 6.4%; }
+.cr-ach-label .cr-count { color: #C4B3D6; margin-left: .4cqw; }
+.cr-ach { left: 47%; top: 76.2%; width: 18.6%; height: 14%; gap: 1.4cqw; text-decoration: none; color: inherit; border-radius: 1cqw; }
+.cr-ach img { height: 100%; width: auto; filter: drop-shadow(0 .25cqw .4cqw rgba(0,0,0,.4)); transition: transform .15s ease; }
+.cr-ach:hover img { transform: translateY(-.3cqw); }
+@media (max-width: 760px) {
+  .cracha { aspect-ratio: auto; background: linear-gradient(#3a1f63, #2a1550); border: 3px solid #E8A33D; border-radius: 16px; box-shadow: 0 0 0 2px #7a3f12 inset; padding: 16px 14px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6px 14px; container-type: normal;
+    grid-template-areas: "av name" "av xp" "av bar" "tlab plab" "track pbar" "track pct" "track check" "ttl alab" "title ach"; }
+  .cr-slot { position: static; width: auto; height: auto; }
+  .cr-label { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: #C4B3D6; margin-top: 10px; }
+  .cr-avatar { grid-area: av; height: 120px; justify-content: flex-start; }
+  .cr-avatar button.empty { width: 84px; font-size: 32px; border-width: 2px; }
+  .cr-name { grid-area: name; align-self: end; }
+  .cr-name button { font-size: 22px; }
+  .cr-name button.empty { font-size: 16px; white-space: normal; }
+  .cr-name button .name-edit-icon { font-size: 14px; }
+  .cr-name input { font-size: 15px; padding: 6px 8px; border-radius: 8px; }
+  .cr-name form .btn { font-size: 14px; padding: 6px 10px; }
+  .cr-lv { display: none; }
+  .cr-xp { grid-area: xp; justify-content: flex-start; font-size: 14px; }
+  .cr-xp .cr-lv-inline { display: inline; color: #C4B3D6; margin-right: 6px; }
+  .cr-xp b { margin-left: 4px; }
+  .cr-xpbar { grid-area: bar; height: 16px; border-width: 2px; border-radius: 8px; padding: 2px; align-self: start; }
+  .cr-xpbar span { border-radius: 5px; background: repeating-linear-gradient(90deg, transparent 0 22px, rgba(120,70,0,.55) 22px 24px), linear-gradient(#FFE58A, #F6B92E); }
+  .cr-track-label { grid-area: tlab; } .cr-prog-label { grid-area: plab; }
+  .cr-track { grid-area: track; height: 130px; justify-content: flex-start; align-self: start; }
+  .cr-progbar { grid-area: pbar; height: 16px; border-width: 2px; border-radius: 8px; padding: 2px; gap: 2px; }
+  .cr-progbar i { border-radius: 4px; }
+  .cr-pct { grid-area: pct; justify-content: flex-start; font-size: 20px; }
+  .cr-check { grid-area: check; gap: 6px; justify-content: flex-start; }
+  .cr-check li { font-size: 13px; gap: 6px; }
+  .cr-box { width: 14px; height: 14px; border-width: 2px; border-radius: 3px; font-size: 10px; }
+  .cr-title-label { grid-area: ttl; } .cr-ach-label { grid-area: alab; }
+  .cr-title { grid-area: title; justify-content: center; align-self: start; font-size: 16px; border: 2px solid #E57CF2; border-radius: 99px; padding: 6px 10px; background: #3a1d66; white-space: normal; text-align: center; }
+  .cr-ach { grid-area: ach; height: auto; gap: 6px; align-items: flex-start; }
+  .cr-ach img { min-width: 0; max-width: calc((100% - 12px) / 3); height: auto; max-height: 60px; }
+  .cr-ach-label .cr-count { margin-left: 4px; }
+}
 /* The logo block (logo, name, tagline) is only seen on the home page, inside the banner. Everywhere it stays for screen readers: it holds the page's h1. */
 .top .brand { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; margin: 0; }
 .top .qa-name { grid-column: 1; grid-row: 2; padding-top: 0; }
@@ -851,6 +938,9 @@ body { zoom: var(--ui-scale, 1); }
   </header>
 
   <section class="home" id="home-view">
+    <section class="cracha" id="cracha" aria-labelledby="cracha-title" data-test="cracha">
+      <h2 class="visually-hidden" id="cracha-title" data-i18n="crTitle">Your academy badge</h2>
+    </section>
     <div class="tpl-note" id="tpl-note" hidden></div>
     <div class="story"><div class="story-avatar" aria-hidden="true"><img src="assets/bruxa-maria.webp" width="196" height="240" alt=""></div><div><div class="story-who" data-i18n="welcomeWho">Bruxa Maria says</div><p class="story-text" id="home-welcome"></p></div></div>
     <div class="home-intro">
@@ -3266,6 +3356,7 @@ buildContent();
 const UI = {
   en: {
     rank: 'Rank', apprenticeName: '+ Add your name', changeName: 'Change your name', yourName: 'Your name', save: 'Save',
+    crTitle: 'Your academy badge', crTrack: 'Current track', crProgress: 'Track progress', crRank: 'Current title', crAch: 'Achievements', crLv: 'Level {n}', crXpAria: '{x} of {m} XP to the next title', crOpenTrack: 'Open the {m} track', crSeeAch: 'See all achievements', crDoneAria: 'done', crNowAria: 'current level',
     achLink: 'Achievements', achLinkAria: 'Achievements: {n} of {t} badges', achTitle: '🏅 Achievements', achIntro: 'Every badge you can earn in the academy. Earned badges are in colour; the others show what to do to get them.',
     achCount: '{n} of {t} badges earned', achAcademyTitle: 'Your academy title', achXp: '{x} of {m} XP in the academy', achNext: '{n} XP to {r}', achTop: 'You reached the highest title!',
     achEarnedOn: 'Earned on {d}', achLocked: 'Locked', achSoon: 'Coming soon', achNew: 'New badge: {b}', achMany: '{n} new badges! See them in Achievements.',
@@ -3365,6 +3456,7 @@ const UI = {
   },
   pt: {
     rank: 'Título', apprenticeName: '+ Adicione seu nome', changeName: 'Mudar seu nome', yourName: 'Seu nome', save: 'Salvar',
+    crTitle: 'Seu crachá da academia', crTrack: 'Trilha atual', crProgress: 'Progresso da trilha', crRank: 'Título atual', crAch: 'Conquistas', crLv: 'Nível {n}', crXpAria: '{x} de {m} XP para o próximo título', crOpenTrack: 'Abrir a trilha {m}', crSeeAch: 'Ver todas as conquistas', crDoneAria: 'concluído', crNowAria: 'nível atual',
     achLink: 'Conquistas', achLinkAria: 'Conquistas: {n} de {t} medalhas', achTitle: '🏅 Conquistas', achIntro: 'Todas as medalhas que dá para ganhar na academia. As conquistadas aparecem coloridas; as outras mostram o que fazer para ganhar.',
     achCount: '{n} de {t} medalhas conquistadas', achAcademyTitle: 'Seu título na academia', achXp: '{x} de {m} XP na academia', achNext: 'Faltam {n} XP para {r}', achTop: 'Você chegou ao título mais alto!',
     achEarnedOn: 'Conquistada em {d}', achLocked: 'Bloqueada', achSoon: 'Em breve', achNew: 'Nova medalha: {b}', achMany: '{n} medalhas novas! Veja em Conquistas.',
@@ -3837,6 +3929,7 @@ function renderHeader() {
     $('xpbar').style.width = (max ? Math.round((total / max) * 100) : 0) + '%';
     $('xpbar').title = t('allXp', { x: total, m: max });
     $('badges').innerHTML = '';
+    renderCracha();
     return;
   }
   const mod = activeModule;
@@ -4530,8 +4623,8 @@ function validAvatar(v) { const n = Number(v); return v != null && Number.isInte
 function avatarButton() {
   const n = validAvatar(state.avatar);
   return n
-    ? '<button class="avatar-btn" id="avatar-open" type="button" aria-haspopup="dialog" title="' + esc(t('changeAvatar')) + '" aria-label="' + esc(t('changeAvatar') + ' (' + avatarAlt(n) + ')') + '"><img src="' + avatarSrc(n) + '" width="210" height="240" alt=""></button>'
-    : '<button class="avatar-btn empty" id="avatar-open" type="button" aria-haspopup="dialog" title="' + esc(t('chooseAvatar')) + '" aria-label="' + esc(t('chooseAvatar')) + '"><span aria-hidden="true">+</span></button>';
+    ? '<button class="avatar-btn avatar-trigger" id="avatar-open" type="button" aria-haspopup="dialog" title="' + esc(t('changeAvatar')) + '" aria-label="' + esc(t('changeAvatar') + ' (' + avatarAlt(n) + ')') + '"><img src="' + avatarSrc(n) + '" width="210" height="240" alt=""></button>'
+    : '<button class="avatar-btn empty avatar-trigger" id="avatar-open" type="button" aria-haspopup="dialog" title="' + esc(t('chooseAvatar')) + '" aria-label="' + esc(t('chooseAvatar')) + '"><span aria-hidden="true">+</span></button>';
 }
 function openAvatars() {
   const dlg = $('avatar-dialog');
@@ -4555,12 +4648,13 @@ $('avatar-grid').addEventListener('click', e => {
   saveState();
   closeAvatars();
   renderName();
-  const open = $('avatar-open'); if (open) open.focus();
+  focusAvatarTrigger();
   toast(t('avatarSaved'));
 });
 $('avatar-close').addEventListener('click', closeAvatars);
 $('avatar-dialog').addEventListener('click', e => { if (e.target === $('avatar-dialog')) closeAvatars(); }); // click on the backdrop
-$('avatar-dialog').addEventListener('close', () => { const b = $('avatar-open'); if (b) b.focus(); });
+function focusAvatarTrigger() { const b = [...document.querySelectorAll('.avatar-trigger')].find(x => x.offsetParent !== null); if (b) b.focus(); }
+$('avatar-dialog').addEventListener('close', focusAvatarTrigger);
 
 /* ---------- Achievements page ---------- */
 function badgeImg(a) { return 'assets/badges/' + (a.shared ? '' : LANG + '/') + a.id + '.webp'; }
@@ -4583,6 +4677,7 @@ function checkBadges() {
   saveState();
   renderAchLink();
   if (!$('achievements-view').hidden) renderAchievements(); // show the new dates
+  if (!$('home-view').hidden) renderCracha();
   if (fresh.length > 2) { toast(t('achMany', { n: fresh.length }), 'assets/badges/star-premium.webp'); return; }
   fresh.forEach(id => { const a = ACH.list.find(x => x.id === id); toast(t('achNew', { b: a.name }), badgeImg(a)); });
 }
@@ -4621,7 +4716,83 @@ function renderAchievements() {
   }).join('');
 }
 
+/* ---------- Home: the badge card (crachá) ---------- */
+// The track shown on the card: the one of the exercise the learner opened last, else the Start Track.
+function crachaTrack() {
+  const cur = state.current && byId(state.current);
+  const m = cur ? moduleOf(cur) : START_TRACK_ID;
+  return MODULES.find(x => x.id === m && trackOpen(x.id)) || MODULES.find(x => x.id === START_TRACK_ID);
+}
+const PENNANTS = { start: 'assets/pennant-start.webp', dev: 'assets/pennant-dev.webp', qa: 'assets/pennant-qa.webp', ai: 'assets/pennant-ai.webp' };
+function renderCracha() {
+  const box = $('cracha'); if (!box || !ACH) return;
+  const facts = badgeFacts();
+  const { xp, max } = academyXp();
+  const titles = ACH.list.filter(a => a.group === 'titles');
+  const { title, next } = academyTitle(ACH.list, facts);
+  const lv = titles.indexOf(title) + 1;
+  const goal = next ? Math.max(1, Math.ceil(next.at * max)) : max;
+  const n = validAvatar(state.avatar), name = (state.name || '').trim();
+  // track progress: one segment per level, the checklist shows 4 levels around the current one
+  const mod = crachaTrack();
+  const levels = moduleLevels(mod.id);
+  const lvState = levels.map(l => { const ex = EXERCISES.filter(e => e.level === l.id); return { l, done: ex.filter(e => state.done[e.id]).length, total: ex.length }; });
+  const all = lvState.reduce((s, x) => s + x.total, 0), doneAll = lvState.reduce((s, x) => s + x.done, 0);
+  const pct = all ? Math.floor(doneAll * 100 / all) : 0;
+  const nowIdx = Math.max(0, lvState.findIndex(x => x.done < x.total));
+  const firstOpen = lvState.findIndex(x => x.done < x.total);
+  const from = Math.max(0, Math.min((firstOpen < 0 ? lvState.length : firstOpen) - 1, lvState.length - 4));
+  const shown = lvState.slice(from, from + 4);
+  const trackImg = PENNANTS[mod.id] || PENNANTS.start;
+  // the last 3 badges earned (state.badges keeps the order they were earned in)
+  const recent = Object.keys(state.badges || {}).map(id => ACH.list.find(a => a.id === id)).filter(a => a && !a.soon).slice(-3).reverse();
+  const earnedCount = Object.keys(state.badges || {}).filter(id => ACH.list.some(a => a.id === id && !a.soon)).length;
+  box.innerHTML = '<h2 class="visually-hidden" id="cracha-title">' + esc(t('crTitle')) + '</h2>' +
+    '<div class="cr-slot cr-avatar">' + (n
+      ? '<button type="button" class="avatar-trigger" id="cr-avatar" aria-haspopup="dialog" title="' + esc(t('changeAvatar')) + '" aria-label="' + esc(t('changeAvatar') + ' (' + avatarAlt(n) + ')') + '"><img src="' + avatarSrc(n) + '" width="210" height="240" alt=""></button>'
+      : '<button type="button" class="avatar-trigger empty" id="cr-avatar" aria-haspopup="dialog" title="' + esc(t('chooseAvatar')) + '" aria-label="' + esc(t('chooseAvatar')) + '"><span aria-hidden="true">+</span></button>') + '</div>' +
+    '<div class="cr-slot cr-name" id="cr-name">' + (name
+      ? '<button type="button" id="cr-name-edit" style="--nfs:' + Math.min(3.1, 36 / name.length).toFixed(2) + 'cqw" title="' + esc(t('changeName')) + '">' + esc(name) + '<span class="name-edit-icon" aria-hidden="true"> ✎</span></button>'
+      : '<button type="button" class="empty" id="cr-name-edit">' + esc(t('apprenticeName')) + '</button>') + '</div>' +
+    '<div class="cr-slot cr-lv" aria-hidden="true">' + lv + '</div>' +
+    '<div class="cr-slot cr-xp"><span class="cr-lv-inline">Lv ' + lv + ' ·</span><span class="visually-hidden">' + esc(t('crLv', { n: lv })) + ': </span>' + xp + ' / ' + goal + '<b>XP</b></div>' +
+    '<div class="cr-slot cr-xpbar" role="progressbar" aria-valuemin="0" aria-valuemax="' + goal + '" aria-valuenow="' + Math.min(xp, goal) + '" aria-label="' + esc(t('crXpAria', { x: xp, m: goal })) + '"><span style="width:' + Math.min(100, Math.round(xp * 100 / goal)) + '%"></span></div>' +
+    '<div class="cr-slot cr-label cr-track-label">' + esc(t('crTrack')) + '</div>' +
+    '<a class="cr-slot cr-track" href="#' + mod.id + '" title="' + esc(t('crOpenTrack', { m: mod.name })) + '"><img src="' + trackImg + '" alt="' + esc(t('crOpenTrack', { m: mod.name })) + '"></a>' +
+    '<div class="cr-slot cr-label cr-prog-label">' + esc(t('crProgress')) + '</div>' +
+    '<div class="cr-slot cr-progbar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '" aria-label="' + esc(t('crProgress') + ' · ' + mod.name) + '">' +
+      lvState.map(x => '<i title="' + esc(x.l.name) + '"><b style="width:' + (x.total ? Math.round(x.done * 100 / x.total) : 0) + '%"></b></i>').join('') + '</div>' +
+    '<div class="cr-slot cr-pct" aria-hidden="true">' + pct + '%</div>' +
+    '<ul class="cr-slot cr-check">' + shown.map(x => {
+      const done = x.total > 0 && x.done === x.total, now = lvState.indexOf(x) === nowIdx && !done;
+      return '<li class="' + (done ? 'done' : now ? 'now' : '') + '" title="' + esc(x.l.name) + '"><span class="cr-box" aria-hidden="true">' + (done ? '✓' : '') + '</span><span>' + esc(x.l.name) +
+        (done ? '<span class="visually-hidden"> (' + esc(t('crDoneAria')) + ')</span>' : now ? '<span class="visually-hidden"> (' + esc(t('crNowAria')) + ')</span>' : '') + '</span></li>';
+    }).join('') + '</ul>' +
+    '<div class="cr-slot cr-label cr-title-label">' + esc(t('crRank')) + '</div>' +
+    '<div class="cr-slot cr-title" style="--tfs:' + Math.min(2, 19 / Math.max(8, title.name.length)).toFixed(2) + 'cqw">' + esc(title.name) + '</div>' +
+    '<div class="cr-slot cr-label cr-ach-label">' + esc(t('crAch')) + '<span class="cr-count">(' + earnedCount + ')</span></div>' +
+    '<a class="cr-slot cr-ach" href="#achievements" aria-label="' + esc(t('crSeeAch')) + '">' + recent.map(a => '<img src="' + badgeImg(a) + '" alt="' + esc(a.name) + '" title="' + esc(a.name) + '">').join('') + '</a>';
+  $('cr-avatar').addEventListener('click', openAvatars);
+  $('cr-name-edit').addEventListener('click', crachaEditName);
+}
+function crachaEditName() {
+  const slot = $('cr-name');
+  slot.innerHTML = '<form id="cr-name-form"><input id="cr-name-input" maxlength="40" autocomplete="name" placeholder="' + esc(t('yourName')) + '" aria-label="' + esc(t('yourName')) + '"><button class="btn primary" type="submit">' + esc(t('save')) + '</button></form>';
+  const input = $('cr-name-input');
+  input.value = state.name || '';
+  input.focus();
+  input.addEventListener('keydown', e => { if (e.key === 'Escape') { renderCracha(); $('cr-name-edit').focus(); } });
+  $('cr-name-form').addEventListener('submit', e => {
+    e.preventDefault();
+    state.name = input.value.trim().slice(0, 40);
+    saveState();
+    renderName();
+    $('cr-name-edit').focus();
+  });
+}
+
 function renderName() {
+  renderCracha();
   const box = $('qa-name');
   const name = (state.name || '').trim();
   const nameHtml = name
