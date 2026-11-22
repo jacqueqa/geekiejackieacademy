@@ -43,6 +43,7 @@ Na página inicial, a seção **Comece por aqui** tem o cartão do guia (imagem 
 - A página **Conquistas** (`#achievements`, link embaixo do XP) mostra todas as medalhas: as conquistadas coloridas e com a data, as bloqueadas com a regra para ganhar, e as **em breve**, que dependem de contas de aluno ou de exercícios novos.
 - **Títulos da academia** pelo XP de todas as trilhas juntas: Estagiário(a) 0%, Aprendiz 10%, Assistente 25%, Especialista 50%, Mestre 75% e Arquimago(a) 95%. Os títulos de cada trilha continuam iguais.
 - As regras ficam no bloco `ACHIEVEMENTS` do `index.html` (função `buildAchievements`), testadas em `tests/achievements.test.mjs`. O progresso guarda também os dias de estudo, os exercícios seguidos de primeira e as páginas de recursos abertas.
+- **Crachá:** na página inicial, embaixo do banner, o crachá (`assets/cracha.webp`) mostra o avatar, o nome, o nível (o número do título), o XP até o próximo título, a trilha atual (a do último exercício aberto), o progresso dela por nível, o título atual e as 3 últimas medalhas. No celular ele vira um cartão empilhado.
 - Imagens: `assets/badges/pt/` e `assets/badges/en/` (medalhas com texto) e `assets/badges/` (as sem texto, iguais nas duas línguas).
 
 ### O que tem na academia
@@ -127,6 +128,7 @@ On the home page, the **Start here** section has the guide card (the magic shop 
 - The **Achievements** page (`#achievements`, linked under the XP) shows every badge: earned ones in colour with the date, locked ones with the rule to earn them, and **coming soon** ones that need student accounts or new exercises.
 - **Academy titles** by the XP of all tracks together: Intern 0%, Apprentice 10%, Assistant 25%, Specialist 50%, Master 75% and Archmage 95%. Each track keeps its own ranks.
 - The rules live in the `ACHIEVEMENTS` block of `index.html` (`buildAchievements`), tested in `tests/achievements.test.mjs`. Progress now also keeps study days, exercises solved in a row at the first try and the resource pages opened.
+- **Badge card (crachá):** on the home page, under the banner, the card (`assets/cracha.webp`) shows the avatar, the name, the level (the title number), the XP to the next title, the current track (the one of the last exercise opened), its progress per level, the current title and the 3 latest badges. On phones it becomes a stacked card.
 - Images: `assets/badges/pt/` and `assets/badges/en/` (badges with text) and `assets/badges/` (the ones without text, shared by both languages).
 
 ### What’s inside
