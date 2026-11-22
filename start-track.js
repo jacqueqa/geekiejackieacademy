@@ -2,7 +2,7 @@
    TRILHA INICIAL · START TRACK
    Logic in plain language, with boxes and diagrams. Nobody writes code here:
    the code only shows up to peek at, in "See it in JavaScript".
-   DEV, QA and AI recommend 60% of these exercises first (see ACCESS-RULES in index.html).
+   The other tracks recommend 60% of these exercises first (see ACCESS-RULES in index.html).
 
    Only data: index.html draws each kind and checks the answers (LOGIC-CHECK block).
    Every exercise has: kind, title, tag (the concept), story (Bruxa Maria), what, why, task,
@@ -46,7 +46,7 @@ function buildStartTrack(L) {
     stack: L('Logic · plain language and diagrams', 'Lógica · português e diagramas'), color: 'var(--xp)',
     art: 'total ← 0\nFOR EACH price IN cart:\n  total ← total + price',
     bullets: [L('40 logic exercises, no code to write', '40 exercícios de lógica, sem escrever código'), L('Boxes, flowcharts and step-by-step tables', 'Caixinhas, fluxogramas e tabelas passo a passo'),
-      L('Ideal base for DEV, QA and AI: 60%', 'Base ideal para DEV, QA e IA: 60%')],
+      L('Ideal base for the other tracks: 60%', 'Base ideal para as outras trilhas: 60%')],
   };
   const ranks = [
     { at: 0, name: L('New Intern', 'Novo Estagiário') }, { at: 0.15, name: L('Logic Apprentice', 'Aprendiz de Lógica') }, { at: 0.4, name: L('Flowchart Weaver', 'Tecelão de Fluxogramas') },
