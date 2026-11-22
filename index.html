@@ -191,6 +191,7 @@ button { font: inherit; cursor: pointer; }
 .mod-card code { font-size: 0.88em; }
 /* Technical Resources: shown but not ready yet */
 .resources-intro { margin-top: 72px; }
+.res-art { display: block; width: 100%; height: auto; aspect-ratio: 1670 / 942; object-fit: cover; }
 /* Three resource cards, same size as the module cards above */
 .home-cards.resources { grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; margin-inline: auto; }
 @media (max-width: 900px) { .home-cards.resources { grid-template-columns: minmax(0, 1fr); width: 100%; } }
@@ -387,6 +388,94 @@ pre.t-out { margin: 0; font-size: 12.5px; color: var(--muted); white-space: pre-
 .export-group legend { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 600; margin-bottom: 8px; padding: 0; }
 .export-group label { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
 .export-group input { accent-color: var(--accent); width: 16px; height: 16px; }
+.rulebook.design { max-width: 1100px; }
+.dp-hero { position: relative; container-type: inline-size; border-radius: 18px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+.dp-hero img { display: block; width: 100%; height: auto; }
+/* the banner of the art, cleared: x 612-1076, y 721-838 of 1670 x 942 */
+.dp-hero-title { position: absolute; left: 36.6%; top: 76.5%; width: 27.8%; height: 12.4%; margin: 0; display: grid; place-items: center; text-align: center;
+  font-family: var(--font-display); font-weight: 700; font-size: 2.35cqw; line-height: 1.04; text-transform: uppercase; letter-spacing: .02em; color: #2B1745; }
+.dp-intro { color: var(--muted); max-width: 70ch; margin: 0 auto; text-align: center; }
+/* the map: a medallion in the middle, linked to four cards (SOLID, DRY / KISS, YAGNI) */
+.dp-map { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(150px, 200px) minmax(0, 1fr); grid-template-areas: "c1 mid c2" "c3 mid c4"; gap: 26px 34px; align-items: center; padding: 8px 0 12px; }
+.dp-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.dp-lines line { stroke-width: 3; stroke-linecap: round; opacity: .8; }
+.dp-lines circle { opacity: .95; }
+.dp-center { grid-area: mid; position: relative; z-index: 1; aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; text-align: center; padding: 18px;
+  background: radial-gradient(circle at 35% 30%, #FFF6C8, #F2D879); color: #3A2150; border: 4px solid #E8A33D; box-shadow: 0 6px 0 rgba(0,0,0,.4), 0 0 0 6px rgba(232,163,61,.18);
+  font-family: var(--font-display); font-weight: 700; font-size: 15px; line-height: 1.2; text-transform: uppercase; letter-spacing: .02em; }
+.dp-card { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 10px; padding: 10px 10px 14px; border-radius: 20px; cursor: pointer; text-align: left; color: var(--ink); font: inherit;
+  background: color-mix(in srgb, var(--c) 14%, var(--surface)); border: 3px solid var(--c); box-shadow: 0 6px 0 rgba(0,0,0,.45); transition: transform .15s ease, box-shadow .15s ease; }
+.dp-card:hover, .dp-card:focus-visible { transform: translateY(-3px); box-shadow: 0 9px 0 rgba(0,0,0,.45), 0 0 0 4px color-mix(in srgb, var(--c) 35%, transparent); }
+.dp-card:focus-visible { outline: none; }
+.dp-card img { display: block; width: 100%; height: auto; aspect-ratio: 1670 / 942; object-fit: cover; border-radius: 13px; }
+.dp-card-text { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; padding: 0 6px; }
+.dp-card-text strong { font-family: var(--font-display); font-size: 22px; letter-spacing: .06em; color: var(--c); }
+.dp-card-text span { color: var(--ink); font-size: 14px; }
+.dp-card-text em { flex-basis: 100%; font-style: normal; color: var(--muted); font-size: 12.5px; }
+.dp-card[data-area="c1"] { grid-area: c1; } .dp-card[data-area="c2"] { grid-area: c2; } .dp-card[data-area="c3"] { grid-area: c3; } .dp-card[data-area="c4"] { grid-area: c4; }
+@media (max-width: 760px) {
+  .dp-map { grid-template-columns: minmax(0, 1fr); grid-template-areas: "mid" "c1" "c2" "c3" "c4"; gap: 18px; }
+  .dp-lines { display: none; }
+  .dp-center { width: 150px; justify-self: center; font-size: 13px; }
+  .dp-hero-title { font-size: 2.6cqw; }
+}
+
+/* ---------- Quest / status window: the project's window style ----------
+   Chamfered corners (clip-path), a gold frame, a lilac header band, hatch stripes, and a see-through
+   purple body with blur so it doesn't feel heavy. */
+.quest { border: 0; padding: 0; background: transparent; color: #F3E8FF; width: min(820px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); overflow: visible; }
+.quest::backdrop { background: rgba(12, 4, 28, .62); backdrop-filter: blur(3px); }
+.quest-frame { --cut: 22px; position: relative; padding: 3px; background: linear-gradient(135deg, #F6C85F, #E8A33D 40%, #F6C85F 60%, #C9862A);
+  clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 calc(100% - var(--cut)), 0 var(--cut)); }
+.quest-inner { --cut: 20px; position: relative; max-height: calc(100dvh - 30px); overflow: auto; overscroll-behavior: contain;
+  background: rgba(36, 14, 64, .84); backdrop-filter: blur(10px);
+  clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 calc(100% - var(--cut)), 0 var(--cut)); }
+.quest-inner::after { content: ""; display: block; height: 8px; width: 46%; /* hatch stripes at the end of the content, never over the text */
+  background: repeating-linear-gradient(-45deg, rgba(246,200,95,.9) 0 5px, transparent 5px 10px); pointer-events: none; }
+.quest-head { position: sticky; top: 0; z-index: 2; padding: 16px 64px 14px 26px; color: #2B1145;
+  background: linear-gradient(rgba(214, 140, 236, .92), rgba(190, 110, 220, .92)); border-bottom: 3px solid rgba(110, 40, 140, .7);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), 62% calc(100% - 10px), calc(62% - 10px) 100%, 0 100%); }
+.quest-head::before { content: ""; position: absolute; right: 70px; top: 8px; width: 120px; height: 6px; background: repeating-linear-gradient(-45deg, rgba(60,20,90,.55) 0 4px, transparent 4px 8px); }
+.quest-kicker { font-size: 11px; text-transform: uppercase; letter-spacing: .14em; font-weight: 700; opacity: .8; }
+.quest-head h3 { font-family: var(--font-display); font-size: clamp(26px, 4vw, 34px); line-height: 1.05; margin: 2px 0 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.quest-head h3 small { font-size: 15px; font-weight: 600; opacity: .85; }
+.quest-head p { margin: 4px 0 0; font-weight: 600; }
+.quest-close { position: absolute; top: 14px; right: 18px; width: 36px; height: 36px; border-radius: 10px; border: 2px solid rgba(60,20,90,.6); background: rgba(255,255,255,.35); color: #2B1145; font-size: 16px; cursor: pointer; }
+.quest-close:hover, .quest-close:focus-visible { background: rgba(255,255,255,.6); outline: none; }
+.quest-body { padding: 18px 26px 26px; display: flex; flex-direction: column; gap: 16px; }
+.quest-stats { display: flex; flex-wrap: wrap; gap: 8px; }
+.quest-stat { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 12.5px; padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(246,200,95,.45); background: rgba(246,200,95,.08); }
+.quest-stat b { color: #F6C85F; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; font-size: 11px; }
+.quest-stat .rule-link { font-size: 11.5px; padding: 1px 8px; }
+.quest-sec { border-left: 3px solid var(--c, #C9A8F0); padding: 2px 0 2px 14px; }
+.quest-sec h4 { font-size: 13px; text-transform: uppercase; letter-spacing: .1em; color: var(--c, #C9A8F0); margin: 0 0 4px; }
+.quest-sec p { margin: 0; color: #EDE2F7; line-height: 1.55; }
+.quest-sec.warn { --c: #F6C85F; }
+.quest-code { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; } /* before above after: the lines are too long side by side */
+.quest-code figure { margin: 0; min-width: 0; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,.12); background: rgba(10, 4, 24, .55); }
+.quest-code figcaption { font-size: 12px; font-weight: 700; padding: 6px 12px; letter-spacing: .04em; }
+.quest-code .bad figcaption { background: rgba(255, 138, 138, .16); color: #FFB3B3; }
+.quest-code .good figcaption { background: rgba(98, 211, 148, .16); color: #9BEFC0; }
+.quest-code pre { margin: 0; padding: 10px 12px; overflow: auto; font-size: 12.5px; line-height: 1.5; color: #F3E8FF; }
+.quest-parts { display: flex; flex-direction: column; gap: 8px; }
+.quest-part { border: 1px solid rgba(123, 211, 137, .4); border-radius: 12px; background: rgba(123, 211, 137, .06); }
+.quest-part > summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 12px; padding: 10px 14px; }
+.quest-part > summary::-webkit-details-marker { display: none; }
+.quest-part > summary::after { content: "▾"; margin-left: auto; color: #7BD389; transition: transform .15s ease; }
+.quest-part[open] > summary::after { transform: rotate(180deg); }
+.quest-letter { flex: none; width: 36px; height: 36px; border-radius: 9px; display: grid; place-items: center; font-family: var(--font-display); font-weight: 700; font-size: 20px; color: #17301D; background: #7BD389; }
+.quest-part > summary span { display: flex; flex-direction: column; }
+.quest-part > summary small { color: var(--muted); font-size: 12px; }
+.quest-part-body { padding: 0 14px 14px; display: flex; flex-direction: column; gap: 10px; }
+.quest-part-body p { margin: 0; color: #EDE2F7; }
+.quest-foot { display: flex; justify-content: space-between; gap: 10px; padding-top: 4px; }
+.quest-nav { font: inherit; font-size: 13px; font-weight: 600; color: #F3E8FF; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.18); border-radius: 10px; padding: 8px 14px; cursor: pointer; }
+.quest-nav:hover, .quest-nav:focus-visible { border-color: #F6C85F; color: #F6C85F; outline: none; }
+@media (max-width: 640px) {
+  .quest-code { grid-template-columns: minmax(0, 1fr); }
+  .quest-head { padding: 14px 58px 12px 18px; }
+  .quest-body { padding: 14px 16px 20px; }
+}
 .export-resume { color: var(--muted); font-size: 13px; margin-top: 6px; }
 .import-dialog { width: min(520px, calc(100vw - 32px)); }
 .import-body { padding: 14px 20px 20px; display: flex; flex-direction: column; gap: 14px; }
@@ -968,6 +1057,16 @@ body { zoom: var(--ui-scale, 1); }
     </div>
   </section>
 
+  <section class="rulebook design" id="design-view" hidden data-test="design-view">
+    <a class="back-link" href="#" data-i18n="allTracks">← Homepage</a>
+    <div class="dp-hero">
+      <img src="assets/design/grimoire.webp" width="1670" height="942" alt="" data-i18n-alt="dpHeroAlt">
+      <h2 class="dp-hero-title" data-i18n="dpTitle">Code design principles</h2>
+    </div>
+    <p class="dp-intro" data-i18n="dpIntro">Four ideas that make code easier to read, test and change. Open a card to see each one with an example from the shop.</p>
+    <div class="dp-map" id="dp-map"></div>
+  </section>
+
   <section class="rulebook achievements" id="achievements-view" hidden data-test="achievements-view">
     <a class="back-link" href="#" data-i18n="allTracks">← Homepage</a>
     <div class="rb-head">
@@ -1214,6 +1313,11 @@ body { zoom: var(--ui-scale, 1); }
     </div>
   </div>
 </dialog>
+<!-- Status window of a design principle. Its look (chamfered gold frame, lilac header band, hatch stripes,
+     see-through purple) is the "quest window" style of the project: reuse .quest for windows like this one. -->
+<dialog class="quest" id="dp-dialog" aria-labelledby="dp-q-title">
+  <div class="quest-frame"><div class="quest-inner" id="dp-q-inner"></div></div>
+</dialog>
 <dialog class="avatar-dialog" id="avatar-dialog" aria-labelledby="avatar-title">
   <div class="drawer-head">
     <div>
@@ -1266,6 +1370,7 @@ body { zoom: var(--ui-scale, 1); }
 
 <!-- Glossary terms (Recursos técnicos → Glossário). Data only; see the comment at the top of the file. -->
 <script src="glossary.js"></script>
+<script src="design-principles.js"></script>
 <!-- Start Track exercises (logic with boxes and diagrams). Data only; see the comment at the top of the file. -->
 <script src="start-track.js"></script>
 <script type="text/plain" id="worker-src">
@@ -2310,6 +2415,9 @@ RESOURCES = [
     bullets: [L('Programming words explained simply', 'Palavras de programação explicadas de forma simples'), L('Examples from the shop, A–Z and search', 'Exemplos da lojinha, A–Z e busca'), L('Filter by category and by track', 'Filtro por categoria e por trilha')] },
   { title: L('The shop (mock e-commerce)', 'A lojinha (e-commerce de mentira)'), url: 'shop/', color: 'var(--m-post)', art: 'catalog → cart → coupon\n  → checkout → POST /api/orders\n  → pay → 201 / 409',
     bullets: [L('A working online shop built from the same rules and products', 'Uma loja online funcionando, feita com as mesmas regras e produtos'), L('Practise manual tests, Cypress and API checks', 'Para treinar testes manuais, Cypress e testes de API'), L('With test cards, coupons and an API log', 'Com cartões de teste, cupons e log da API')] },
+  { title: L('Code design principles', 'Princípios de design de código'), url: '#design', color: 'var(--accent)', image: 'assets/design/grimoire.webp',
+    imageAlt: L('Pixel art: Geekie Jackie holds a glowing grimoire', 'Pixel art: a Geekie Jackie segura um grimório brilhante'),
+    bullets: [L('SOLID, DRY, KISS and YAGNI, one window each', 'SOLID, DRY, KISS e YAGNI, uma janela para cada'), L('Before and after code from the shop', 'Código antes e depois, da lojinha'), L('The warning signs that call for each one', 'Os sinais de alerta que pedem cada um')] },
   { title: L('Git grimoire', 'Grimório do Git'), url: '#grimoire', color: 'var(--m-git)', art: 'clone → pull → branch\n  → add → commit → push',
     bullets: [L('Every Git spell on one page', 'Todos os feitiços de Git numa página'), L('With the VS Code equivalent of each command', 'Com o equivalente no VS Code de cada comando'), L('Filled in with your track’s repo and branch', 'Preenchido com o repo e a branch da sua trilha')] },
 ];
@@ -3388,6 +3496,9 @@ buildContent();
 const UI = {
   en: {
     rank: 'Rank', apprenticeName: '+ Add your name', changeName: 'Change your name', yourName: 'Your name', save: 'Save',
+    dpTitle: 'Code design principles', dpLink: 'Code design principles', dpIntro: 'Four ideas that make code easier to read, test and change. Open a card to see each one with an example from the shop.', dpCenter: 'Software design principles',
+    dpHeroAlt: 'Pixel art: Geekie Jackie holds a glowing grimoire, next to books named Clean code, Better apps and Happier devs', dpOpen: 'Open the {n} window', dpKicker: 'Design principle', dpWhat: 'What it is', dpWhy: 'Why it matters', dpSmell: 'Warning sign',
+    dpShop: 'In the shop', dpBefore: '❌ Before', dpAfter: '✅ After', dpTracks: 'Tracks', dpRules: 'Shop rules', dpLetters: 'The five letters', dpPrev: '← {n}', dpNext: '{n} →', dpNoData: 'The design principles file (design-principles.js) did not load.',
     importBtn: 'Import progress', impSummary: '{n} · {d} exercises done · {b} badges · exported on {e}', impNoName: 'No name', impWarn: 'The progress saved in this browser will be replaced by the one in the file. This can’t be undone.', impConfirm: 'Replace my progress', impDone: 'Progress imported. Welcome back!',
     impNone: 'This file has no saved progress. Download it again from “My work” in the academy and try once more.', impBad: 'The saved progress in this file is damaged and can’t be read.', impNewer: 'This file comes from a newer version of the academy. Reload the page and try again.', impBig: 'This file is too big to be an export of the academy.', impRead: 'The file could not be read.',
     expResume: 'The file also keeps your full progress: use “Import progress” to continue in another browser or computer.',
@@ -3491,6 +3602,9 @@ const UI = {
   },
   pt: {
     rank: 'Título', apprenticeName: '+ Adicione seu nome', changeName: 'Mudar seu nome', yourName: 'Seu nome', save: 'Salvar',
+    dpTitle: 'Princípios de design de código', dpLink: 'Princípios de design de código', dpIntro: 'Quatro ideias que deixam o código mais fácil de ler, testar e mudar. Abra um cartão para ver cada uma com um exemplo da lojinha.', dpCenter: 'Princípios do design de software',
+    dpHeroAlt: 'Pixel art: a Geekie Jackie segura um grimório brilhante, ao lado de livros chamados Clean code, Better apps e Happier devs', dpOpen: 'Abrir a janela do {n}', dpKicker: 'Princípio de design', dpWhat: 'O que é', dpWhy: 'Por que importa', dpSmell: 'Sinal de alerta',
+    dpShop: 'Na lojinha', dpBefore: '❌ Antes', dpAfter: '✅ Depois', dpTracks: 'Trilhas', dpRules: 'Regras da loja', dpLetters: 'As cinco letras', dpPrev: '← {n}', dpNext: '{n} →', dpNoData: 'O arquivo dos princípios de design (design-principles.js) não carregou.',
     importBtn: 'Importar progresso', impSummary: '{n} · {d} exercícios feitos · {b} medalhas · exportado em {e}', impNoName: 'Sem nome', impWarn: 'O progresso salvo neste navegador será substituído pelo do arquivo. Não dá para desfazer.', impConfirm: 'Substituir meu progresso', impDone: 'Progresso importado. Que bom ter você de volta!',
     impNone: 'Este arquivo não tem progresso salvo. Baixe de novo em “Meu trabalho” na academia e tente outra vez.', impBad: 'O progresso salvo neste arquivo está danificado e não dá para ler.', impNewer: 'Este arquivo é de uma versão mais nova da academia. Recarregue a página e tente de novo.', impBig: 'Este arquivo é grande demais para ser uma exportação da academia.', impRead: 'Não deu para ler o arquivo.',
     expResume: 'O arquivo também guarda seu progresso completo: use “Importar progresso” para continuar em outro navegador ou computador.',
@@ -4603,10 +4717,24 @@ function showView() {
   if (['glossary', 'rulebook', 'catalog', 'grimoire'].includes(hash) && !(state.visited && state.visited[hash])) {
     state.visited = state.visited || {}; state.visited[hash] = 1; saveState(); checkBadges();
   }
+  // #design and #design/<principle id> (that one opens its status window)
+  const isDesign = hash === 'design' || hash.indexOf('design/') === 0;
+  $('design-view').hidden = !isDesign;
+  if (isDesign) {
+    activeModule = null;
+    ['home-view', 'rulebook-view', 'howto-view', 'module-view', 'catalog-view', 'grimoire-view', 'glossary-view', 'achievements-view'].forEach(id => { $(id).hidden = true; });
+    renderHeader(); renderDesign();
+    document.title = CONFIG.name + ': ' + t('dpTitle');
+    window.scrollTo(0, 0);
+    const pid = hash.slice('design/'.length);
+    if (pid) openDesign(pid, false);
+    return;
+  }
+  if ($('dp-dialog').open) $('dp-dialog').close();
   $('achievements-view').hidden = hash !== 'achievements';
   if (hash === 'achievements') {
     activeModule = null;
-    ['home-view', 'rulebook-view', 'howto-view', 'module-view', 'catalog-view', 'grimoire-view', 'glossary-view'].forEach(id => { $(id).hidden = true; });
+    ['home-view', 'rulebook-view', 'howto-view', 'module-view', 'catalog-view', 'grimoire-view', 'glossary-view', 'design-view'].forEach(id => { $(id).hidden = true; });
     renderHeader(); renderAchievements();
     document.title = CONFIG.name + ': ' + t('achLink');
     window.scrollTo(0, 0);
@@ -4615,7 +4743,7 @@ function showView() {
   $('glossary-view').hidden = hash !== 'glossary';
   if (hash === 'glossary') {
     activeModule = null;
-    ['home-view', 'rulebook-view', 'howto-view', 'module-view', 'catalog-view', 'grimoire-view'].forEach(id => { $(id).hidden = true; });
+    ['home-view', 'rulebook-view', 'howto-view', 'module-view', 'catalog-view', 'grimoire-view', 'design-view'].forEach(id => { $(id).hidden = true; });
     renderHeader(); renderGlossary();
     document.title = CONFIG.name + ': ' + t('glossaryLink');
     window.scrollTo(0, 0);
@@ -5246,7 +5374,7 @@ function renderShell() {
   $('resources-intro-text').textContent = CONFIG.resourcesIntro;
   $('resource-cards').innerHTML = RESOURCES.map(r => {
     const inactive = r.soon || !r.url;
-    const inner = '<div class="mod-card-media">' + cardArt(r.title, '', esc(r.art || ''), r.color || 'var(--accent)') +
+    const inner = '<div class="mod-card-media">' + (r.image ? '<img class="res-art" src="' + r.image + '" width="1670" height="942" loading="lazy" alt="' + esc(r.imageAlt || '') + '">' : cardArt(r.title, '', esc(r.art || ''), r.color || 'var(--accent)')) +
       (inactive ? '<span class="soon-badge">' + esc(t('soon')) + '</span>' : '') + '</div>' +
       '<div class="mod-card-body"><ul>' + (r.bullets || []).map(b => '<li>' + b + '</li>').join('') + '</ul>' +
       (inactive ? '' : '<span class="mod-cta">' + esc(t('openX', { x: r.title })) + '</span>') + '</div>';
@@ -5359,6 +5487,81 @@ document.querySelectorAll('.fold-toggle').forEach(btn => btn.addEventListener('c
   saveState();
   renderFolds();
 }));
+
+/* ---------- Code design principles (data in design-principles.js) ---------- */
+function designData() { return typeof DESIGN_PRINCIPLES !== 'undefined' && Array.isArray(DESIGN_PRINCIPLES) ? DESIGN_PRINCIPLES : []; }
+// The text of a principle (or of one SOLID letter) in the current language.
+function dpT(x, field) { return LANG === 'en' && x.en && x.en[field] != null ? x.en[field] : x[field]; }
+const DP_AREAS = ['c1', 'c2', 'c3', 'c4'];
+function renderDesign() {
+  const list = designData();
+  const map = $('dp-map');
+  if (!list.length) { map.innerHTML = '<p class="dp-intro">' + esc(t('dpNoData')) + '</p>'; return; }
+  // lines from the medallion to each card, with a dot at the card end (like the sketch)
+  const ends = [[30, 26], [70, 26], [30, 74], [70, 74]];
+  const lines = '<svg class="dp-lines" aria-hidden="true">' + list.slice(0, 4).map((pr, i) =>
+    '<line x1="50%" y1="50%" x2="' + ends[i][0] + '%" y2="' + ends[i][1] + '%" stroke="' + pr.color + '"/>' +
+    '<circle cx="' + (50 + (ends[i][0] - 50) * 0.36) + '%" cy="' + (50 + (ends[i][1] - 50) * 0.36) + '%" r="6" fill="' + pr.color + '"/>').join('') + '</svg>';
+  map.innerHTML = lines + '<div class="dp-center">' + esc(t('dpCenter')) + '</div>' + list.map((pr, i) =>
+    '<button type="button" class="dp-card" data-area="' + (DP_AREAS[i] || '') + '" data-principle="' + pr.id + '" style="--c:' + pr.color + '" aria-haspopup="dialog" aria-label="' + esc(t('dpOpen', { n: pr.name })) + '">' +
+      '<img src="' + pr.image + '" width="1200" height="676" loading="lazy" alt="">' +
+      '<span class="dp-card-text"><strong>' + esc(pr.name) + '</strong><span>' + esc(dpT(pr, 'title')) + '</span><em>' + esc(pr.full) + '</em></span></button>').join('');
+  map.querySelectorAll('[data-principle]').forEach(b => b.addEventListener('click', () => openDesign(b.dataset.principle, true)));
+}
+function dpCode(before, after) {
+  return '<div class="quest-code"><figure class="bad"><figcaption>' + esc(t('dpBefore')) + '</figcaption><pre><code>' + esc(before) + '</code></pre></figure>' +
+    '<figure class="good"><figcaption>' + esc(t('dpAfter')) + '</figcaption><pre><code>' + esc(after) + '</code></pre></figure></div>';
+}
+let dpTrigger = null;
+function openDesign(id, fromCard) {
+  const list = designData();
+  const i = list.findIndex(x => x.id === id);
+  if (i < 0) return;
+  const pr = list[i], prev = list[(i - 1 + list.length) % list.length], next = list[(i + 1) % list.length];
+  const trackNames = (pr.tracks || []).map(tr => { const m = MODULES.find(x => x.id === tr); return m ? m.name : tr; });
+  const rules = [...new Set((pr.rules || []).concat(...(pr.parts || []).map(x => x.rules || [])))];
+  const sec = (cls, title, text) => '<section class="quest-sec ' + cls + '"><h4>' + esc(title) + '</h4><p>' + esc(text) + '</p></section>';
+  $('dp-q-inner').style.setProperty('--c', pr.color);
+  $('dp-q-inner').innerHTML =
+    '<header class="quest-head" style="background:linear-gradient(color-mix(in srgb, ' + pr.color + ' 70%, #E7A8F5), color-mix(in srgb, ' + pr.color + ' 55%, #C06FE0))">' +
+      '<div class="quest-kicker">' + esc(t('dpKicker')) + '</div>' +
+      '<h3 id="dp-q-title">' + esc(pr.name) + ' <small>' + esc(pr.full) + '</small></h3><p>' + esc(dpT(pr, 'title')) + '</p>' +
+      '<button type="button" class="quest-close" id="dp-close" aria-label="' + esc(t('close')) + '">✕</button></header>' +
+    '<div class="quest-body">' +
+      '<div class="quest-stats">' +
+        (trackNames.length ? '<span class="quest-stat"><b>' + esc(t('dpTracks')) + '</b>' + esc(trackNames.join(' · ')) + '</span>' : '') +
+        (rules.length ? '<span class="quest-stat"><b>' + esc(t('dpRules')) + '</b>' + rules.map(r => '<button type="button" class="rule-link" data-rule="' + r + '">' + r + '</button>').join('') + '</span>' : '') +
+      '</div>' +
+      sec('', t('dpWhat'), dpT(pr, 'summary')) + sec('', t('dpWhy'), dpT(pr, 'why')) + sec('warn', '⚠️ ' + t('dpSmell'), dpT(pr, 'smell')) +
+      (pr.parts
+        ? '<section class="quest-sec"><h4>' + esc(t('dpLetters')) + '</h4></section><div class="quest-parts">' + pr.parts.map((x, k) =>
+            '<details class="quest-part"' + (k === 0 ? ' open' : '') + '><summary><span class="quest-letter" aria-hidden="true">' + x.letter + '</span><span><strong>' + esc(dpT(x, 'title')) + '</strong><small>' + esc(x.full) + '</small></span></summary>' +
+            '<div class="quest-part-body"><p>' + esc(dpT(x, 'summary')) + '</p>' + dpCode(dpT(x, 'before'), dpT(x, 'after')) + '</div></details>').join('') + '</div>'
+        : '<section class="quest-sec"><h4>' + esc(t('dpShop')) + '</h4></section>' + dpCode(dpT(pr, 'before'), dpT(pr, 'after'))) +
+      '<div class="quest-foot"><button type="button" class="quest-nav" data-go="' + prev.id + '">' + esc(t('dpPrev', { n: prev.name })) + '</button>' +
+        '<button type="button" class="quest-nav" data-go="' + next.id + '">' + esc(t('dpNext', { n: next.name })) + '</button></div>' +
+    '</div>';
+  $('dp-close').addEventListener('click', closeDesign);
+  $('dp-q-inner').querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => openDesign(b.dataset.go, false)));
+  $('dp-q-inner').querySelectorAll('[data-rule]').forEach(b => b.addEventListener('click', () => { closeDesign(); openRule(b.dataset.rule); }));
+  $('dp-q-inner').scrollTop = 0;
+  // the address shows the open window (#design/dry) without reloading the page
+  try { history.replaceState(null, '', '#design/' + pr.id); } catch (e) {}
+  const dlg = $('dp-dialog');
+  if (fromCard) dpTrigger = document.activeElement;
+  if (!dlg.open) { if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', ''); }
+  $('dp-close').focus();
+}
+function closeDesign() {
+  const dlg = $('dp-dialog');
+  if (dlg.open) { if (typeof dlg.close === 'function') dlg.close(); else dlg.removeAttribute('open'); }
+}
+$('dp-dialog').addEventListener('close', () => {
+  if ((location.hash || '').indexOf('#design/') === 0) { try { history.replaceState(null, '', '#design'); } catch (e) {} }
+  if (dpTrigger && dpTrigger.offsetParent !== null) dpTrigger.focus();
+  dpTrigger = null;
+});
+$('dp-dialog').addEventListener('click', e => { if (e.target === $('dp-dialog')) closeDesign(); }); // click on the backdrop
 
 /* ---------- Glossary (terms in glossary.js, search in GLOSSARY-LOGIC) ---------- */
 const glossUI = { query: '', category: '', track: '', open: new Set(), get lang() { return LANG; } };
