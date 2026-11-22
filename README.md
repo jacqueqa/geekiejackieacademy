@@ -18,7 +18,7 @@ Você acaba de ser contratado como estagiário de tecnologia na lojinha de tarot
 | **Git** | init, status, add, commit e log; branches main, develop e feature/*; clone, pull, push, merge, conflitos e pull request, no terminal e no VS Code |
 | **Back End** | Objetos, loops, condicionais e regras de negócio em JavaScript, mais 30 desafios de algoritmos (era a trilha DEV; o id continua `dev`) |
 | **Front End** | HTML e acessibilidade, CSS (seletores, cascata, caixa, flexbox) e JavaScript que monta a vitrine a partir dos dados |
-| **QA** | Asserções com Chai `expect()`, dados ruins e valores-limite |
+| **QA** | Em 8 módulos, alinhados aos conceitos do ISTQB (`qa-track.js`): mentalidade de QA, ciclo de vida do software e dos testes, requisitos, técnicas de teste, execução e bugs, gestão e métricas, ferramentas e automação (asserções com Chai `expect()`), e a caixa de ferramentas do QA. Já prontos: 01, 02, 04 e 07 |
 | **IA** | Prompts montados a partir de dados, alucinações e revisão de código gerado por IA |
 | **Dados** | Contar, somar e tirar médias dos pedidos, agrupar por categoria e por dia em JavaScript, ler SQL e escolher o gráfico certo |
 
@@ -67,7 +67,7 @@ Na página inicial, a seção **Comece por aqui** tem o cartão do guia (imagem 
 
 ### Como usar
 
-É uma página, `index.html`, mais os arquivos de dados `start-track.js` (Trilha Inicial), `new-tracks.js` (Git, Front End e Dados), `glossary.js` (glossário) e `design-principles.js`, sem nada para instalar. Abra no navegador ou publique com o GitHub Pages. O progresso fica salvo no navegador de quem usa.
+É uma página, `index.html`, mais os arquivos de dados `start-track.js` (Trilha Inicial), `new-tracks.js` (Git, Front End e Dados), `qa-track.js` (QA), `glossary.js` (glossário) e `design-principles.js`, sem nada para instalar. Abra no navegador ou publique com o GitHub Pages. O progresso fica salvo no navegador de quem usa.
 
 ### Como editar o conteúdo
 
@@ -109,7 +109,7 @@ You have just been hired as a tech intern at **Bruxa Maria’s** little tarot an
 | **Git** | init, status, add, commit and log; main, develop and feature/* branches; clone, pull, push, merge, conflicts and pull requests, in the terminal and in VS Code |
 | **Back End** | Objects, loops, conditionals and business rules in JavaScript, plus 30 algorithm challenges (it was the DEV track; the id is still `dev`) |
 | **Front End** | HTML and accessibility, CSS (selectors, cascade, box model, flexbox) and JavaScript that builds the shop window from data |
-| **QA** | Chai `expect()` assertions, bad data and boundary values |
+| **QA** | In 8 modules aligned with the ISTQB concepts (`qa-track.js`): the QA mindset, software and testing lifecycle, requirements, test techniques, execution and defects, management and metrics, tools and automation (Chai `expect()` assertions) and the QA toolbox. Ready so far: 01, 02, 04 and 07 |
 | **AI** | Prompts built from data, hallucinations and reviewing AI-generated code |
 | **Data** | Counting, summing and averaging orders, grouping by category and by day in JavaScript, reading SQL and picking the right chart |
 
@@ -158,7 +158,7 @@ On the home page, the **Start here** section has the guide card (the magic shop 
 
 ### How to use it
 
-It is one page, `index.html`, plus the data files `start-track.js` (Start Track), `new-tracks.js` (Git, Front End and Data), `glossary.js` (glossary) and `design-principles.js`, with nothing to install. Open it in a browser or publish it with GitHub Pages. Progress is saved in each learner’s browser.
+It is one page, `index.html`, plus the data files `start-track.js` (Start Track), `new-tracks.js` (Git, Front End and Data), `qa-track.js` (QA), `glossary.js` (glossary) and `design-principles.js`, with nothing to install. Open it in a browser or publish it with GitHub Pages. Progress is saved in each learner’s browser.
 
 ### How to edit the content
 

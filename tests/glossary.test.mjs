@@ -106,7 +106,8 @@ test('the A–Z bar has 26 letters and disables those without terms', () => {
   const on = l => letters.find(x => x.letter === l).enabled;
   assert.equal(on('A'), true);
   assert.equal(on('F'), true, 'Função and Framework');
-  assert.equal(on('K'), false);
+  assert.equal(on('K'), true, 'Kanban');
+  assert.equal(on('Q'), false);
   assert.equal(on('W'), false);
 });
 
