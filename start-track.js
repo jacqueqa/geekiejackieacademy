@@ -179,7 +179,7 @@ function buildStartTrack(L) {
     story: L('Every product has a record with the same fields. A customer wants details about the Rider-Waite.', 'Todo produto tem uma ficha com os mesmos campos. Uma cliente quer detalhes do Rider-Waite.'),
     what: L('<p>A <b>record</b> groups several values under one name. Each value has a <b>field</b> name: <code>price</code>, <code>stock</code>… In programming this is called an <b>object</b>.</p>',
       '<p>Uma <b>ficha</b> junta vários valores sob um nome só. Cada valor tem o nome de um <b>campo</b>: <code>preço</code>, <code>estoque</code>… Em programação, isso se chama <b>objeto</b>.</p>'),
-    why: L('<p>Products, customers and orders are all records. In the DEV track, the very first exercise reads a field of one.</p>', '<p>Produtos, clientes e pedidos são todos fichas. Na trilha DEV, o primeiro exercício é justamente ler um campo de uma.</p>'),
+    why: L('<p>Products, customers and orders are all records. In the Back End track, the very first exercise reads a field of one.</p>', '<p>Produtos, clientes e pedidos são todos fichas. Na trilha Back End, o primeiro exercício é justamente ler um campo de uma.</p>'),
     task: L('Read the record and answer.', 'Leia a ficha e responda.'),
     data: '<div class="lg-record"><div class="lg-record-title">' + L('Record', 'Ficha') + ' TAR-001</div>' +
       [['sku', '"TAR-001"'], [L('name', 'nome'), '"Rider-Waite Tarot"'], [L('category', 'categoria'), '"Tarot"'], [L('price', 'preço'), num(34.9)], [L('stock', 'estoque'), '12']]
@@ -400,7 +400,7 @@ function buildStartTrack(L) {
     story: L('I wrote the shipping rule once, as a recipe with a name. Now anyone can use it without rewriting it.', 'Escrevi a regra do frete uma vez só, como uma receita com nome. Agora qualquer um pode usar sem reescrever.'),
     what: L('<p>A <b>recipe</b> (in programming, a <b>function</b>) is an algorithm with a name. It receives values (the <b>parameters</b>) and <b>returns</b> a result. To use it, you call its name with the values: <code>shipping(62)</code>.</p>',
       '<p>Uma <b>receita</b> (em programação, uma <b>função</b>) é um algoritmo com nome. Ela recebe valores (os <b>parâmetros</b>) e <b>devolve</b> um resultado. Para usar, você chama o nome com os valores: <code>frete(62)</code>.</p>'),
-    why: L('<p>If the shipping rule changes, you change it in one place and every part of the shop that uses the recipe follows. Every DEV exercise is a recipe like this.</p>', '<p>Se a regra do frete mudar, você muda num lugar só e todas as partes da loja que usam a receita acompanham. Todo exercício da DEV é uma receita assim.</p>'),
+    why: L('<p>If the shipping rule changes, you change it in one place and every part of the shop that uses the recipe follows. Every Back End exercise is a recipe like this.</p>', '<p>Se a regra do frete mudar, você muda num lugar só e todas as partes da loja que usam a receita acompanham. Todo exercício do Back End é uma receita assim.</p>'),
     task: L('Read the recipe and answer.', 'Leia a receita e responda.'),
     data: '<pre class="lg-pseudo">' + S.recipe + ' ' + L('shipping', 'frete') + '(' + v('total', 'total') + '):\n    ' + S.if + ' ' + v('total', 'total') + ' ≥ 50 ' + S.then + ' ' + S.ret + ' 0\n    ' + S.else + ' ' + S.ret + ' ' + num(4.9) + '</pre>',
     questions: [
@@ -544,9 +544,9 @@ function buildStartTrack(L) {
   }),
   X(307, 15, {
     kind: 'match', title: L('The terminal', 'O terminal'), tag: L('Commands', 'Comandos'),
-    story: L('In the DEV, QA and AI tracks you will type commands in the terminal. Let’s get to know the first ones.', 'Nas trilhas DEV, QA e IA você vai digitar comandos no terminal. Vamos conhecer os primeiros.'),
+    story: L('In the Git track and in the others you will type commands in the terminal. Let’s get to know the first ones.', 'Na trilha Git e nas outras você vai digitar comandos no terminal. Vamos conhecer os primeiros.'),
     what: L('<p>The <b>terminal</b> is where you give orders to the computer by typing instead of clicking. Each <b>command</b> is a word (sometimes with extra information) that does one thing.</p>', '<p>O <b>terminal</b> é onde você dá ordens ao computador digitando, em vez de clicar. Cada <b>comando</b> é uma palavra (às vezes com informações extras) que faz uma coisa.</p>'),
-    why: L('<p>Git, tests and many tools are used from the terminal. The first exercise of DEV, QA and AI starts there.</p>', '<p>Git, testes e muitas ferramentas são usados pelo terminal. O primeiro exercício de DEV, QA e IA começa ali.</p>'),
+    why: L('<p>Git, tests and many tools are used from the terminal. The Git track starts right there.</p>', '<p>Git, testes e muitas ferramentas são usados pelo terminal. A trilha Git começa justamente ali.</p>'),
     task: L('Match each command with what it does.', 'Ligue cada comando ao que ele faz.'),
     left: ['<code>cd shop</code>', '<code>ls</code>', '<code>mkdir tests</code>', '<code>git status</code>'],
     right: [L('creates a folder called tests', 'cria uma pasta chamada tests'), L('shows what changed in the project', 'mostra o que mudou no projeto'), L('enters the shop folder', 'entra na pasta shop'), L('lists what is in the folder', 'lista o que tem na pasta')],
@@ -602,7 +602,7 @@ function buildStartTrack(L) {
     kind: 'predict', title: L('Which code does this?', 'Qual código faz isso?'), tag: L('Sequence and variables in code', 'Sequência e variáveis em código'),
     story: L('Time to peek at real code! Which JavaScript does exactly what the boxes say?', 'Hora de espiar código de verdade! Qual JavaScript faz exatamente o que as caixinhas dizem?'),
     what: L('<p>Each line of pseudocode has a line of code. <code>←</code> becomes <code>=</code>, <b>SHOW</b> becomes <code>console.log</code>, and a new box is created with <code>let</code>.</p>', '<p>Cada linha do português estruturado tem uma linha de código. <code>←</code> vira <code>=</code>, <b>MOSTRAR</b> vira <code>console.log</code>, e uma caixinha nova é criada com <code>let</code>.</p>'),
-    why: L('<p>You won’t write code here, but recognising it makes the first day in DEV much calmer.</p>', '<p>Você não vai escrever código aqui, mas reconhecer o código deixa o primeiro dia na DEV muito mais tranquilo.</p>'),
+    why: L('<p>You won’t write code here, but recognising it makes the first day in Back End or Front End much calmer.</p>', '<p>Você não vai escrever código aqui, mas reconhecer o código deixa o primeiro dia no Back End ou no Front End muito mais tranquilo.</p>'),
     task: L('Read the boxes and answer.', 'Leia as caixinhas e responda.'),
     data: '<pre class="lg-pseudo">' + v('stock', 'estoque') + ' ← 12\n' + v('stock', 'estoque') + ' ← ' + v('stock', 'estoque') + ' − 1\n' + S.show + ' ' + v('stock', 'estoque') + '</pre>',
     questions: [
@@ -627,16 +627,16 @@ function buildStartTrack(L) {
   }),
   X(308, 15, {
     kind: 'predict', title: L('FOR EACH becomes for', 'O PARA CADA vira for'), tag: L('Repetitions in code', 'Repetições em código'),
-    story: L('Last one before DEV: the “running out” counter, now in JavaScript.', 'Último antes da DEV: o contador de “acabando”, agora em JavaScript.'),
+    story: L('Last one before the code tracks: the “running out” counter, now in JavaScript.', 'Último antes das trilhas de código: o contador de “acabando”, agora em JavaScript.'),
     what: L('<p><b>FOR EACH</b> becomes <code>for (const item of list) { … }</code>, and the IF inside it becomes an <code>if</code> inside the braces.</p>', '<p>O <b>PARA CADA</b> vira <code>for (const item of lista) { … }</code>, e o SE de dentro vira um <code>if</code> dentro das chaves.</p>'),
-    why: L('<p>This is the exact shape of several DEV exercises. When you see it there, you’ll already know what it does.</p>', '<p>Esse é o formato exato de vários exercícios da DEV. Quando você encontrar lá, já vai saber o que ele faz.</p>'),
+    why: L('<p>This is the exact shape of several Back End exercises. When you see it there, you’ll already know what it does.</p>', '<p>Esse é o formato exato de vários exercícios do Back End. Quando você encontrar lá, já vai saber o que ele faz.</p>'),
     task: L('Choose the code that does the same as the boxes.', 'Escolha o código que faz o mesmo que as caixinhas.'),
     data: '<pre class="lg-pseudo">' + v('runningOut', 'acabando') + ' ← 0\n' + S.forEach + ' ' + v('product', 'produto') + ' ' + S.inF + ' ' + L('shelf', 'prateleira') + ':\n    ' + S.if + ' ' + v('stock', 'estoque') + ' ≤ 3 ' + S.then + '\n        ' + v('runningOut', 'acabando') + ' ← ' + v('runningOut', 'acabando') + ' + 1</pre>',
     questions: [
       { q: L('Which code does the same?', 'Qual código faz o mesmo?'), code: true, options: ['let runningOut = 0;\nfor (const product of shelf) {\n  if (product.stock <= 3) {\n    runningOut = runningOut + 1;\n  }\n}', 'let runningOut = 0;\nfor (const product of shelf) {\n  runningOut = runningOut + 1;\n}', 'let runningOut = 0;\nfor (const product of shelf) {\n  if (product.stock <= 3) {\n    runningOut = product.stock;\n  }\n}'], answer: 0 },
     ],
     hints: [L('The counter goes up by 1, and only when the stock is 3 or less.', 'O contador aumenta de 1 em 1, e só quando o estoque é 3 ou menos.')],
-    ok: L('Right! You just read a loop with a condition in JavaScript. DEV is waiting for you. 🚀', 'Isso! Você acabou de ler uma repetição com condição em JavaScript. A DEV está esperando por você. 🚀'),
+    ok: L('Right! You just read a loop with a condition in JavaScript. Back End is waiting for you. 🚀', 'Isso! Você acabou de ler uma repetição com condição em JavaScript. O Back End está esperando por você. 🚀'),
   }),
 
   /* ================= Reinforcement ================= */

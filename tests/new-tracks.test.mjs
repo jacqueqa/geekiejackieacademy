@@ -1,4 +1,4 @@
-// Front End and Data tracks (new-tracks.js): structure, code exercises against their tests, logic exercises checked.
+// Git, Front End and Data tracks (new-tracks.js): structure, code exercises against their tests, logic exercises checked.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
@@ -6,12 +6,12 @@ import { fileURLToPath } from 'node:url';
 import { load, workerRunner } from './load.mjs';
 
 const EN = (en, pt) => en, PT = (en, pt) => pt;
-const G = load(['file:new-tracks.js', 'LOGIC-CHECK'], ['buildFrontendTrack', 'buildDataTrack', 'logicCheck', 'logicSolution', 'logicInitial']);
+const G = load(['file:new-tracks.js', 'LOGIC-CHECK'], ['buildGitTrack', 'buildFrontendTrack', 'buildDataTrack', 'logicCheck', 'logicSolution', 'logicInitial']);
 const SHARED = { FORK_URL: 'https://github.com/<you>/geekiejackieacademy', FORK_PATTERN: 'x', FORK_NOTE: 'fork it' };
 const plain = v => JSON.parse(JSON.stringify(v));
 const run = workerRunner();
 const asset = p => existsSync(fileURLToPath(new URL('../' + p, import.meta.url)));
-const TRACKS = { frontend: G.buildFrontendTrack, data: G.buildDataTrack };
+const TRACKS = { git: G.buildGitTrack, frontend: G.buildFrontendTrack, data: G.buildDataTrack };
 
 for (const [modId, build] of Object.entries(TRACKS)) {
   const en = build(EN, SHARED), pt = build(PT, SHARED);
@@ -24,7 +24,8 @@ for (const [modId, build] of Object.entries(TRACKS)) {
     for (const f of ['repo', 'url', 'folder', 'pullWhy', 'pullFile', 'task', 'branch', 'branchNote', 'file', 'commitMsg', 'commitNote']) assert.ok(en.git[f], 'git.' + f);
     assert.match(en.git.branch, /^feature\/\d+_/);
     assert.ok(en.levels.every(l => l.module === modId));
-    assert.equal(en.levels.filter(l => l.git).length, 1, 'one Git level');
+    // only the Git track has the "Get the code" level (its terminal exercises are made in index.html)
+    assert.equal(en.levels.filter(l => l.git).length, modId === 'git' ? 1 : 0, 'Git level');
     for (const l of en.levels.filter(l => !l.git)) assert.ok(en.exercises.some(e => e.level === l.id), 'level ' + l.id + ' has exercises');
   });
 
@@ -59,8 +60,10 @@ for (const [modId, build] of Object.entries(TRACKS)) {
 }
 
 test('the new tracks don’t reuse level or exercise ids', () => {
-  const a = TRACKS.frontend(EN, SHARED), b = TRACKS.data(EN, SHARED);
-  const levelIds = [...a.levels, ...b.levels].map(l => l.id);
+  const all = Object.values(TRACKS).map(b => b(EN, SHARED));
+  const levelIds = all.flatMap(t => t.levels.map(l => l.id));
+  const exIds = all.flatMap(t => t.exercises.map(e => e.id));
+  assert.equal(new Set(exIds).size, exIds.length, 'exercise ids are unique across the tracks');
   assert.equal(new Set(levelIds).size, levelIds.length);
   for (const id of levelIds) assert.ok(![1, 2, 31, 32, 41, 42, 101, 102, 103, 201, 202, 203, 204].includes(id) && !(id >= 301 && id <= 309), 'level ' + id + ' is free');
 });
