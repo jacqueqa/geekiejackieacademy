@@ -140,6 +140,25 @@ button { font: inherit; cursor: pointer; }
 .name-btn:hover .name-edit-icon, .name-btn:focus-visible .name-edit-icon { color: var(--accent); }
 .name-btn.empty { color: var(--accent); font-size: 16px; }
 .name-edit-icon { color: var(--muted); font-size: 14px; margin-left: 6px; }
+/* Avatar next to the learner name */
+.qa-name-row { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.qa-name-text { min-width: 0; }
+.avatar-btn { flex: none; display: grid; place-items: center; width: 60px; height: 68px; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 10px; }
+.avatar-btn img { display: block; width: 60px; height: auto; transition: transform .15s ease; }
+.avatar-btn:hover img, .avatar-btn:focus-visible img { transform: scale(1.06); }
+.avatar-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.avatar-btn.empty { width: 56px; height: 56px; border: 2px dashed var(--accent); border-radius: 50%; color: var(--accent); font-size: 24px; line-height: 1; }
+.avatar-btn.empty:hover { background: var(--accent-soft); }
+.avatar-dialog { border: 1px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--ink); padding: 0; width: min(640px, calc(100vw - 32px)); max-height: calc(100vh - 32px); }
+.avatar-dialog::backdrop { background: rgba(0, 0, 0, 0.55); }
+.avatar-dialog .drawer-head { border-bottom: 1px solid var(--line); }
+.avatar-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; padding: 16px 20px 20px; }
+.avatar-opt { display: grid; place-items: center; padding: 8px 4px; border: 2px solid transparent; border-radius: 12px; background: none; cursor: pointer; }
+.avatar-opt img { display: block; width: 100%; max-width: 96px; height: auto; }
+.avatar-opt:hover { background: var(--accent-soft); }
+.avatar-opt:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.avatar-opt[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+@media (max-width: 560px) { .avatar-grid { gap: 6px; padding: 12px 12px 16px; } .avatar-opt { padding: 4px 2px; } }
 .name-form { display: flex; gap: 8px; flex-wrap: wrap; }
 .name-form input { font: inherit; font-size: 15px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); width: 200px; max-width: 100%; }
 .name-form .btn { padding: 6px 12px; }
@@ -1027,6 +1046,17 @@ body { zoom: var(--ui-scale, 1); }
 </div>
 
 <div class="drawer-backdrop" id="export-backdrop" hidden></div>
+<dialog class="avatar-dialog" id="avatar-dialog" aria-labelledby="avatar-title">
+  <div class="drawer-head">
+    <div>
+      <h3 id="avatar-title" data-i18n="avatarTitle">Choose your avatar</h3>
+      <p data-i18n="avatarSub">It shows next to your name. You can change it whenever you like.</p>
+    </div>
+    <button class="btn drawer-close" id="avatar-close" type="button" aria-label="Close" data-i18n-aria="close">✕</button>
+  </div>
+  <div class="avatar-grid" id="avatar-grid" role="group" aria-labelledby="avatar-title"></div>
+</dialog>
+
 <aside class="drawer" id="export-panel" hidden role="dialog" aria-modal="true" aria-labelledby="export-title">
   <div class="drawer-head">
     <div>
@@ -3185,6 +3215,7 @@ buildContent();
 const UI = {
   en: {
     rank: 'Rank', apprenticeName: '+ Add your name', changeName: 'Change your name', yourName: 'Your name', save: 'Save',
+    avatarTitle: 'Choose your avatar', avatarSub: 'It shows next to your name. You can change it whenever you like.', chooseAvatar: 'Choose your avatar', changeAvatar: 'Change your avatar', avatarSaved: 'Avatar saved',
     chooseTrack: 'Choose your track', resources: 'Technical resources', welcomeWho: 'Bruxa Maria says', storyWho: 'Message from Bruxa Maria',
     allTracks: '← Homepage', howTitle: 'How to play', heroAlt: 'Geekie Jackie Academy · Learn. Build. Test. Evolve. Geekie Jackie waves while walking to the academy with two cats, under banners for DEV, QA and AI',
     fAction: 'The action', fWhat: 'What it is', fWhy: 'Why we do it at {c}', fTask: 'Your exercise', example: 'Example data',
@@ -3280,6 +3311,7 @@ const UI = {
   },
   pt: {
     rank: 'Título', apprenticeName: '+ Adicione seu nome', changeName: 'Mudar seu nome', yourName: 'Seu nome', save: 'Salvar',
+    avatarTitle: 'Escolha seu avatar', avatarSub: 'Ele aparece ao lado do seu nome. Você pode trocar quando quiser.', chooseAvatar: 'Escolher seu avatar', changeAvatar: 'Trocar seu avatar', avatarSaved: 'Avatar salvo',
     chooseTrack: 'Escolha sua trilha', resources: 'Recursos técnicos', welcomeWho: 'A Bruxa Maria diz', storyWho: 'Mensagem da Bruxa Maria',
     allTracks: '← Homepage', howTitle: 'Como jogar', heroAlt: 'Geekie Jackie Academy · Learn. Build. Test. Evolve. A Geekie Jackie acena a caminho da academia com dois gatos, sob bandeiras de DEV, QA e IA',
     fAction: 'A ação', fWhat: 'O que é', fWhy: 'Por que fazemos isso {c}', fTask: 'Seu exercício', example: 'Dados de exemplo',
@@ -3536,7 +3568,7 @@ const STORE_KEY = CONFIG.storageKey;
 const emptyReport = () => '<span class="empty-rep">' + t('emptyReport') + '</span>';
 
 // hints[id]: how many hints were opened (old saves have true = 1). revealed[id]: the solution was seen at least once, so 0 XP for good.
-function freshState() { return { logic: {}, folds: {}, name: '', current: null, lastByModule: {}, done: {}, hints: {}, solutions: {}, revealed: {}, fails: {}, code: {}, term: {} }; }
+function freshState() { return { logic: {}, folds: {}, name: '', avatar: null, current: null, lastByModule: {}, done: {}, hints: {}, solutions: {}, revealed: {}, fails: {}, code: {}, term: {} }; }
 function loadState() {
   try {
     const raw = localStorage.getItem(STORE_KEY);
@@ -4172,8 +4204,8 @@ function bindResetAll() {
   $('reset-all').addEventListener('click', () => {
     $('reset-area').innerHTML = esc(t('eraseQ')) + ' <button class="link-btn" id="reset-yes">' + esc(t('eraseYes')) + '</button> <button class="link-btn" id="reset-no">' + esc(t('cancel')) + '</button>';
     $('reset-yes').addEventListener('click', () => {
-      const keepName = state.name;
-      state = freshState(); state.name = keepName; saveState(); restoreResetLink(); showView(); toast(t('progressReset'));
+      const keepName = state.name, keepAvatar = state.avatar;
+      state = freshState(); state.name = keepName; state.avatar = keepAvatar; saveState(); restoreResetLink(); showView(); toast(t('progressReset'));
     });
     $('reset-no').addEventListener('click', restoreResetLink);
   });
@@ -4279,17 +4311,71 @@ function renderAll() {
   renderHeader(); renderTrack(); renderExercise();
 }
 /* ---------- QA name (saved in this browser, like the progress) ---------- */
+/* ---------- Avatar ---------- */
+const AVATARS = [
+  { en: 'long wavy brown hair with a star clip', pt: 'cabelo castanho longo e ondulado com presilha de estrela' },
+  { en: 'blonde hair and a purple cat beanie', pt: 'cabelo loiro e gorro roxo de gatinho' },
+  { en: 'red curls with a star clip', pt: 'cachos ruivos com presilha de estrela' },
+  { en: 'braids with gold beads', pt: 'tranças com contas douradas' },
+  { en: 'purple hair, glasses and a moon clip', pt: 'cabelo roxo, óculos e presilha de lua' },
+  { en: 'short wavy brown hair', pt: 'cabelo castanho curto e ondulado' },
+  { en: 'blond hair and glasses', pt: 'cabelo loiro e óculos' },
+  { en: 'messy red hair', pt: 'cabelo ruivo bagunçado' },
+  { en: 'curly black hair', pt: 'cabelo preto cacheado' },
+  { en: 'a purple cat cap', pt: 'boné roxo de gatinho' }
+];
+const avatarSrc = n => 'assets/avatars/avatar-' + String(n).padStart(2, '0') + '.webp';
+const avatarAlt = n => 'Avatar ' + n + ': ' + L(AVATARS[n - 1].en, AVATARS[n - 1].pt);
+function validAvatar(v) { const n = Number(v); return v != null && Number.isInteger(n) && n >= 1 && n <= AVATARS.length ? n : null; }
+function avatarButton() {
+  const n = validAvatar(state.avatar);
+  return n
+    ? '<button class="avatar-btn" id="avatar-open" type="button" aria-haspopup="dialog" title="' + esc(t('changeAvatar')) + '" aria-label="' + esc(t('changeAvatar') + ' (' + avatarAlt(n) + ')') + '"><img src="' + avatarSrc(n) + '" width="210" height="240" alt=""></button>'
+    : '<button class="avatar-btn empty" id="avatar-open" type="button" aria-haspopup="dialog" title="' + esc(t('chooseAvatar')) + '" aria-label="' + esc(t('chooseAvatar')) + '"><span aria-hidden="true">+</span></button>';
+}
+function openAvatars() {
+  const dlg = $('avatar-dialog');
+  const cur = validAvatar(state.avatar);
+  $('avatar-grid').innerHTML = AVATARS.map((a, i) => {
+    const n = i + 1;
+    return '<button class="avatar-opt" type="button" data-avatar="' + n + '" aria-pressed="' + (n === cur) + '"><img src="' + avatarSrc(n) + '" width="210" height="240" alt="' + esc(avatarAlt(n)) + '"></button>';
+  }).join('');
+  if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
+  const first = $('avatar-grid').querySelector('[aria-pressed="true"]') || $('avatar-grid').querySelector('button');
+  if (first) first.focus();
+}
+function closeAvatars() {
+  const dlg = $('avatar-dialog');
+  if (dlg.open) { if (typeof dlg.close === 'function') dlg.close(); else dlg.removeAttribute('open'); }
+}
+$('avatar-grid').addEventListener('click', e => {
+  const b = e.target.closest('[data-avatar]');
+  if (!b) return;
+  state.avatar = validAvatar(b.dataset.avatar);
+  saveState();
+  closeAvatars();
+  renderName();
+  const open = $('avatar-open'); if (open) open.focus();
+  toast(t('avatarSaved'));
+});
+$('avatar-close').addEventListener('click', closeAvatars);
+$('avatar-dialog').addEventListener('click', e => { if (e.target === $('avatar-dialog')) closeAvatars(); }); // click on the backdrop
+$('avatar-dialog').addEventListener('close', () => { const b = $('avatar-open'); if (b) b.focus(); });
+
 function renderName() {
   const box = $('qa-name');
   const name = (state.name || '').trim();
-  box.innerHTML = name
+  const nameHtml = name
     ? '<div class="label">' + esc(CONFIG.learnerLabel) + '</div><button class="name-btn" id="name-edit" title="' + esc(t('changeName')) + '">' + esc(name) + '<span class="name-edit-icon" aria-hidden="true">✎</span></button>'
     : '<div class="label">' + esc(CONFIG.learnerLabel) + '</div><button class="name-btn empty" id="name-edit">' + esc(t('apprenticeName')) + '</button>';
+  box.innerHTML = '<div class="qa-name-row">' + avatarButton() + '<div class="qa-name-text">' + nameHtml + '</div></div>';
   $('name-edit').addEventListener('click', editName);
+  $('avatar-open').addEventListener('click', openAvatars);
 }
 function editName() {
   const box = $('qa-name');
-  box.innerHTML = '<div class="label">' + esc(t('yourName')) + '</div><form class="name-form" id="name-form"><input id="name-input" maxlength="40" autocomplete="name" placeholder="' + esc(t('yourName')) + '" aria-label="' + esc(t('yourName')) + '"><button class="btn primary" type="submit">' + esc(t('save')) + '</button></form>';
+  box.innerHTML = '<div class="qa-name-row">' + avatarButton() + '<div class="qa-name-text"><div class="label">' + esc(t('yourName')) + '</div><form class="name-form" id="name-form"><input id="name-input" maxlength="40" autocomplete="name" placeholder="' + esc(t('yourName')) + '" aria-label="' + esc(t('yourName')) + '"><button class="btn primary" type="submit">' + esc(t('save')) + '</button></form></div></div>';
+  $('avatar-open').addEventListener('click', openAvatars);
   const input = $('name-input');
   input.value = state.name || '';
   input.focus();
