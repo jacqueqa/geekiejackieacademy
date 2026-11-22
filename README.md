@@ -54,6 +54,7 @@ Na página inicial, a seção **Comece por aqui** tem o cartão do guia (imagem 
 - **Regras da Loja**: as regras de negócio, cada uma ligada aos exercícios que a usam.
 - **Catálogo de produtos**: os dados de mentira dos exercícios, em cartões ou em JSON.
 - **Grimório do Git**: todos os comandos, erros comuns e glossário.
+- **Princípios de design de código** (`#design`): SOLID, DRY, KISS e YAGNI num mapa com as artes; cada cartão abre uma janela de status com o que é, por que importa, o sinal de alerta e o código antes e depois da lojinha. Os textos ficam em `design-principles.js` (testado em `tests/design-principles.test.mjs`) e as artes em `assets/design/`.
 - **Glossário de programação**: 34 termos explicados de forma simples, em português e inglês, com exemplos da lojinha, busca (sem diferenciar acentos e maiúsculas), navegação A–Z e filtros por categoria e por trilha.
 - **A lojinha** ([`shop/`](shop/)): um e-commerce de mentira com as mesmas regras e produtos, para treinar testes manuais, Cypress e testes de API. Veja o [guia da loja](shop/README.md).
 - **Meu trabalho (.md)**: exporta o progresso e o código em Markdown.
@@ -141,6 +142,7 @@ On the home page, the **Start here** section has the guide card (the magic shop 
 - **Product catalog**: the exercises’ mock data, as cards or as JSON.
 - **Programming glossary**: 34 terms explained simply, with shop examples, search (ignoring accents and case), A–Z navigation and filters by category and track. In English and Portuguese, like the rest of the academy.
 - **Git grimoire**: every command, common errors and a glossary.
+- **Code design principles** (`#design`): SOLID, DRY, KISS and YAGNI on a map with their art; each card opens a status window with what it is, why it matters, the warning sign and before/after code from the shop. The texts live in `design-principles.js` (tested in `tests/design-principles.test.mjs`) and the art in `assets/design/`.
 - **The shop** ([`shop/`](shop/)): a mock e-commerce with the same rules and products, to practise manual tests, Cypress and API checks. See the [shop guide](shop/README.md).
 - **My work (.md)**: exports progress and code as Markdown.
 - **Import progress**: the exported .md ends with a hidden block (an HTML comment, invisible on GitHub and in VS Code) holding the full progress. Importing that file in any browser **replaces** that browser’s progress with the file’s, after a confirmation. Files exported before this feature don’t have the block. The format lives in the `SAVE-FILE` block of `index.html`, tested in `tests/save-file.test.mjs`.
