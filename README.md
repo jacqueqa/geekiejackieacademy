@@ -57,6 +57,7 @@ Na página inicial, a seção **Comece por aqui** tem o cartão do guia (imagem 
 - **Glossário de programação**: 34 termos explicados de forma simples, em português e inglês, com exemplos da lojinha, busca (sem diferenciar acentos e maiúsculas), navegação A–Z e filtros por categoria e por trilha.
 - **A lojinha** ([`shop/`](shop/)): um e-commerce de mentira com as mesmas regras e produtos, para treinar testes manuais, Cypress e testes de API. Veja o [guia da loja](shop/README.md).
 - **Meu trabalho (.md)**: exporta o progresso e o código em Markdown.
+- **Importar progresso**: o .md exportado termina com um bloco escondido (um comentário HTML, invisível no GitHub e no VS Code) com o progresso completo. Ao importar esse arquivo em qualquer navegador, o progresso daquele navegador é **substituído** pelo do arquivo, depois de uma confirmação. Arquivos exportados antes dessa função não têm o bloco. O formato fica no bloco `SAVE-FILE` do `index.html`, testado em `tests/save-file.test.mjs`.
 - **Duas línguas**: português do Brasil e inglês. Código, comandos e nomes de testes ficam em inglês, como nos projetos reais.
 
 ### Como usar
@@ -142,6 +143,7 @@ On the home page, the **Start here** section has the guide card (the magic shop 
 - **Git grimoire**: every command, common errors and a glossary.
 - **The shop** ([`shop/`](shop/)): a mock e-commerce with the same rules and products, to practise manual tests, Cypress and API checks. See the [shop guide](shop/README.md).
 - **My work (.md)**: exports progress and code as Markdown.
+- **Import progress**: the exported .md ends with a hidden block (an HTML comment, invisible on GitHub and in VS Code) holding the full progress. Importing that file in any browser **replaces** that browser’s progress with the file’s, after a confirmation. Files exported before this feature don’t have the block. The format lives in the `SAVE-FILE` block of `index.html`, tested in `tests/save-file.test.mjs`.
 - **Two languages**: Brazilian Portuguese and English. Code, commands and test names stay in English, like in real projects.
 
 ### How to use it
