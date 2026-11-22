@@ -3,7 +3,7 @@
 **Learn. Build. Test. Evolve.**
 
 
-<img width="70" height="70" alt="Geekie Jackie e Gato Pixel Art" src="https://github.com/user-attachments/assets/d7954a91-8154-44fb-9a84-25f68948b8a0" /> <p> **[Abrir a academia / Open the academy](https://jacqueqa.github.io/geekiejackieacademy/)**
+<img width="2172" height="724" alt="Academia Geekie Jackie em Pixel Art" src="https://github.com/user-attachments/assets/a7e09768-e744-4bf4-b359-2ac88002fc94" /> <p> **[Abrir a academia / Open the academy](https://jacqueqa.github.io/geekiejackieacademy/)**
 
 🇧🇷 [Português](#-português) · 🇬🇧 [English](#-english)
 
