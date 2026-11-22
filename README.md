@@ -66,6 +66,7 @@ Na página inicial, em **Recursos técnicos**:
 - O progresso fica salvo **no navegador** que você usa. Se você limpar os dados do navegador, ele some.
 - Para guardar ou levar para outro computador, use **Meu trabalho (.md)**, no rodapé. Ele baixa um arquivo com o seu progresso.
 - Em outro navegador, use **Importar progresso** e escolha esse arquivo para continuar de onde parou.
+- O contador de visitas do rodapé usa o [GoatCounter](https://www.goatcounter.com): ele conta as visitas sem cookies e sem guardar dados pessoais.
 
 ### Para a trilha Git
 
@@ -152,6 +153,7 @@ On the home page, under **Technical resources**:
 - Progress is saved **in the browser** you use. If you clear the browser’s data, it is gone.
 - To keep it or take it to another computer, use **My work (.md)** in the footer. It downloads a file with your progress.
 - In another browser, use **Import progress** and choose that file to continue where you left off.
+- The visit counter in the footer uses [GoatCounter](https://www.goatcounter.com): it counts visits with no cookies and without keeping personal data.
 
 ### For the Git track
 
