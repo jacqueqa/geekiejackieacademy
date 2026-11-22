@@ -149,7 +149,7 @@ button { font: inherit; cursor: pointer; }
 .avatar-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .avatar-btn.empty { width: 56px; height: 56px; border: 2px dashed var(--accent); border-radius: 50%; color: var(--accent); font-size: 24px; line-height: 1; }
 .avatar-btn.empty:hover { background: var(--accent-soft); }
-.avatar-dialog { border: 1px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--ink); padding: 0; width: min(640px, calc(100vw - 32px)); max-height: calc(100vh - 32px); }
+.avatar-dialog { border: 1px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--ink); padding: 0; width: min(640px, calc(100vw / var(--ui-scale, 1) - 32px)); max-height: calc(100vh / var(--ui-scale, 1) - 32px); }
 .avatar-dialog::backdrop { background: rgba(0, 0, 0, 0.55); }
 .avatar-dialog .drawer-head { border-bottom: 1px solid var(--line); }
 .avatar-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; padding: 16px 20px 20px; }
@@ -393,16 +393,15 @@ pre.t-out { margin: 0; font-size: 12.5px; color: var(--muted); white-space: pre-
 .dp-hero img { display: block; width: 100%; height: auto; }
 /* the banner of the art, cleared: x 612-1076, y 721-838 of 1670 x 942 */
 .dp-hero-title { position: absolute; left: 36.6%; top: 76.5%; width: 27.8%; height: 12.4%; margin: 0; display: grid; place-items: center; text-align: center;
-  font-family: var(--font-display); font-weight: 700; font-size: 2.35cqw; line-height: 1.04; text-transform: uppercase; letter-spacing: .02em; color: #2B1745; }
+  font-family: var(--font-display); font-weight: 700; font-size: 2.9cqw; line-height: 1.04; text-transform: uppercase; letter-spacing: .02em; color: #2B1745; }
 .dp-intro { color: var(--muted); max-width: 70ch; margin: 0 auto; text-align: center; }
 /* the map: a medallion in the middle, linked to four cards (SOLID, DRY / KISS, YAGNI) */
-.dp-map { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(150px, 200px) minmax(0, 1fr); grid-template-areas: "c1 mid c2" "c3 mid c4"; gap: 26px 34px; align-items: center; padding: 8px 0 12px; }
+.dp-map { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.8fr) minmax(0, 1fr); grid-template-areas: "c1 mid c2" "c3 mid c4"; gap: 26px 34px; align-items: center; padding: 8px 0 12px; }
 .dp-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
 .dp-lines line { stroke-width: 3; stroke-linecap: round; opacity: .8; }
 .dp-lines circle { opacity: .95; }
-.dp-center { grid-area: mid; position: relative; z-index: 1; aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; text-align: center; padding: 18px;
-  background: radial-gradient(circle at 35% 30%, #FFF6C8, #F2D879); color: #3A2150; border: 4px solid #E8A33D; box-shadow: 0 6px 0 rgba(0,0,0,.4), 0 0 0 6px rgba(232,163,61,.18);
-  font-family: var(--font-display); font-weight: 700; font-size: 15px; line-height: 1.2; text-transform: uppercase; letter-spacing: .02em; }
+.dp-center { grid-area: mid; position: relative; z-index: 1; align-self: center; }
+.dp-center.dp-hero { box-shadow: 0 10px 30px rgba(0,0,0,.45), 0 0 0 4px rgba(232,163,61,.25); }
 .dp-card { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 10px; padding: 10px 10px 14px; border-radius: 20px; cursor: pointer; text-align: left; color: var(--ink); font: inherit;
   background: color-mix(in srgb, var(--c) 14%, var(--surface)); border: 3px solid var(--c); box-shadow: 0 6px 0 rgba(0,0,0,.45); transition: transform .15s ease, box-shadow .15s ease; }
 .dp-card:hover, .dp-card:focus-visible { transform: translateY(-3px); box-shadow: 0 9px 0 rgba(0,0,0,.45), 0 0 0 4px color-mix(in srgb, var(--c) 35%, transparent); }
@@ -416,18 +415,16 @@ pre.t-out { margin: 0; font-size: 12.5px; color: var(--muted); white-space: pre-
 @media (max-width: 760px) {
   .dp-map { grid-template-columns: minmax(0, 1fr); grid-template-areas: "mid" "c1" "c2" "c3" "c4"; gap: 18px; }
   .dp-lines { display: none; }
-  .dp-center { width: 150px; justify-self: center; font-size: 13px; }
-  .dp-hero-title { font-size: 2.6cqw; }
 }
 
 /* ---------- Quest / status window: the project's window style ----------
    Chamfered corners (clip-path), a gold frame, a lilac header band, hatch stripes, and a see-through
    purple body with blur so it doesn't feel heavy. */
-.quest { border: 0; padding: 0; background: transparent; color: #F3E8FF; width: min(820px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); overflow: visible; }
+.quest { border: 0; padding: 0; background: transparent; color: #F3E8FF; width: min(820px, calc(100vw / var(--ui-scale, 1) - 24px)); max-height: calc(100dvh / var(--ui-scale, 1) - 24px); overflow: visible; } /* / --ui-scale: the body is zoomed on big screens */
 .quest::backdrop { background: rgba(12, 4, 28, .62); backdrop-filter: blur(3px); }
 .quest-frame { --cut: 22px; position: relative; padding: 3px; background: linear-gradient(135deg, #F6C85F, #E8A33D 40%, #F6C85F 60%, #C9862A);
   clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 calc(100% - var(--cut)), 0 var(--cut)); }
-.quest-inner { --cut: 20px; position: relative; max-height: calc(100dvh - 30px); overflow: auto; overscroll-behavior: contain;
+.quest-inner { --cut: 20px; position: relative; max-height: calc(100dvh / var(--ui-scale, 1) - 30px); overflow: auto; overscroll-behavior: contain;
   background: rgba(36, 14, 64, .84); backdrop-filter: blur(10px);
   clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 calc(100% - var(--cut)), 0 var(--cut)); }
 .quest-inner::after { content: ""; display: block; height: 8px; width: 46%; /* hatch stripes at the end of the content, never over the text */
@@ -1059,10 +1056,6 @@ body { zoom: var(--ui-scale, 1); }
 
   <section class="rulebook design" id="design-view" hidden data-test="design-view">
     <a class="back-link" href="#" data-i18n="allTracks">← Homepage</a>
-    <div class="dp-hero">
-      <img src="assets/design/grimoire.webp" width="1670" height="942" alt="" data-i18n-alt="dpHeroAlt">
-      <h2 class="dp-hero-title" data-i18n="dpTitle">Code design principles</h2>
-    </div>
     <p class="dp-intro" data-i18n="dpIntro">Four ideas that make code easier to read, test and change. Open a card to see each one with an example from the shop.</p>
     <div class="dp-map" id="dp-map"></div>
   </section>
@@ -3496,7 +3489,7 @@ buildContent();
 const UI = {
   en: {
     rank: 'Rank', apprenticeName: '+ Add your name', changeName: 'Change your name', yourName: 'Your name', save: 'Save',
-    dpTitle: 'Code design principles', dpLink: 'Code design principles', dpIntro: 'Four ideas that make code easier to read, test and change. Open a card to see each one with an example from the shop.', dpCenter: 'Software design principles',
+    dpTitle: 'Code design principles', dpLink: 'Code design principles', dpIntro: 'Four ideas that make code easier to read, test and change. Open a card to see each one with an example from the shop.',
     dpHeroAlt: 'Pixel art: Geekie Jackie holds a glowing grimoire, next to books named Clean code, Better apps and Happier devs', dpOpen: 'Open the {n} window', dpKicker: 'Design principle', dpWhat: 'What it is', dpWhy: 'Why it matters', dpSmell: 'Warning sign',
     dpShop: 'In the shop', dpBefore: '❌ Before', dpAfter: '✅ After', dpTracks: 'Tracks', dpRules: 'Shop rules', dpLetters: 'The five letters', dpPrev: '← {n}', dpNext: '{n} →', dpNoData: 'The design principles file (design-principles.js) did not load.',
     importBtn: 'Import progress', impSummary: '{n} · {d} exercises done · {b} badges · exported on {e}', impNoName: 'No name', impWarn: 'The progress saved in this browser will be replaced by the one in the file. This can’t be undone.', impConfirm: 'Replace my progress', impDone: 'Progress imported. Welcome back!',
@@ -3602,7 +3595,7 @@ const UI = {
   },
   pt: {
     rank: 'Título', apprenticeName: '+ Adicione seu nome', changeName: 'Mudar seu nome', yourName: 'Seu nome', save: 'Salvar',
-    dpTitle: 'Princípios de design de código', dpLink: 'Princípios de design de código', dpIntro: 'Quatro ideias que deixam o código mais fácil de ler, testar e mudar. Abra um cartão para ver cada uma com um exemplo da lojinha.', dpCenter: 'Princípios do design de software',
+    dpTitle: 'Princípios de design de código', dpLink: 'Princípios de design de código', dpIntro: 'Quatro ideias que deixam o código mais fácil de ler, testar e mudar. Abra um cartão para ver cada uma com um exemplo da lojinha.',
     dpHeroAlt: 'Pixel art: a Geekie Jackie segura um grimório brilhante, ao lado de livros chamados Clean code, Better apps e Happier devs', dpOpen: 'Abrir a janela do {n}', dpKicker: 'Princípio de design', dpWhat: 'O que é', dpWhy: 'Por que importa', dpSmell: 'Sinal de alerta',
     dpShop: 'Na lojinha', dpBefore: '❌ Antes', dpAfter: '✅ Depois', dpTracks: 'Trilhas', dpRules: 'Regras da loja', dpLetters: 'As cinco letras', dpPrev: '← {n}', dpNext: '{n} →', dpNoData: 'O arquivo dos princípios de design (design-principles.js) não carregou.',
     importBtn: 'Importar progresso', impSummary: '{n} · {d} exercícios feitos · {b} medalhas · exportado em {e}', impNoName: 'Sem nome', impWarn: 'O progresso salvo neste navegador será substituído pelo do arquivo. Não dá para desfazer.', impConfirm: 'Substituir meu progresso', impDone: 'Progresso importado. Que bom ter você de volta!',
@@ -5498,11 +5491,12 @@ function renderDesign() {
   const map = $('dp-map');
   if (!list.length) { map.innerHTML = '<p class="dp-intro">' + esc(t('dpNoData')) + '</p>'; return; }
   // lines from the medallion to each card, with a dot at the card end (like the sketch)
-  const ends = [[30, 26], [70, 26], [30, 74], [70, 74]];
+  const ends = [[24, 26], [76, 26], [24, 74], [76, 74]];
   const lines = '<svg class="dp-lines" aria-hidden="true">' + list.slice(0, 4).map((pr, i) =>
     '<line x1="50%" y1="50%" x2="' + ends[i][0] + '%" y2="' + ends[i][1] + '%" stroke="' + pr.color + '"/>' +
-    '<circle cx="' + (50 + (ends[i][0] - 50) * 0.36) + '%" cy="' + (50 + (ends[i][1] - 50) * 0.36) + '%" r="6" fill="' + pr.color + '"/>').join('') + '</svg>';
-  map.innerHTML = lines + '<div class="dp-center">' + esc(t('dpCenter')) + '</div>' + list.map((pr, i) =>
+    '<circle cx="' + ends[i][0] + '%" cy="' + ends[i][1] + '%" r="6" fill="' + pr.color + '"/>').join('') + '</svg>';
+  map.innerHTML = lines + '<div class="dp-center dp-hero"><img src="assets/design/grimoire.webp" width="1670" height="942" alt="' + esc(t('dpHeroAlt')) + '">' +
+    '<h2 class="dp-hero-title">' + esc(t('dpTitle')) + '</h2></div>' + list.map((pr, i) =>
     '<button type="button" class="dp-card" data-area="' + (DP_AREAS[i] || '') + '" data-principle="' + pr.id + '" style="--c:' + pr.color + '" aria-haspopup="dialog" aria-label="' + esc(t('dpOpen', { n: pr.name })) + '">' +
       '<img src="' + pr.image + '" width="1200" height="676" loading="lazy" alt="">' +
       '<span class="dp-card-text"><strong>' + esc(pr.name) + '</strong><span>' + esc(dpT(pr, 'title')) + '</span><em>' + esc(pr.full) + '</em></span></button>').join('');
