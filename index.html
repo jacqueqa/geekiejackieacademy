@@ -378,7 +378,9 @@ h1, h2, h3 { font-weight: 700 !important; }
 .howto-step h3 { font-size: 20px; margin-bottom: 6px; }
 .howto-step p { color: var(--muted); max-width: 68ch; }
 .story { display: flex; gap: 14px; align-items: flex-start; background: var(--accent-soft); border: 1px solid var(--accent); border-radius: var(--radius); padding: 14px 16px; }
-.story-avatar { flex: none; width: 40px; height: 40px; border-radius: 50%; background: var(--bg); border: 1.5px solid var(--xp); display: grid; place-items: center; font-size: 20px; }
+/* Bruxa Maria's pixel-art portrait next to her messages (same as the prototype) */
+.story-avatar { flex: none; width: 44px; display: grid; place-items: center; align-self: center; }
+.story-avatar img { display: block; width: 44px; height: auto; filter: drop-shadow(0 3px 8px rgba(0, 0, 0, .35)); }
 .story-who { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--xp); font-weight: 600; margin-bottom: 2px; }
 .story-text { font-style: italic; color: var(--ink); max-width: 75ch; }
 .home .story { max-width: 760px; margin: 0 auto; }
@@ -794,7 +796,7 @@ body { zoom: var(--ui-scale, 1); }
 
   <section class="home" id="home-view">
     <div class="tpl-note" id="tpl-note" hidden></div>
-    <div class="story"><div class="story-avatar" aria-hidden="true">🧙‍♀️</div><div><div class="story-who" data-i18n="welcomeWho">Bruxa Maria says</div><p class="story-text" id="home-welcome"></p></div></div>
+    <div class="story"><div class="story-avatar" aria-hidden="true"><img src="assets/bruxa-maria.webp" width="196" height="240" alt=""></div><div><div class="story-who" data-i18n="welcomeWho">Bruxa Maria says</div><p class="story-text" id="home-welcome"></p></div></div>
     <div class="home-intro">
       <h2 data-i18n="startHere">Start here</h2>
     </div>
@@ -930,7 +932,7 @@ body { zoom: var(--ui-scale, 1); }
     <main class="panel" id="panel">
       <div class="ex-meta" id="ex-meta"></div>
       <h2 class="ex-title" id="ex-title"></h2>
-      <div class="story" id="story"><div class="story-avatar" aria-hidden="true">🧙‍♀️</div><div><div class="story-who" data-i18n="storyWho">Message from Bruxa Maria</div><p class="story-text" id="story-text"></p></div></div>
+      <div class="story" id="story"><div class="story-avatar" aria-hidden="true"><img src="assets/bruxa-maria.webp" width="196" height="240" alt=""></div><div><div class="story-who" data-i18n="storyWho">Message from Bruxa Maria</div><p class="story-text" id="story-text"></p></div></div>
       <div class="ex-rules" id="ex-rules"></div>
 
       <ol class="flow">
@@ -3673,7 +3675,7 @@ function renderExercise() {
   const isTerm = ex.type === 'terminal';
   $('ex-meta').innerHTML =
     '<span class="chip">' + esc(t('levelChip', { n: levelNumber(lvl), name: lvl.name })) + '</span>' +
-    (ex.hr ? '<span class="chip hr">' + esc(t('like', { x: ex.hr })) + '</span>' : '<span class="chip hr">' + esc(ex.tag) + '</span>') +
+    (ex.hr ? '<span class="chip hr">' + esc(t('like', { x: ex.hr })) + '</span>' : ex.conceptTag ? '' : '<span class="chip hr">' + esc(ex.tag) + '</span>') +
     (ex.conceptTag ? '<span class="chip concept-chip">' + esc(ex.conceptTag) + '</span>' : '') +
     (ex.reinforces ? '<span class="chip reinforce-chip">' + esc(t('reinforces', { x: ex.reinforces.map(id => '#' + byId(id).order + ' ' + byId(id).title).join(' · ') })) + '</span>' : '') +
     '<span class="chip xp">+' + ex.xp + ' XP</span>';
