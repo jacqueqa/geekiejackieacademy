@@ -344,6 +344,8 @@ pre.t-out { margin: 0; font-size: 12.5px; color: var(--muted); white-space: pre-
   .ach-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .ach-img { height: 96px; } .ach-img img { max-height: 96px; }
 }
+.foot-left { display: inline-flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; }
+.foot-visits::before { content: "·"; margin-right: 14px; color: var(--line); }
 .foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; color: var(--muted); font-size: 12px; margin-top: 310px; padding-top: 24px; border-top: 1px solid var(--line); }
 .link-btn { background: none; border: 0; color: var(--muted); text-decoration: underline; padding: 0; font-size: 12px; }
 .link-btn:hover { color: var(--accent); }
@@ -1338,7 +1340,7 @@ body { zoom: var(--ui-scale, 1); }
   </div>
 
   <div class="foot">
-    <span data-i18n="footSaved">Progress is saved in this browser only.</span>
+    <span class="foot-left"><span data-i18n="footSaved">Progress is saved in this browser only.</span><span class="foot-visits" id="foot-visits" hidden></span></span>
     <span class="foot-actions">
       <span id="feedback-slot"></span>
       <a class="link-btn" href="#how-to" data-i18n="howTo">How to play</a>
@@ -3658,7 +3660,7 @@ const UI = {
     fAction: 'The action', fWhat: 'What it is', fWhy: 'Why we do it at {c}', fTask: 'Your exercise', example: 'Example data',
     runKeys: 'Ctrl/⌘ + Enter to run', termHead: 'Terminal · VS Code', termTip: 'Type the command and press Enter', enter: 'Enter',
     run: 'Run tests', hint: 'Show hint', solution: 'Show solution', reset: 'Reset code', startOver: 'Start over', results: 'Test results',
-    footSaved: 'Progress is saved in this browser only.', grimoire: 'Git grimoire', catalog: 'Catalog', rulebook: 'Shop Rulebook', howTo: 'How to play',
+    footSaved: 'Progress is saved in this browser only.', visits: '👀 {n} visits', grimoire: 'Git grimoire', catalog: 'Catalog', rulebook: 'Shop Rulebook', howTo: 'How to play',
     myWork: 'My work (.md)', resetAll: 'Reset all progress', eraseQ: 'Erase all XP and code?', eraseYes: 'Yes, reset', cancel: 'Cancel', progressReset: 'Progress reset',
     drawerTitle: 'My work', drawerSub: 'Your progress as a Markdown file, to keep or to share with your lead.', tracks: 'Tracks', include: 'Include',
     incCode: 'My code and commands', incTodo: 'Exercises not started', preview: 'Preview', copy: 'Copy', copied: 'Copied', download: 'Download .md', close: 'Close',
@@ -3773,7 +3775,7 @@ const UI = {
     fAction: 'A ação', fWhat: 'O que é', fWhy: 'Por que fazemos isso {c}', fTask: 'Seu exercício', example: 'Dados de exemplo',
     runKeys: 'Ctrl/⌘ + Enter para rodar', termHead: 'Terminal · VS Code', termTip: 'Digite o comando e aperte Enter', enter: 'Enter',
     run: 'Rodar testes', hint: 'Ver dica', solution: 'Ver solução', reset: 'Resetar código', startOver: 'Recomeçar', results: 'Resultado dos testes',
-    footSaved: 'O progresso fica salvo só neste navegador.', grimoire: 'Grimório do Git', catalog: 'Catálogo', rulebook: 'Regras da Loja', howTo: 'Como jogar',
+    footSaved: 'O progresso fica salvo só neste navegador.', visits: '👀 {n} visitas', grimoire: 'Grimório do Git', catalog: 'Catálogo', rulebook: 'Regras da Loja', howTo: 'Como jogar',
     myWork: 'Meu trabalho (.md)', resetAll: 'Apagar todo o progresso', eraseQ: 'Apagar todo o XP e o código?', eraseYes: 'Sim, apagar', cancel: 'Cancelar', progressReset: 'Progresso apagado',
     drawerTitle: 'Meu trabalho', drawerSub: 'O seu progresso como um arquivo Markdown, para guardar ou mostrar para a sua liderança.', tracks: 'Trilhas', include: 'Incluir',
     incCode: 'Meu código e comandos', incTodo: 'Exercícios não começados', preview: 'Prévia', copy: 'Copiar', copied: 'Copiado', download: 'Baixar .md', close: 'Fechar',
@@ -6047,6 +6049,26 @@ function applyStaticI18n() {
   document.querySelectorAll('.lang-btn').forEach(b => { const on = b.dataset.lang === LANG; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); });
   const ra = $('reset-all'); if (ra) ra.textContent = t('resetAll');
 }
+/* ---------- Visit counter (GoatCounter: no cookies, no personal data) ----------
+   count.js (end of the page) counts the visit; here we only read the public total. GoatCounter skips
+   local files and localhost, so opening index.html on a computer doesn't add visits. */
+const GOATCOUNTER = 'https://geekiejackieacademy.goatcounter.com';
+let visitTotal = null;
+function renderVisits() {
+  const el = $('foot-visits');
+  if (!el) return;
+  el.hidden = visitTotal == null;
+  if (visitTotal != null) el.textContent = t('visits', { n: visitTotal });
+}
+function loadVisits() {
+  if (typeof fetch !== 'function') return;
+  fetch(GOATCOUNTER + '/counter/TOTAL.json')
+    .then(r => (r.ok ? r.json() : null))
+    .then(d => { if (d && d.count != null && String(d.count).trim()) { visitTotal = String(d.count).trim(); renderVisits(); } })
+    .catch(() => {});
+}
+loadVisits();
+
 function setLang(lang) {
   if (lang === LANG) return;
   LANG = lang;
@@ -6056,6 +6078,7 @@ function setLang(lang) {
   renderShell();
   applyStaticI18n();
   renderName();
+  renderVisits();
   if (!$('export-panel').hidden) refreshExport();
   showView();
   window.scrollTo(0, y);
@@ -6070,4 +6093,5 @@ checkBadges();
 
 </script>
 
+<script data-goatcounter="https://geekiejackieacademy.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body></html>
