@@ -562,6 +562,22 @@ dl.io dd { margin: 0; }
 .win-nocount { border-color: var(--xp) !important; }
 .win #redo-btn { margin-top: 10px; }
 
+/* "Start here" guide card (image in a frame on the left, text on the right) and the how-to page */
+.guide-media { padding: 16px; background: var(--code-bg); display: flex; align-items: center; border-bottom: 1px solid var(--line); }
+.guide-media img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 14px; border: 1px solid var(--line); }
+@media (min-width: 901px) { .guide-media { border-bottom: 0; border-right: 1px solid var(--line); } }
+.guide-body { justify-content: center; gap: 12px; padding: 22px 24px; }
+.guide-pill { align-self: flex-start; font-size: 12px; font-weight: 800; color: var(--pass); background: rgba(98, 211, 148, .12); border: 1px solid rgba(98, 211, 148, .4); border-radius: 99px; padding: 2px 10px; }
+.guide-title { font-family: var(--font-display); font-size: clamp(22px, 2.6vw, 28px); font-weight: 800; letter-spacing: -0.01em; }
+.guide-lead { color: var(--ink); }
+.guide-text { color: var(--muted); }
+.guide-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.guide-tags span { font-size: 12.5px; color: var(--muted); border: 1px solid var(--line); border-radius: 8px; padding: 2px 9px; }
+.howto-hero { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; max-height: 420px; object-fit: cover; border-radius: 20px; border: 1px solid var(--line); }
+.howto-intro { color: var(--muted); font-size: 17px; max-width: 68ch; margin-top: -10px; }
+.howto-step a { color: var(--accent); }
+.howto-go { align-self: flex-start; text-decoration: none; margin-top: 6px; }
+
 /* Glossary */
 .gl-az { display: flex; flex-wrap: wrap; gap: 4px; }
 .gl-letter-btn { min-width: 32px; height: 32px; padding: 0 6px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink);
@@ -647,8 +663,7 @@ body { zoom: var(--ui-scale, 1); }
     <div class="tpl-note" id="tpl-note" hidden></div>
     <div class="story"><div class="story-avatar" aria-hidden="true">🧙‍♀️</div><div><div class="story-who" data-i18n="welcomeWho">Bruxa Maria says</div><p class="story-text" id="home-welcome"></p></div></div>
     <div class="home-intro">
-      <h2 data-i18n="chooseTrack">Choose your track</h2>
-      <p id="home-intro-text"></p>
+      <h2 data-i18n="startHere">Start here</h2>
     </div>
     <div class="home-cards" id="home-cards"></div>
 
@@ -661,10 +676,13 @@ body { zoom: var(--ui-scale, 1); }
     </div>
   </section>
 
-  <section class="howto" id="howto-view" hidden>
+  <section class="howto" id="howto-view" hidden data-test="howto-view">
     <a class="back-link" href="#" data-i18n="allTracks">← All tracks</a>
+    <img class="howto-hero" src="assets/magic-shop.webp" width="1536" height="1024" alt="Bruxa Maria’s tarot shop" data-i18n-alt="shopAlt">
     <h2 data-i18n="howTitle">How to play</h2>
+    <p class="howto-intro" data-i18n="howIntro"></p>
     <div id="howto-steps"></div>
+    <a class="btn primary howto-go" href="#start" data-i18n="howGo">Start the Start Track →</a>
   </section>
 
   <section class="rulebook" id="grimoire-view" hidden>
@@ -1899,8 +1917,8 @@ CONFIG = {
   learnerLabel: L('Apprentice', 'Aprendiz'),
   homeIntro: L('Start with the Start Track: 30 problem-solving exercises set in the shop. Complete 80% of it and DEV, QA and AI open. Those three tracks start with Git and solve real problems of the shop: products, stock, orders and coupons. Everything runs here with mock data, so there is nothing to install.',
     'Comece pela Trilha Inicial: 30 exercícios de resolução de problemas no contexto da loja. Complete 80% dela e as trilhas DEV, QA e IA se abrem. Essas três começam com Git e resolvem problemas reais da loja: produtos, estoque, pedidos e cupons. Tudo roda aqui com dados de mentira, então não há nada para instalar.'),
-  welcome: L('“Hello, apprentice! The shop has grown, the orders keep coming and I can’t handle the tech alone anymore. Pick a track and let’s get to work. Careful though: one tiny bug and a tarot delivery turns into a box of potions!” 🐈‍⬛',
-    '“Olá, aprendiz! A loja cresceu, os pedidos não param de chegar e eu já não dou conta da tecnologia sozinha. Escolha uma trilha e vamos ao trabalho. Mas cuidado: um bugzinho e uma entrega de tarot vira uma caixa de poções!” 🐈‍⬛'),
+  welcome: L('“Hello, apprentice! The shop has grown, the orders keep coming and I can’t handle the tech alone anymore. Start right below and let’s get to work. Careful though: one tiny bug and a tarot delivery turns into a box of potions!” 🐈‍⬛',
+    '“Olá, aprendiz! A loja cresceu, os pedidos não param de chegar e eu já não dou conta da tecnologia sozinha. Comece por aqui embaixo e vamos ao trabalho. Mas cuidado: um bugzinho e uma entrega de tarot vira uma caixa de poções!” 🐈‍⬛'),
   gitHost: 'GitHub',
   feedbackUrl: '',
   feedbackLabel: L('Found a bug?', 'Achou um bug?'),
@@ -3051,6 +3069,12 @@ const UI = {
     cards: 'Cards', items: '{n} items', copyJson: 'Copy JSON', jsonCopied: 'JSON copied', selectCopy: 'Select the text and copy it',
     digital: 'Digital · always available', soldOut: 'Sold out', onlyLeft: 'Only {n} left', inStock: '{n} in stock', viewJson: '{ } view as JSON', catEmpty: 'No product matches this search.',
     notInCat: 'Not in the catalog', notInCatSub: 'Records that look like products but must never reach the shelf.',
+    startHere: 'Start here', guidePill: 'Start here', guideTitle: 'How the academy works',
+    guideLead: 'You were just hired at Bruxa Maria’s little tarot shop. Before the first exercise, read the guide: tracks, XP, hints and the rules of the game.',
+    guideText: 'Start with the Start Track. When you complete 80% of it, the DEV, QA and AI tracks appear here.',
+    guideTags: ['Start Track', 'Unlock at 80%', 'Hints and solutions', 'Glossary', 'The mock shop'], guideCta: 'Read the guide →',
+    shopAlt: 'Pixel art of Bruxa Maria’s tarot shop, with the witch, Geekie Jackie, a friend and two cats at the door',
+    howIntro: 'Everything you need to know before your first exercise at Bruxa Maria’s shop.', howGo: 'Start the Start Track →',
     glossaryLink: 'Glossary', glTitle: '📚 Programming glossary', glSearchLbl: 'Search the glossary',
     glIntro: 'Programming words explained simply, with examples from the shop. Search, jump to a letter or filter by category and track.',
     glSearch: 'Search a term, an acronym or a word like “loop”', glAz: 'Jump to a letter', glCatLbl: 'Filter by category', glTrackLbl: 'Filter by track',
@@ -3065,16 +3089,18 @@ const UI = {
     cursesTitle: 'Common curses', cursesSub: 'Error messages you will meet, what they mean and the counter-spell.',
     forbTitle: 'Forbidden spells', forbSub: 'Things nobody casts at Bruxa Maria’s shop.', grEmpty: 'No spell matches this search.', selectCmd: 'Select the command and copy it',
     howSteps: [
-      ['Start with the Start Track', '30 problem-solving exercises set in the shop: arrays, loops, text and sets. DEV, QA and AI open when you complete 24 of them (80%). An exercise solved with the revealed solution does not count.'],
-      ['Pick a track', 'Each track is one journey: {tracks}. Your XP and rank are counted per track.'],
+      ['Start with the Start Track', '30 problem-solving exercises set in the shop (20 main and 10 reinforcement): arrays, loops, text and sets. Complete 24 of them (80%), reinforcement included, and DEV, QA and AI appear on the home page. Until then they stay hidden.'],
+      ['Then pick DEV, QA or AI', 'Each track is one journey and starts with Git: cloning the repo, opening a branch and sending your work. Your XP and rank are counted per track.'],
       ['Follow the four steps', 'Every exercise starts with a message from Bruxa Maria and reads the same way: the action, what it is, why we do it at {c}, and your exercise.'],
-      ['Write code or type commands', 'Code exercises have an editor and a <b>Run tests</b> button (or <code>Ctrl/⌘ + Enter</code>). Git exercises have a terminal where you type each command.'],
-      ['Use hints wisely', 'A hint costs {h} XP. After 2 wrong attempts you can see the solution, but the exercise then gives 0 XP.'],
+      ['Write code or type commands', 'Code exercises have an editor and a <b>Run tests</b> button (or <code>Ctrl/⌘ + Enter</code>). Some tests are hidden, like on an online judge: think about empty lists, ties and very large values. Git exercises have a terminal where you type each command.'],
+      ['Use hints wisely', 'Hints come one at a time, from a nudge to almost the answer. Each one costs {h} XP.'],
+      ['The solution has a price', 'After 2 wrong attempts you can see the solution, but the exercise then gives 0 XP. In the Start Track it also does not count toward the 80%: press <b>Solve it again on my own</b> and solve it without help to make it count.'],
       ['Earn badges and ranks', 'Finish every exercise in a level to unlock its badge. Ranks grow with the XP of each track.'],
-      ['Keep the Git grimoire open', 'The <b>Git grimoire</b> has every command of the Git exercises and a few more, with the VS Code equivalent, common errors and a glossary.'],
-      ['Browse the catalog', 'The <b>Product catalog</b> shows every product the exercises use, as cards or as the JSON the shop API returns.'],
-      ['Check the Shop Rulebook', 'Every exercise comes from a rule of the shop. Click a rule id like <code>BR-STK-01</code> on an exercise to read it in the <b>Shop Rulebook</b>, and jump back to the exercises that use it.'],
-      ['Share your work', 'Use <b>My work (.md)</b> at the bottom of the page to copy or download your progress and code.'],
+      ['Look words up in the Glossary', 'The <a href="#glossary">Glossary</a> explains programming words simply, with examples from the shop: search, jump to a letter or filter by track.'],
+      ['Keep the Git grimoire open', 'The <a href="#grimoire">Git grimoire</a> has every command of the Git exercises and a few more, with the VS Code equivalent, common errors and a glossary of Git words.'],
+      ['Check the shop’s data and rules', 'The <a href="#catalog">Product catalog</a> shows every product the exercises use. Every exercise comes from a rule of the <a href="#rulebook">Shop Rulebook</a>: click a rule id like <code>BR-STK-01</code> on an exercise to read it.'],
+      ['Practise in the shop', '<a href="shop/" target="_blank" rel="noopener">Bruxa Maria’s shop</a> is a mock online shop made from the same rules: log in with <code>jane@example.com</code> / <code>Witch123!</code>, fill the cart, try coupons and test cards, and watch every request in the API log. Great for manual tests, Cypress and API practice.'],
+      ['Your progress and your work', 'Progress is saved in this browser only: another browser or device starts from zero. Use <b>My work (.md)</b> at the bottom of the page to copy or download your progress and code.'],
       ['Two languages', 'Switch between English and Portuguese at the top of the page. Code, commands and test names stay in English, like in real projects.'],
     ],
   },
@@ -3130,6 +3156,12 @@ const UI = {
     cards: 'Cartões', items: '{n} itens', copyJson: 'Copiar JSON', jsonCopied: 'JSON copiado', selectCopy: 'Selecione o texto e copie',
     digital: 'Digital · sempre disponível', soldOut: 'Esgotado', onlyLeft: 'Só restam {n}', inStock: '{n} em estoque', viewJson: '{ } ver como JSON', catEmpty: 'Nenhum produto corresponde a esta busca.',
     notInCat: 'Fora do catálogo', notInCatSub: 'Registros que parecem produtos, mas nunca podem chegar à prateleira.',
+    startHere: 'Comece por aqui', guidePill: 'Comece por aqui', guideTitle: 'Como funciona a academia',
+    guideLead: 'Você acabou de ser contratado na lojinha de tarot da Bruxa Maria. Antes do primeiro exercício, leia o guia: trilhas, XP, dicas e as regras do jogo.',
+    guideText: 'Comece pela Trilha Inicial. Quando você completar 80% dela, as trilhas DEV, QA e IA aparecem aqui.',
+    guideTags: ['Trilha Inicial', 'Desbloqueio com 80%', 'Dicas e soluções', 'Glossário', 'A lojinha'], guideCta: 'Ler o guia →',
+    shopAlt: 'Pixel art da loja de tarot A Bruxa Maria, com a bruxa, a Geekie Jackie, um amigo e dois gatos na porta',
+    howIntro: 'Tudo o que você precisa saber antes do primeiro exercício na lojinha da Bruxa Maria.', howGo: 'Começar a Trilha Inicial →',
     glossaryLink: 'Glossário', glTitle: '📚 Glossário de programação', glSearchLbl: 'Buscar no glossário',
     glIntro: 'Palavras de programação explicadas de um jeito simples, com exemplos da lojinha. Busque, pule para uma letra ou filtre por categoria e trilha.',
     glSearch: 'Busque um termo, uma sigla ou uma palavra como “função”', glAz: 'Pular para uma letra', glCatLbl: 'Filtrar por categoria', glTrackLbl: 'Filtrar por trilha',
@@ -3144,16 +3176,18 @@ const UI = {
     cursesTitle: 'Maldições comuns', cursesSub: 'Mensagens de erro que você vai encontrar, o que significam e o contrafeitiço.',
     forbTitle: 'Feitiços proibidos', forbSub: 'Coisas que ninguém faz na lojinha da Bruxa Maria.', grEmpty: 'Nenhum feitiço corresponde a esta busca.', selectCmd: 'Selecione o comando e copie',
     howSteps: [
-      ['Comece pela Trilha Inicial', '30 exercícios de resolução de problemas no contexto da loja: arrays, loops, textos e conjuntos. DEV, QA e IA se abrem quando você completa 24 deles (80%). Um exercício resolvido com a solução revelada não conta.'],
-      ['Escolha uma trilha', 'Cada trilha é uma jornada: {tracks}. O seu XP e o seu título são contados por trilha.'],
+      ['Comece pela Trilha Inicial', '30 exercícios de resolução de problemas no contexto da loja (20 principais e 10 de reforço): arrays, loops, textos e conjuntos. Complete 24 deles (80%), os de reforço incluídos, e as trilhas DEV, QA e IA aparecem na página inicial. Até lá elas ficam escondidas.'],
+      ['Depois escolha DEV, QA ou IA', 'Cada trilha é uma jornada e começa com Git: clonar o repositório, abrir uma branch e enviar o seu trabalho. O seu XP e o seu título são contados por trilha.'],
       ['Siga os quatro passos', 'Todo exercício começa com uma mensagem da Bruxa Maria e segue a mesma ordem: a ação, o que é, por que fazemos isso {c}, e o seu exercício.'],
-      ['Escreva código ou digite comandos', 'Exercícios de código têm um editor e o botão <b>Rodar testes</b> (ou <code>Ctrl/⌘ + Enter</code>). Exercícios de Git têm um terminal onde você digita cada comando.'],
-      ['Use as dicas com sabedoria', 'Uma dica custa {h} XP. Depois de 2 tentativas erradas você pode ver a solução, mas o exercício passa a valer 0 XP.'],
+      ['Escreva código ou digite comandos', 'Exercícios de código têm um editor e o botão <b>Rodar testes</b> (ou <code>Ctrl/⌘ + Enter</code>). Alguns testes são ocultos, como num juiz online: pense em listas vazias, empates e valores muito grandes. Exercícios de Git têm um terminal onde você digita cada comando.'],
+      ['Use as dicas com sabedoria', 'As dicas vêm uma de cada vez, de um empurrãozinho até quase a resposta. Cada uma custa {h} XP.'],
+      ['A solução tem um preço', 'Depois de 2 tentativas erradas você pode ver a solução, mas o exercício passa a valer 0 XP. Na Trilha Inicial ele também não conta para os 80%: clique em <b>Resolver de novo sozinho</b> e resolva sem ajuda para ele contar.'],
       ['Ganhe medalhas e títulos', 'Termine todos os exercícios de um nível para desbloquear a medalha dele. O título cresce com o XP de cada trilha.'],
-      ['Deixe o grimório do Git aberto', 'O <b>Grimório do Git</b> tem todos os comandos dos exercícios de Git e mais alguns, com o equivalente no VS Code, erros comuns e um glossário.'],
-      ['Explore o catálogo', 'O <b>Catálogo de produtos</b> mostra todos os produtos que os exercícios usam, em cartões ou no JSON que a API da loja devolve.'],
-      ['Consulte as Regras da Loja', 'Todo exercício nasce de uma regra da loja. Clique num id de regra como <code>BR-STK-01</code> num exercício para lê-la nas <b>Regras da Loja</b> e voltar aos exercícios que a usam.'],
-      ['Compartilhe o seu trabalho', 'Use <b>Meu trabalho (.md)</b> no fim da página para copiar ou baixar o seu progresso e o seu código.'],
+      ['Consulte o Glossário', 'O <a href="#glossary">Glossário</a> explica as palavras de programação de um jeito simples, com exemplos da lojinha: busque, pule para uma letra ou filtre por trilha.'],
+      ['Deixe o grimório do Git aberto', 'O <a href="#grimoire">Grimório do Git</a> tem todos os comandos dos exercícios de Git e mais alguns, com o equivalente no VS Code, erros comuns e um glossário de Git.'],
+      ['Conheça os dados e as regras da loja', 'O <a href="#catalog">Catálogo de produtos</a> mostra todos os produtos que os exercícios usam. Todo exercício nasce de uma regra das <a href="#rulebook">Regras da Loja</a>: clique num id como <code>BR-STK-01</code> num exercício para lê-la.'],
+      ['Treine na lojinha', 'A <a href="shop/" target="_blank" rel="noopener">lojinha da Bruxa Maria</a> é uma loja online de mentira feita com as mesmas regras: entre com <code>jane@example.com</code> / <code>Witch123!</code>, monte o carrinho, teste cupons e cartões de teste e veja cada requisição no log da API. Ótima para testes manuais, Cypress e testes de API.'],
+      ['O seu progresso e o seu trabalho', 'O progresso fica salvo só neste navegador: outro navegador ou outro aparelho começa do zero. Use <b>Meu trabalho (.md)</b> no fim da página para copiar ou baixar o seu progresso e o seu código.'],
       ['Duas línguas', 'Troque entre inglês e português no topo da página. Código, comandos e nomes dos testes ficam em inglês, como nos projetos reais.'],
     ],
   },
@@ -3302,6 +3336,7 @@ function renderHomeProgress() {
     $('prog-bar-' + m.id).style.width = (max ? Math.round((xp / max) * 100) : 0) + '%';
     if (m.requires) {
       const open = canAccessTrack(m, p);
+      $('mod-card-' + m.id).hidden = !open; // locked tracks don't show on the home page; a direct link still explains the lock
       $('mod-card-' + m.id).classList.toggle('is-locked', !open);
       $('lock-badge-' + m.id).hidden = open;
       $('lock-note-' + m.id).hidden = open;
@@ -4058,7 +4093,6 @@ function renderShell() {
   $('brand-name').textContent = CONFIG.brandTop || CONFIG.name;
   $('brand-tagline').innerHTML = '<b style="color:var(--ink);font-family:var(--font-display);font-size:18px;font-weight:600">' + esc(CONFIG.tagline) + '</b><br>' + esc(CONFIG.taglineSub || '');
   $('brand-link').setAttribute('aria-label', CONFIG.name + ', all modules');
-  $('home-intro-text').textContent = CONFIG.homeIntro;
   $('home-welcome').textContent = CONFIG.welcome;
   $('why-label').textContent = t('fWhy', { c: CONFIG.company });
   $('hint-cost').textContent = '−' + CONFIG.hintCost + ' XP';
@@ -4067,7 +4101,15 @@ function renderShell() {
   note.hidden = !CONFIG.showTemplateNotice;
   note.innerHTML = '<b>This is a template.</b><span>Edit the first script block in the page: <code>CONFIG</code> for the name and links, <code>MODULES</code> and <code>LEVELS</code> for the tracks, <code>GIT_CONTEXT</code> for your repos, and <code>EXERCISES</code> for the content. Every exercise marked EXAMPLE is a placeholder. Set <code>showTemplateNotice: false</code> to hide this box.</span>';
 
-  $('home-cards').innerHTML = MODULES.map(m =>
+  // "Start here": the guide card opens the how-to page, then the Start Track. DEV, QA and AI appear once they unlock.
+  const guide = '<a class="mod-card is-start guide-card" id="guide-card" href="#how-to" style="--card:var(--sakura)" data-test="guide-card">' +
+    '<div class="mod-card-media guide-media"><img src="assets/magic-shop.webp" width="1536" height="1024" loading="lazy" alt="' + esc(t('shopAlt')) + '" data-i18n-alt="shopAlt"></div>' +
+    '<div class="mod-card-body guide-body"><span class="guide-pill">' + esc(t('guidePill')) + '</span>' +
+    '<h3 class="guide-title">' + esc(t('guideTitle')) + '</h3>' +
+    '<p class="guide-lead">' + esc(t('guideLead')) + '</p><p class="guide-text">' + esc(t('guideText')) + '</p>' +
+    '<div class="guide-tags">' + t('guideTags').map(x => '<span>' + esc(x) + '</span>').join('') + '</div>' +
+    '<span class="mod-cta">' + esc(t('guideCta')) + '</span></div></a>';
+  $('home-cards').innerHTML = guide + MODULES.map(m =>
     '<a class="mod-card' + (m.id === START_TRACK_ID ? ' is-start' : '') + '" id="mod-card-' + m.id + '" style="--card:' + m.color + '" href="#' + m.id + '">' +
     '<div class="mod-card-media">' + cardArt(m.name, m.stack, m.art, m.color) +
     (m.requires ? '<span class="lock-badge" id="lock-badge-' + m.id + '" hidden>🔒 ' + esc(t('lockedBadge')) + '</span>' : '') + '</div>' +
