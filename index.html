@@ -191,7 +191,6 @@ button { font: inherit; cursor: pointer; }
 .mod-card code { font-size: 0.88em; }
 /* Technical Resources: shown but not ready yet */
 .resources-intro { margin-top: 72px; }
-.res-art { display: block; width: 100%; height: auto; aspect-ratio: 1670 / 942; object-fit: cover; }
 /* Three resource cards, same size as the module cards above */
 .home-cards.resources { grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; margin-inline: auto; }
 @media (max-width: 900px) { .home-cards.resources { grid-template-columns: minmax(0, 1fr); width: 100%; } }
@@ -2477,8 +2476,7 @@ RESOURCES = [
     bullets: [L('Programming words explained simply', 'Palavras de programação explicadas de forma simples'), L('Examples from the shop, A–Z and search', 'Exemplos da lojinha, A–Z e busca'), L('Filter by category and by track', 'Filtro por categoria e por trilha')] },
   { title: L('The shop (mock e-commerce)', 'A lojinha (e-commerce de mentira)'), url: 'shop/', color: 'var(--m-post)', art: 'catalog → cart → coupon\n  → checkout → POST /api/orders\n  → pay → 201 / 409',
     bullets: [L('A working online shop built from the same rules and products', 'Uma loja online funcionando, feita com as mesmas regras e produtos'), L('Practise manual tests, Cypress and API checks', 'Para treinar testes manuais, Cypress e testes de API'), L('With test cards, coupons and an API log', 'Com cartões de teste, cupons e log da API')] },
-  { title: L('Code design principles', 'Princípios de design de código'), url: '#design', color: 'var(--accent)', image: 'assets/design/grimoire.webp',
-    imageAlt: L('Pixel art: Geekie Jackie holds a glowing grimoire', 'Pixel art: a Geekie Jackie segura um grimório brilhante'),
+  { title: L('Code design principles', 'Princípios de design de código'), url: '#design', color: 'var(--accent)', art: 'SOLID · DRY\n  KISS · YAGNI\n// clean code, happy devs',
     bullets: [L('SOLID, DRY, KISS and YAGNI, one window each', 'SOLID, DRY, KISS e YAGNI, uma janela para cada'), L('Before and after code from the shop', 'Código antes e depois, da lojinha'), L('The warning signs that call for each one', 'Os sinais de alerta que pedem cada um')] },
   { title: L('Git grimoire', 'Grimório do Git'), url: '#grimoire', color: 'var(--m-git)', art: 'clone → pull → branch\n  → add → commit → push',
     bullets: [L('Every Git spell on one page', 'Todos os feitiços de Git numa página'), L('With the VS Code equivalent of each command', 'Com o equivalente no VS Code de cada comando'), L('Filled in with your track’s repo and branch', 'Preenchido com o repo e a branch da sua trilha')] },
@@ -5530,7 +5528,7 @@ function renderShell() {
   $('resources-intro-text').textContent = CONFIG.resourcesIntro;
   $('resource-cards').innerHTML = RESOURCES.map(r => {
     const inactive = r.soon || !r.url;
-    const inner = '<div class="mod-card-media">' + (r.image ? '<img class="res-art" src="' + r.image + '" width="1670" height="942" loading="lazy" alt="' + esc(r.imageAlt || '') + '">' : cardArt(r.title, '', esc(r.art || ''), r.color || 'var(--accent)')) +
+    const inner = '<div class="mod-card-media">' + cardArt(r.title, '', esc(r.art || ''), r.color || 'var(--accent)') +
       (inactive ? '<span class="soon-badge">' + esc(t('soon')) + '</span>' : '') + '</div>' +
       '<div class="mod-card-body"><ul>' + (r.bullets || []).map(b => '<li>' + b + '</li>').join('') + '</ul>' +
       (inactive ? '' : '<span class="mod-cta">' + esc(t('openX', { x: r.title })) + '</span>') + '</div>';
