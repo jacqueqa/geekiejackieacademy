@@ -14,8 +14,8 @@ Você acaba de ser contratado como estagiário de tecnologia na lojinha de tarot
 
 | Trilha | O que se aprende |
 |---|---|
-| **Inicial** | Resolução de problemas: arrays, loops, textos, conjuntos e matrizes, em 30 exercícios (pré-requisito das outras) |
-| **DEV** | Git, objetos, loops, condicionais e regras de negócio em JavaScript |
+| **Inicial** | Lógica em português, com caixinhas e diagramas, sem escrever código: 40 exercícios (pré-requisito das outras) |
+| **DEV** | Git, objetos, loops, condicionais e regras de negócio em JavaScript, mais 30 desafios de algoritmos |
 | **QA** | Git, asserções com Chai `expect()`, dados ruins e valores-limite |
 | **IA** | Git, prompts montados a partir de dados, alucinações e revisão de código gerado por IA |
 
@@ -27,12 +27,15 @@ Na página inicial, a seção **Comece por aqui** tem o cartão do guia (imagem 
 
 ### Trilha Inicial e desbloqueio
 
-- 30 exercícios: 20 principais e 10 de reforço. Cada reforço indica qual exercício principal ele reforça.
-- Os conceitos seguem problemas clássicos do HackerRank (o nome aparece no exercício), mas todos os enunciados, exemplos e testes são originais e passados na lojinha. Valores em dinheiro ficam em cêntimos (`3490` = €34,90).
-- **DEV, QA e IA só abrem com 24 dos 30 exercícios concluídos (80%)**. Os de reforço contam. Até lá, os cartões delas não aparecem na página inicial, o cartão da Trilha Inicial mostra quanto falta, e um link direto para a trilha abre uma página de bloqueio.
+- **40 exercícios de lógica, sem código para escrever.** Os passos aparecem em português estruturado (`PARA CADA preço NO carrinho: total ← total + preço`), em caixinhas e fluxogramas, sempre com a lojinha como contexto.
+- **9 níveis:** Pensar como o computador · Guardar informação · Decidir · Repetir · Organizar · Conferir · A caixa de ferramentas (pastas, terminal, Git, API, JSON) · Ponte para o código · Reforço. Cada exercício de reforço indica qual exercício ele reforça.
+- **Tipos de exercício**, todos corrigidos automaticamente: ordenar os passos, escolher a pergunta do losango e prever os casos de teste, rastrear uma variável numa tabela, prever o resultado, completar a caixinha vazia, achar o passo com bug, ligar pares e marcar os casos certos.
+- **Ponte para o código:** quase todo exercício tem **👀 Ver em JavaScript**, com o mesmo algoritmo em código, só para ler. O nível "Ponte para o código" pede para reconhecer qual código faz o que as caixinhas dizem.
+- **DEV, QA e IA só abrem com 32 dos 40 exercícios concluídos (80%)**. Os de reforço contam. Até lá, os cartões delas não aparecem na página inicial, o cartão da Trilha Inicial mostra quanto falta, e um link direto para a trilha abre uma página de bloqueio.
 - **Solução revelada não conta:** depois de 2 tentativas o aluno pode ver a solução, mas aí o exercício dá 0 XP e não conta para os 80%. O botão "Resolver de novo sozinho" recomeça o exercício; resolvido assim, ele passa a contar (continua com 0 XP).
-- Cada exercício tem de 1 a 3 dicas progressivas (3 XP cada) e testes visíveis e ocultos. Os ocultos aparecem só como "3 testes ocultos: 2 passando".
-- **Limitação atual:** a academia não tem servidor. A regra de acesso fica em funções isoladas (bloco `ACCESS-RULES` do `index.html`) e roda no navegador, então quem mexer no `localStorage` consegue burlar, e os testes ocultos ficam visíveis no código-fonte. A ideia é mover isso para o backend (Supabase) depois.
+- Cada exercício tem de 1 a 3 dicas progressivas (3 XP cada).
+- **Os 30 exercícios em JavaScript** (inspirados em problemas clássicos do HackerRank, com enunciados originais) agora são os **Desafios de algoritmos** da trilha DEV.
+- **Limitação atual:** a academia não tem servidor. A regra de acesso fica em funções isoladas (bloco `ACCESS-RULES` do `index.html`) e roda no navegador, então quem mexer no `localStorage` consegue burlar, e as respostas ficam visíveis no código-fonte. A ideia é mover isso para o backend (Supabase) depois.
 - Regras novas da loja criadas para os enunciados: BR-ORD-06 (hora em 24 h), BR-LOY-01 (pontos de fidelidade) e BR-RES-01 (taxa de reserva atrasada).
 
 ### O que tem na academia
@@ -50,7 +53,7 @@ Na página inicial, a seção **Comece por aqui** tem o cartão do guia (imagem 
 
 ### Como usar
 
-É uma página, `index.html`, mais os termos do glossário em `glossary.js`, sem nada para instalar. Abra no navegador ou publique com o GitHub Pages. O progresso fica salvo no navegador de quem usa.
+É uma página, `index.html`, mais dois arquivos de dados, `start-track.js` (Trilha Inicial) e `glossary.js` (glossário), sem nada para instalar. Abra no navegador ou publique com o GitHub Pages. O progresso fica salvo no navegador de quem usa.
 
 ### Como editar o conteúdo
 
@@ -62,7 +65,7 @@ title: L('Read the price tag', 'Leia a etiqueta de preço'),
 
 Ao criar um exercício novo, confira duas coisas: o código inicial (`starter`) precisa **falhar** nos testes e a `solution` precisa **passar**.
 
-Os exercícios da Trilha Inicial ficam no bloco `START-TRACK` (função `buildStartTrack`), cada um escrito com `S({...})`: enunciado, entrada, saída, restrições, exemplos, dicas, testes visíveis e ocultos (`hidden`) e a solução.
+Os exercícios da Trilha Inicial ficam em `start-track.js`, separados da página: cada um tem o tipo (`kind`), os textos, as dicas e a resposta certa. O comentário no topo do arquivo explica os campos de cada tipo. Os desafios de algoritmos da DEV ficam no bloco `ALGO-CHALLENGES` do `index.html` (função `buildAlgoChallenges`), cada um escrito com `S({...})`: enunciado, entrada, saída, restrições, exemplos, dicas, testes visíveis e ocultos (`hidden`) e a solução.
 
 ### Testes automatizados
 
@@ -72,7 +75,7 @@ Só precisa do Node (22 ou mais), sem instalar nada:
 node --test "tests/*.test.mjs"
 ```
 
-Eles conferem o cálculo do progresso, o bloqueio abaixo de 80%, o desbloqueio em exatamente 24 de 30, que soluções reveladas não contam, e, para cada um dos 30 exercícios, que a solução de referência passa em todos os testes (visíveis e ocultos) e que o código inicial falha. No glossário, conferem os campos nas duas línguas, que não há termos repetidos, que os exemplos em inglês não ficaram com português, a ordem alfabética, a busca (acentos, maiúsculas, sigla, sem resultados), os filtros e a barra A–Z.
+Eles conferem o cálculo do progresso, o bloqueio abaixo de 80%, o desbloqueio em exatamente 32 de 40 e que soluções reveladas não contam. Na Trilha Inicial, para cada um dos 40 exercícios e nas duas línguas: os campos, que a resposta certa passa e que o estado inicial e uma resposta errada não passam. Nos desafios da DEV, que a solução de referência passa em todos os testes (visíveis e ocultos) e que o código inicial falha. No glossário, conferem os campos nas duas línguas, que não há termos repetidos, que os exemplos em inglês não ficaram com português, a ordem alfabética, a busca (acentos, maiúsculas, sigla, sem resultados), os filtros e a barra A–Z.
 
 ### Como adicionar um termo ao glossário
 
@@ -88,8 +91,8 @@ You have just been hired as a tech intern at **Bruxa Maria’s** little tarot an
 
 | Track | What you learn |
 |---|---|
-| **Start** | Problem solving: arrays, loops, text, sets and matrices, in 30 exercises (prerequisite of the others) |
-| **DEV** | Git, objects, loops, conditionals and business rules in JavaScript |
+| **Start** | Logic in plain language, with boxes and diagrams, no code to write: 40 exercises (prerequisite of the others) |
+| **DEV** | Git, objects, loops, conditionals and business rules in JavaScript, plus 30 algorithm challenges |
 | **QA** | Git, Chai `expect()` assertions, bad data and boundary values |
 | **AI** | Git, prompts built from data, hallucinations and reviewing AI-generated code |
 
@@ -101,12 +104,15 @@ On the home page, the **Start here** section has the guide card (the magic shop 
 
 ### Start Track and unlocking
 
-- 30 exercises: 20 main and 10 reinforcement, each reinforcement pointing to the main exercise it practises again.
-- The concepts follow classic HackerRank problems (named on each exercise); every statement, example and test is original and set in the shop. Money is in cents (`3490` = €34.90).
-- **DEV, QA and AI open with 24 of the 30 exercises done (80%)**, reinforcement included. Until then their cards are hidden on the home page, the Start Track card shows what is missing, and a direct link opens a locked page.
-- **A revealed solution does not count:** after 2 attempts the learner may see the solution, but the exercise then gives 0 XP and does not count toward the 80%. "Solve it again on my own" restarts it; solved that way it counts (still 0 XP).
-- Every exercise has 1 to 3 progressive hints (3 XP each) and visible and hidden tests. Hidden ones only show as "3 hidden tests: 2 passing".
-- **Current limitation:** there is no server. The access rule lives in isolated functions (the `ACCESS-RULES` block in `index.html`) and runs in the browser, so editing `localStorage` bypasses it and hidden tests can be read in the page source. The plan is to move this to the backend (Supabase) later.
+- **40 logic exercises, no code to write.** Steps are written in plain pseudocode (`FOR EACH price IN cart: total ← total + price`), in boxes and flowcharts, always set in the shop.
+- **9 levels:** Think like a computer · Store information · Decide · Repeat · Organise · Check · The toolbox (folders, terminal, Git, API, JSON) · Bridge to code · Reinforcement. Each reinforcement exercise names the one it reinforces.
+- **Exercise kinds**, all checked automatically: put the steps in order, pick the diamond’s question and predict the test cases, trace a variable in a table, predict the result, fill the empty box, find the step with the bug, match pairs and mark the right cases.
+- **Bridge to code:** almost every exercise has **👀 See it in JavaScript**, the same algorithm in code, just to read. The “Bridge to code” level asks which code does what the boxes say.
+- **DEV, QA and AI open with 32 of the 40 exercises done (80%)**, reinforcement included. Until then their cards are hidden on the home page, the Start Track card shows what is missing, and a direct link opens a locked page.
+- **A revealed solution does not count:** after 2 attempts the learner may see the solution, but the exercise then gives 0 XP and does not count toward the 80%. “Solve it again on my own” restarts it; solved that way it counts (still 0 XP).
+- Every exercise has 1 to 3 progressive hints (3 XP each).
+- **The 30 JavaScript exercises** (inspired by classic HackerRank problems, with original statements) are now the DEV track’s **Algorithm challenges**.
+- **Current limitation:** there is no server. The access rule lives in isolated functions (the `ACCESS-RULES` block in `index.html`) and runs in the browser, so editing `localStorage` bypasses it and the answers can be read in the page source. The plan is to move this to the backend (Supabase) later.
 - New shop rules written for the statements: BR-ORD-06 (24-hour time), BR-LOY-01 (loyalty points) and BR-RES-01 (late reservation fee).
 
 ### What’s inside
@@ -124,7 +130,7 @@ On the home page, the **Start here** section has the guide card (the magic shop 
 
 ### How to use it
 
-It is one page, `index.html`, plus the glossary terms in `glossary.js`, with nothing to install. Open it in a browser or publish it with GitHub Pages. Progress is saved in each learner’s browser.
+It is one page, `index.html`, plus two data files, `start-track.js` (Start Track) and `glossary.js` (glossary), with nothing to install. Open it in a browser or publish it with GitHub Pages. Progress is saved in each learner’s browser.
 
 ### How to edit the content
 
@@ -136,7 +142,7 @@ title: L('Read the price tag', 'Leia a etiqueta de preço'),
 
 When you add an exercise, check two things: the `starter` code must **fail** the tests and the `solution` must **pass** them.
 
-Start Track exercises live in the `START-TRACK` block (`buildStartTrack`), each written with `S({...})`: statement, input, output, constraints, examples, hints, visible and `hidden` tests, and the solution.
+Start Track exercises live in `start-track.js`, apart from the page: each one has its kind, texts, hints and right answer; the comment at the top of the file explains the fields of each kind. DEV’s algorithm challenges live in the `ALGO-CHALLENGES` block of `index.html` (`buildAlgoChallenges`), each written with `S({...})`: statement, input, output, constraints, examples, hints, visible and `hidden` tests, and the solution.
 
 ### Automated tests
 
@@ -146,7 +152,7 @@ Only Node (22 or later) is needed, nothing to install:
 node --test "tests/*.test.mjs"
 ```
 
-They check the progress maths, the lock below 80%, the unlock at exactly 24 of 30, that revealed solutions don’t count, and, for each of the 30 exercises, that the reference solution passes every test (visible and hidden) and the starter code fails. For the glossary they check the fields in both languages, no duplicates, that English examples have no Portuguese left, the alphabetical order, the search (accents, case, acronyms, no results), the filters and the A–Z bar.
+They check the progress maths, the lock below 80%, the unlock at exactly 32 of 40 and that revealed solutions don’t count. For each of the 40 Start Track exercises, in both languages: the fields, that the right answer passes and that the starting state and a wrong answer don’t. For DEV’s challenges, that the reference solution passes every test (visible and hidden) and the starter code fails. For the glossary they check the fields in both languages, no duplicates, that English examples have no Portuguese left, the alphabetical order, the search (accents, case, acronyms, no results), the filters and the A–Z bar.
 
 ### Adding a glossary term
 
