@@ -1,4 +1,4 @@
-// The 80% rule: DEV, QA and AI open only after 24 of the 30 Start Track exercises.
+// The 80% rule: DEV, QA and AI open after 80% of the Start Track, or earlier if the learner confirms they want to start.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { load } from './load.mjs';
@@ -52,6 +52,14 @@ test('they unlock at exactly 24 of 30', () => {
   assert.equal(p.unlocked, true);
   assert.equal(canAccessTrack(DEV, p), true);
   assert.equal(canAccessTrack(DEV, startTrackProgress(START, learner(30))), true);
+});
+
+test('a learner who chose to start early can open the track below 80%', () => {
+  const p = startTrackProgress(START, learner(3));
+  assert.equal(canAccessTrack(DEV, p), false, 'no choice yet');
+  assert.equal(canAccessTrack(DEV, p, false), false);
+  assert.equal(canAccessTrack(DEV, p, true), true, 'chose to start early');
+  assert.equal(p.unlocked, false, 'the 80% rule itself does not change');
 });
 
 test('the Start Track itself is always open', () => {
