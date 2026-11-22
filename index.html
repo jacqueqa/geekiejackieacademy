@@ -402,15 +402,11 @@ pre.t-out { margin: 0; font-size: 12.5px; color: var(--muted); white-space: pre-
 .dp-lines circle { opacity: .95; }
 .dp-center { grid-area: mid; position: relative; z-index: 1; align-self: center; }
 .dp-center.dp-hero { box-shadow: 0 10px 30px rgba(0,0,0,.45), 0 0 0 4px rgba(232,163,61,.25); }
-.dp-card { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 10px; padding: 10px 10px 14px; border-radius: 20px; cursor: pointer; text-align: left; color: var(--ink); font: inherit;
+.dp-card { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 10px; padding: 10px; border-radius: 20px; cursor: pointer; text-align: left; color: var(--ink); font: inherit;
   background: color-mix(in srgb, var(--c) 14%, var(--surface)); border: 3px solid var(--c); box-shadow: 0 6px 0 rgba(0,0,0,.45); transition: transform .15s ease, box-shadow .15s ease; }
 .dp-card:hover, .dp-card:focus-visible { transform: translateY(-3px); box-shadow: 0 9px 0 rgba(0,0,0,.45), 0 0 0 4px color-mix(in srgb, var(--c) 35%, transparent); }
 .dp-card:focus-visible { outline: none; }
 .dp-card img { display: block; width: 100%; height: auto; aspect-ratio: 1670 / 942; object-fit: cover; border-radius: 13px; }
-.dp-card-text { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; padding: 0 6px; }
-.dp-card-text strong { font-family: var(--font-display); font-size: 22px; letter-spacing: .06em; color: var(--c); }
-.dp-card-text span { color: var(--ink); font-size: 14px; }
-.dp-card-text em { flex-basis: 100%; font-style: normal; color: var(--muted); font-size: 12.5px; }
 .dp-card[data-area="c1"] { grid-area: c1; } .dp-card[data-area="c2"] { grid-area: c2; } .dp-card[data-area="c3"] { grid-area: c3; } .dp-card[data-area="c4"] { grid-area: c4; }
 @media (max-width: 760px) {
   .dp-map { grid-template-columns: minmax(0, 1fr); grid-template-areas: "mid" "c1" "c2" "c3" "c4"; gap: 18px; }
@@ -5498,8 +5494,7 @@ function renderDesign() {
   map.innerHTML = lines + '<div class="dp-center dp-hero"><img src="assets/design/grimoire.webp" width="1670" height="942" alt="' + esc(t('dpHeroAlt')) + '">' +
     '<h2 class="dp-hero-title">' + esc(t('dpTitle')) + '</h2></div>' + list.map((pr, i) =>
     '<button type="button" class="dp-card" data-area="' + (DP_AREAS[i] || '') + '" data-principle="' + pr.id + '" style="--c:' + pr.color + '" aria-haspopup="dialog" aria-label="' + esc(t('dpOpen', { n: pr.name })) + '">' +
-      '<img src="' + pr.image + '" width="1200" height="676" loading="lazy" alt="">' +
-      '<span class="dp-card-text"><strong>' + esc(pr.name) + '</strong><span>' + esc(dpT(pr, 'title')) + '</span><em>' + esc(pr.full) + '</em></span></button>').join('');
+      '<img src="' + pr.image + '" width="1200" height="676" loading="lazy" alt="">' + '</button>').join(''); // only the art: the name is in aria-label
   map.querySelectorAll('[data-principle]').forEach(b => b.addEventListener('click', () => openDesign(b.dataset.principle, true)));
 }
 function dpCode(before, after) {
