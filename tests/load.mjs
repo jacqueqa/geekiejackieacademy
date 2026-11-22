@@ -15,10 +15,14 @@ export function block(name) {
 }
 
 // Runs the given blocks in one sandbox and returns the requested globals.
+// A block is a NAME from index.html, or 'file:<path>' for a whole file next to index.html (like 'file:glossary.js').
 export function load(blocks, names, extra = {}) {
   const ctx = vm.createContext({ ...extra });
+  const code = name => name.startsWith('file:')
+    ? readFileSync(fileURLToPath(new URL('../' + name.slice(5), import.meta.url)), 'utf8')
+    : block(name);
   const exportLine = '\n;globalThis.__out = {' + names.map(n => n + ': typeof ' + n + ' !== "undefined" ? ' + n + ' : undefined').join(', ') + '};';
-  vm.runInContext(blocks.map(block).join('\n') + exportLine, ctx);
+  vm.runInContext(blocks.map(code).join('\n') + exportLine, ctx);
   return ctx.__out;
 }
 
