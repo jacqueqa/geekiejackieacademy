@@ -701,7 +701,30 @@ pre.cat-json { margin: 0; background: var(--code-bg); color: var(--code-ink); bo
 .mod-card.is-locked .guide-pill { opacity: .7; }
 .mod-card.is-locked .mod-cta { color: var(--muted); }
 .lock-note { font-size: 13.5px; color: var(--ink); background: var(--bg); border: 1px dashed var(--fail); border-radius: 10px; padding: 8px 10px; }
-.locked-view { max-width: 640px; margin: 0 auto; padding-top: 16px; display: flex; flex-direction: column; gap: 14px; }
+.locked-view { width: 100%; max-width: 1000px; margin: 0 auto; padding-top: 16px; display: flex; flex-direction: column; gap: 14px; }
+.gj-scene { position: relative; container-type: inline-size; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+.gj-art img { display: block; width: 100%; height: auto; }
+.gj-box { position: absolute; left: 25.2%; top: 76%; width: 70.4%; height: 17.6%; display: flex; flex-direction: column; justify-content: space-between; color: #3A2150; text-align: left; }
+.gj-name { display: none; }
+.gj-box p { margin: 0; font-size: 1.45cqw; line-height: 1.38; color: #3A2150; }
+.gj-box p b { color: #7A2E8E; }
+.gj-choices { display: flex; justify-content: flex-end; gap: 1.2cqw; flex-wrap: wrap; }
+.gj-btn { font: inherit; font-family: var(--font-display); font-size: 1.3cqw; font-weight: 600; padding: .45cqw 1.3cqw; border-radius: .7cqw; border: .2cqw solid #7A4A12; background: #FFF6E8; color: #3A2150; cursor: pointer; text-decoration: none; box-shadow: 0 .25cqw 0 #C98A2E; }
+.gj-btn:hover { background: #FFE9C7; }
+.gj-btn.yes { background: linear-gradient(#8E4FD0, #6B34A8); color: #fff; border-color: #3E1A66; box-shadow: 0 .25cqw 0 #3E1A66; }
+.gj-btn.yes:hover { background: linear-gradient(#9C5EDD, #7A3FBA); }
+.gj-btn:focus-visible { outline: 2px solid #E8A33D; outline-offset: 2px; }
+.locked-progress { max-width: 640px; width: 100%; margin: 4px auto 0; }
+@media (max-width: 720px) {
+  /* the art is too small for text here: crop it above its dialog box and draw the box under it */
+  .gj-scene { container-type: normal; overflow: visible; box-shadow: none; }
+  .gj-art { aspect-ratio: 1672 / 716; overflow: hidden; border-radius: 14px 14px 0 0; } /* keeps the art's own name plate */
+  .gj-box { position: static; width: auto; height: auto; gap: 12px; background: #FDEBD6; border: 3px solid #E8A33D; border-top: 0; box-shadow: 0 0 0 3px #4B2378 inset; border-radius: 0 0 14px 14px; padding: 14px 16px 16px; }
+  .gj-box p { font-size: 15px; }
+  .gj-choices { flex-direction: column-reverse; gap: 8px; }
+  .gj-btn { font-size: 15px; padding: 10px 14px; border-width: 2px; border-radius: 10px; text-align: center; box-shadow: 0 3px 0 #C98A2E; }
+  .gj-btn.yes { box-shadow: 0 3px 0 #3E1A66; }
+}
 .locked-card { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 28px; display: flex; flex-direction: column; gap: 14px; text-align: center; }
 .locked-card .unlock { text-align: left; }
 .locked-icon { font-size: 40px; }
@@ -1076,15 +1099,23 @@ body { zoom: var(--ui-scale, 1); }
 
   <section class="locked-view" id="locked-view" hidden data-test="locked-view">
     <a class="back-link" href="#" data-i18n="allTracks">← Homepage</a>
-    <div class="locked-card">
-      <div class="locked-icon" aria-hidden="true">🔒</div>
-      <h2 id="locked-title"></h2>
-      <p id="locked-text"></p>
-      <div class="unlock">
-        <div class="mod-progress"><span id="locked-count"></span><span class="mod-rank" id="locked-percent"></span></div>
-        <div class="bar unlock-bar"><span id="locked-bar" style="width:0%"></span><i class="unlock-mark" id="locked-mark"></i></div>
+    <!-- Geekie Jackie asks if the learner is sure about starting this track before the Start Track. The art is
+         assets/geekie-desk.webp (1672 x 941); the text sits in its empty dialog box, placed in % and sized in cqw. -->
+    <div class="gj-scene">
+      <div class="gj-art"><img src="assets/geekie-desk.webp" width="1672" height="941" alt="" data-i18n-alt="gjAlt"></div>
+      <div class="gj-box" role="group" aria-labelledby="locked-title">
+        <h2 class="visually-hidden" id="locked-title"></h2>
+        <div class="gj-name" aria-hidden="true">Geekie Jackie</div>
+        <p id="locked-text"></p>
+        <div class="gj-choices">
+          <a class="gj-btn" href="#start" id="locked-go"></a>
+          <button class="gj-btn yes" type="button" id="early-yes"></button>
+        </div>
       </div>
-      <a class="btn primary" href="#start" id="locked-go"></a>
+    </div>
+    <div class="unlock locked-progress">
+      <div class="mod-progress"><span id="locked-count"></span><span class="mod-rank" id="locked-percent"></span></div>
+      <div class="bar unlock-bar"><span id="locked-bar" style="width:0%"></span><i class="unlock-mark" id="locked-mark"></i></div>
     </div>
   </section>
 
@@ -3406,10 +3437,10 @@ const UI = {
     drawerTitle: 'My work', drawerSub: 'Your progress as a Markdown file, to keep or to share with your lead.', tracks: 'Tracks', include: 'Include',
     incCode: 'My code and commands', incTodo: 'Exercises not started', preview: 'Preview', copy: 'Copy', copied: 'Copied', download: 'Download .md', close: 'Close',
     startTrack: 'Start with the Start Track',
-    lockedBadge: 'Locked', lockedNote: 'Complete {r} of the {t} Start Track exercises to open it. {f}.', missN: '{n} to go', miss1: '1 to go',
+    lockedBadge: 'After the Start Track', lockedNote: 'Best after {r} of the {t} Start Track exercises: {f}. You can also start it now.', missN: '{n} to go', miss1: '1 to go',
     unlockCount: '{d} / {t} exercises', unlockText: '{n} more to reach {p}% and open DEV, QA and AI.', unlockedText: 'DEV, QA and AI are open. Keep going to finish the track!',
-    lockedTitle: 'The {m} is still locked', lockedText: 'DEV, QA and AI open when you complete {r} of the {t} exercises ({p}%) of the {s}. You are {n} away. Exercises solved with the revealed solution don’t count.',
-    lockedGo: 'Go to the {s} →',
+    lockedTitle: 'Start the {m} before the Start Track?', lockedText: 'Hey, {name}! You haven’t finished the {s} yet: you did {d} of its {t} exercises, and it is the logic foundation of the {m}. Are you sure you want to start the {m} now?',
+    lockedGo: 'No, back to the {s}', earlyYes: 'Yes, start the {m}', earlyDone: 'The {m} is open. Good luck!', gjFriend: 'apprentice', gjAlt: 'Pixel art: Geekie Jackie at her desk, looking at you seriously',
     reinforces: 'Reinforces {x}', hintN: '<b>Hint {n} of {t}.</b> ',
     solNoCount: 'Solved with the solution, this exercise gives 0 XP and does <b>not</b> count toward the {p}%.',
     solOpenStart: 'Show the solution. You get 0 XP and the exercise does not count toward the {p}% until you solve it again on your own.',
@@ -3509,10 +3540,10 @@ const UI = {
     drawerTitle: 'Meu trabalho', drawerSub: 'O seu progresso como um arquivo Markdown, para guardar ou mostrar para a sua liderança.', tracks: 'Trilhas', include: 'Incluir',
     incCode: 'Meu código e comandos', incTodo: 'Exercícios não começados', preview: 'Prévia', copy: 'Copiar', copied: 'Copiado', download: 'Baixar .md', close: 'Fechar',
     startTrack: 'Comece pela Trilha Inicial',
-    lockedBadge: 'Bloqueada', lockedNote: 'Complete {r} dos {t} exercícios da Trilha Inicial para abrir. {f}.', missN: 'Faltam {n}', miss1: 'Falta 1',
+    lockedBadge: 'Depois da Trilha Inicial', lockedNote: 'Melhor depois de {r} dos {t} exercícios da Trilha Inicial. {f}, mas também dá para começar agora.', missN: 'Faltam {n}', miss1: 'Falta 1',
     unlockCount: '{d} / {t} exercícios', unlockText: '{f} para chegar a {p}% e abrir DEV, QA e IA.', unlockedText: 'DEV, QA e IA estão abertas. Continue até terminar a trilha!',
-    lockedTitle: 'A {m} ainda está bloqueada', lockedText: 'DEV, QA e IA se abrem quando você completa {r} dos {t} exercícios ({p}%) da {s}. {f}. Exercícios resolvidos com a solução revelada não contam.',
-    lockedGo: 'Ir para a {s} →',
+    lockedTitle: 'Começar a {m} antes da Trilha Inicial?', lockedText: 'Ei, {name}! Você ainda não terminou a {s}: fez {d} dos {t} exercícios, e ela é a base de lógica para a {m}. Tem certeza que quer começar a {m} agora?',
+    lockedGo: 'Não, voltar para a {s}', earlyYes: 'Sim, quero começar a {m}', earlyDone: 'A {m} está liberada. Boa sorte!', gjFriend: 'aprendiz', gjAlt: 'Pixel art: a Geekie Jackie na mesa dela, olhando séria para você',
     reinforces: 'Reforça {x}', hintN: '<b>Dica {n} de {t}.</b> ',
     solNoCount: 'Resolvido com a solução, este exercício dá 0 XP e <b>não</b> conta para os {p}%.',
     solOpenStart: 'Mostrar a solução. Você ganha 0 XP e o exercício não conta para os {p}% até você resolver de novo sozinho.',
@@ -3608,7 +3639,9 @@ function t(key, vars) {
    Who can open which track. Pure functions (no DOM, no storage) so they are tested in tests/
    and can move to the backend later. Until then they run in the browser only.
    - DEV, QA and AI have `requires: 'start'`: they open once the learner completes 80% of the Start Track.
-   - An exercise solved after revealing the solution gives 0 XP and does not count toward the 80%. */
+   - An exercise solved after revealing the solution gives 0 XP and does not count toward the 80%.
+   - A learner may also open a track early: the page asks if they are sure, and the choice is kept
+     per track (state.earlyAccess). `early` below is that choice. */
 const START_TRACK_ID = 'start';
 const UNLOCK_PERCENT = 80;
 function countsForUnlock(ex, st) { return !!(st.done && st.done[ex.id]) && !(st.solutions && st.solutions[ex.id]); }
@@ -3623,7 +3656,7 @@ function startTrackProgress(exercises, st) {
     unlocked: total > 0 && done >= required,
   };
 }
-function canAccessTrack(module, progress) { return !module.requires || progress.unlocked; }
+function canAccessTrack(module, progress, early) { return !module.requires || progress.unlocked || !!early; }
 /* ACCESS-RULES:END */
 
 /* ACHIEVEMENTS:BEGIN
@@ -3926,7 +3959,7 @@ const STORE_KEY = CONFIG.storageKey;
 const emptyReport = () => '<span class="empty-rep">' + t('emptyReport') + '</span>';
 
 // hints[id]: how many hints were opened (old saves have true = 1). revealed[id]: the solution was seen at least once, so 0 XP for good.
-function freshState() { return { grimoireTrack: null, badges: {}, days: {}, visited: {}, run: 0, bestRun: 0, logic: {}, folds: {}, name: '', avatar: null, current: null, lastByModule: {}, done: {}, hints: {}, solutions: {}, revealed: {}, fails: {}, code: {}, term: {} }; }
+function freshState() { return { earlyAccess: {}, grimoireTrack: null, badges: {}, days: {}, visited: {}, run: 0, bestRun: 0, logic: {}, folds: {}, name: '', avatar: null, current: null, lastByModule: {}, done: {}, hints: {}, solutions: {}, revealed: {}, fails: {}, code: {}, term: {} }; }
 function loadState() {
   try {
     const raw = localStorage.getItem(STORE_KEY);
@@ -3968,8 +4001,10 @@ function startProgress() { return startTrackProgress(moduleExercises(START_TRACK
 function trackOpen(modId) {
   if (CONFIG.unlockAllTracks) return true; // TEMPORARY preview (see CONFIG)
   const m = MODULES.find(x => x.id === modId);
-  return !m || canAccessTrack(m, startProgress());
+  return !m || canAccessTrack(m, startProgress(), !!(state.earlyAccess && state.earlyAccess[modId]));
 }
+// The 80% rule alone, without the early access (the "Unlock the DEV track" badges follow this one).
+function trackUnlockedByRule(modId) { const m = MODULES.find(x => x.id === modId); return !m || canAccessTrack(m, startProgress()); }
 // A rank's XP is its share of the module's total XP, so ranks stay balanced when you add or remove exercises.
 function moduleRanks(mod) {
   const max = moduleMax(mod);
@@ -4688,16 +4723,28 @@ function renderLocked(mod) {
   $('module-view').hidden = true;
   $('locked-view').hidden = false;
   $('locked-title').textContent = t('lockedTitle', { m: t('moduleTitle', { m: mod.name }) });
-  $('locked-text').textContent = t('lockedText', { r: p.required, t: p.total, p: UNLOCK_PERCENT, n: p.missing, f: missingText(p), s: t('moduleTitle', { m: start.name }) });
+  const trackName = t('moduleTitle', { m: mod.name }), startName = t('moduleTitle', { m: start.name });
+  $('locked-text').textContent = t('lockedText', { name: (state.name || '').trim() || t('gjFriend'), d: p.done, t: p.total, s: startName, m: trackName });
+  $('early-yes').textContent = t('earlyYes', { m: trackName });
+  $('early-yes').dataset.track = mod.id;
   $('locked-count').textContent = t('unlockCount', { d: p.done, t: p.total });
   $('locked-percent').textContent = p.percent + '%';
   $('locked-bar').style.width = p.percent + '%';
   $('locked-mark').style.left = UNLOCK_PERCENT + '%';
-  $('locked-go').textContent = t('lockedGo', { s: t('moduleTitle', { m: start.name }) });
+  $('locked-go').textContent = t('lockedGo', { s: startName });
   renderHeader();
   document.title = CONFIG.name + ': ' + mod.name + ' 🔒';
   window.scrollTo(0, 0);
 }
+$('early-yes').addEventListener('click', () => {
+  const id = $('early-yes').dataset.track, mod = MODULES.find(m => m.id === id);
+  if (!mod) return;
+  state.earlyAccess = state.earlyAccess || {};
+  state.earlyAccess[id] = dayKey(new Date());
+  saveState();
+  showView();
+  toast(t('earlyDone', { m: t('moduleTitle', { m: mod.name }) }));
+});
 function renderAll() {
   if (!activeModule) { renderHeader(); renderHomeProgress(); return; }
   renderHeader(); renderTrack(); renderExercise();
@@ -4762,7 +4809,7 @@ function badgeFacts() {
   const { xp, max } = academyXp();
   return achievementFacts({
     levels: LEVELS, exercises: EXERCISES, modules: MODULES.map(m => m.id), state, xp, maxXp: max,
-    unlocked: { dev: trackOpen('dev'), qa: trackOpen('qa'), ai: trackOpen('ai') },
+    unlocked: { dev: trackUnlockedByRule('dev'), qa: trackUnlockedByRule('qa'), ai: trackUnlockedByRule('ai') },
   });
 }
 // Saves the badges earned since the last check (with the date) and announces them.
