@@ -1,4 +1,4 @@
-// The 80% rule: DEV, QA and AI open after 80% of the Start Track, or earlier if the learner confirms they want to start.
+// The 60% rule: DEV, QA and AI open straight away after 60% of the Start Track, or earlier if the learner confirms they want to start.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { load } from './load.mjs';
@@ -18,48 +18,48 @@ function learner(n, withSolution = 0) {
   return st;
 }
 
-test('the unlock threshold is 80%', () => {
-  assert.equal(UNLOCK_PERCENT, 80);
-  assert.equal(startTrackProgress(START, learner(0)).required, 24);
+test('the recommended threshold is 60%', () => {
+  assert.equal(UNLOCK_PERCENT, 60);
+  assert.equal(startTrackProgress(START, learner(0)).required, 18);
 });
 
 test('percent of progress', () => {
   assert.equal(startTrackProgress(START, learner(0)).percent, 0);
   assert.equal(startTrackProgress(START, learner(3)).percent, 10);
   assert.equal(startTrackProgress(START, learner(15)).percent, 50);
-  assert.equal(startTrackProgress(START, learner(23)).percent, 76); // rounded down: never shows 80% too early
-  assert.equal(startTrackProgress(START, learner(24)).percent, 80);
+  assert.equal(startTrackProgress(START, learner(17)).percent, 56); // rounded down: never shows 60% too early
+  assert.equal(startTrackProgress(START, learner(18)).percent, 60);
   assert.equal(startTrackProgress(START, learner(30)).percent, 100);
 });
 
 test('missing exercises are counted', () => {
-  assert.equal(startTrackProgress(START, learner(0)).missing, 24);
-  assert.equal(startTrackProgress(START, learner(20)).missing, 4);
+  assert.equal(startTrackProgress(START, learner(0)).missing, 18);
+  assert.equal(startTrackProgress(START, learner(14)).missing, 4);
   assert.equal(startTrackProgress(START, learner(29)).missing, 0);
 });
 
-test('DEV, QA and AI are locked below 80%', () => {
-  for (const n of [0, 1, 12, 20, 23]) {
+test('below 60%, DEV, QA and AI wait for the learner to confirm', () => {
+  for (const n of [0, 1, 12, 17]) {
     const p = startTrackProgress(START, learner(n));
     assert.equal(p.unlocked, false, n + ' done');
     assert.equal(canAccessTrack(DEV, p), false, n + ' done');
   }
 });
 
-test('they unlock at exactly 24 of 30', () => {
-  const p = startTrackProgress(START, learner(24));
-  assert.equal(p.done, 24);
+test('they open with no question at exactly 18 of 30', () => {
+  const p = startTrackProgress(START, learner(18));
+  assert.equal(p.done, 18);
   assert.equal(p.unlocked, true);
   assert.equal(canAccessTrack(DEV, p), true);
   assert.equal(canAccessTrack(DEV, startTrackProgress(START, learner(30))), true);
 });
 
-test('a learner who chose to start early can open the track below 80%', () => {
+test('a learner who chose to start early can open the track below 60%', () => {
   const p = startTrackProgress(START, learner(3));
   assert.equal(canAccessTrack(DEV, p), false, 'no choice yet');
   assert.equal(canAccessTrack(DEV, p, false), false);
   assert.equal(canAccessTrack(DEV, p, true), true, 'chose to start early');
-  assert.equal(p.unlocked, false, 'the 80% rule itself does not change');
+  assert.equal(p.unlocked, false, 'the 60% rule itself does not change');
 });
 
 test('the Start Track itself is always open', () => {
@@ -68,14 +68,14 @@ test('the Start Track itself is always open', () => {
 
 test('exercises solved with the revealed solution do not count', () => {
   assert.equal(countsForUnlock(START[0], { done: { s01: true }, solutions: { s01: true } }), false);
-  const p = startTrackProgress(START, learner(20, 10)); // 20 alone + 10 with the solution
-  assert.equal(p.done, 20);
+  const p = startTrackProgress(START, learner(15, 10)); // 15 alone + 10 with the solution
+  assert.equal(p.done, 15);
   assert.equal(p.unlocked, false);
 });
 
 test('reinforcement exercises count like the main ones', () => {
   const st = { done: {}, solutions: {} };
-  START.slice(6).forEach(ex => { st.done[ex.id] = true; }); // s07..s30: 14 main + 10 reinforcement = 24
+  START.slice(12).forEach(ex => { st.done[ex.id] = true; }); // s13..s30: 8 main + 10 reinforcement = 18
   assert.equal(startTrackProgress(START, st).unlocked, true);
 });
 

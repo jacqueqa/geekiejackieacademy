@@ -27,13 +27,13 @@ test('ids and order are in sequence', () => {
   });
 });
 
-test('80% means 32 of the 40 exercises', () => {
+test('60% means 24 of the 40 exercises', () => {
   const st = { done: {}, solutions: {} };
-  exercises.slice(0, 31).forEach(e => { st.done[e.id] = true; });
+  exercises.slice(0, 23).forEach(e => { st.done[e.id] = true; });
   assert.equal(G.startTrackProgress(exercises, st).unlocked, false);
-  st.done[exercises[31].id] = true;
+  st.done[exercises[23].id] = true;
   const p = G.startTrackProgress(exercises, st);
-  assert.equal(p.required, 32);
+  assert.equal(p.required, 24);
   assert.equal(p.unlocked, true);
 });
 
