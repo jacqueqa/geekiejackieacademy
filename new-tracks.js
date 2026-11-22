@@ -1,5 +1,5 @@
 /* =====================================================================
-   TRILHAS FRONT END E ANÁLISE DE DADOS
+   TRILHAS GIT, FRONT END E ANÁLISE DE DADOS
    Only data, like start-track.js: index.html draws the exercises and checks the answers.
    Two kinds of exercise:
      logic  (type: 'logic') the same kinds as the Start Track: order, match, predict, bug, pick
@@ -9,7 +9,8 @@
    Run the tests after editing:  node --test "tests/*.test.mjs"
    ===================================================================== */
 
-// shared: { FORK_URL, FORK_PATTERN, FORK_NOTE } from index.html, for the Git level.
+// shared: { FORK_URL, FORK_PATTERN, FORK_NOTE } from index.html. `git` is each track's repo context:
+// the Git track teaches with its own, and the Git grimoire uses every track's one.
 function buildFrontendTrack(L, shared) {
   const h = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const c = s => '<code>' + h(s) + '</code>';
@@ -24,7 +25,7 @@ function buildFrontendTrack(L, shared) {
     imageAlt: L('Pixel art: Geekie Jackie points at a web page being built, with HTML, CSS and JavaScript blocks', 'Pixel art: a Geekie Jackie aponta para uma página web sendo montada, com blocos de HTML, CSS e JavaScript'),
     stack: L('Interfaces · HTML, CSS and JavaScript', 'Interfaces · HTML, CSS e JavaScript'), color: 'var(--m-patch)',
     art: '&lt;article class="card"&gt;\n  &lt;h3&gt;<b>Rider-Waite Tarot</b>&lt;/h3&gt;\n&lt;/article&gt;\n// Make it beautiful.',
-    bullets: [L('Git in VS Code', 'Git no VS Code'), L('HTML: the structure of the shop window', 'HTML: a estrutura da vitrine'), L('CSS: selectors, cascade and spacing', 'CSS: seletores, cascata e espaçamento'), L('JavaScript that builds the screen from data', 'JavaScript que monta a tela a partir dos dados')],
+    bullets: [L('HTML: the structure of the shop window', 'HTML: a estrutura da vitrine'), L('CSS: selectors, cascade and spacing', 'CSS: seletores, cascata e espaçamento'), L('JavaScript that builds the screen from data', 'JavaScript que monta a tela a partir dos dados')],
   };
   const ranks = [
     { at: 0, name: L('New Intern', 'Novo Estagiário') }, { at: 0.15, name: L('Shop Apprentice', 'Aprendiz da Loja') }, { at: 0.4, name: L('Window Designer', 'Desenhista de Vitrines') },
@@ -47,7 +48,6 @@ function buildFrontendTrack(L, shared) {
       'A loja usa <b>conventional commits</b>: <code>feat:</code> para algo novo na tela, <code>fix:</code> para correções, <code>style:</code> só para formatação. As mensagens de commit são escritas em inglês.'),
   };
   const levels = [
-    { id: 501, module: 'frontend', git: true, name: L('Get the code', 'Pegue o código'), topic: L('Git in VS Code', 'Git no VS Code'), badge: 'git' },
     { id: 51, module: 'frontend', name: L('The Shop Window in HTML', 'A Vitrine em HTML'), topic: L('Structure and meaning', 'Estrutura e significado'), badge: '</>' },
     { id: 52, module: 'frontend', name: L('Dressing It with CSS', 'O Visual com CSS'), topic: L('Selectors, cascade and spacing', 'Seletores, cascata e espaçamento'), badge: '🎨' },
     { id: 53, module: 'frontend', name: L('JavaScript in the Window', 'JavaScript na Vitrine'), topic: L('The screen from the data', 'A tela a partir dos dados'), badge: '✦' },
@@ -293,7 +293,7 @@ function buildDataTrack(L, shared) {
     imageAlt: L('Pixel art: Geekie Jackie at a laptop in front of a dashboard with charts, with books about Python, SQL, Pandas, NumPy and Power BI', 'Pixel art: a Geekie Jackie no notebook diante de um painel com gráficos, com livros de Python, SQL, Pandas, NumPy e Power BI'),
     stack: L('Data Analysis · JavaScript and SQL', 'Análise de Dados · JavaScript e SQL'), color: 'var(--m-get)',
     art: 'SELECT category,\n  <b>SUM</b>(price * qty)\nFROM order_items\n<b>GROUP BY</b> category;\n// Find the story in the data.',
-    bullets: [L('Git in VS Code', 'Git no VS Code'), L('Count, sum and average the shop’s orders', 'Contar, somar e tirar médias dos pedidos'), L('Group by category and by day', 'Agrupar por categoria e por dia'), L('Read SQL and choose the right chart', 'Ler SQL e escolher o gráfico certo')],
+    bullets: [L('Count, sum and average the shop’s orders', 'Contar, somar e tirar médias dos pedidos'), L('Group by category and by day', 'Agrupar por categoria e por dia'), L('Read SQL and choose the right chart', 'Ler SQL e escolher o gráfico certo')],
   };
   const ranks = [
     { at: 0, name: L('New Intern', 'Novo Estagiário') }, { at: 0.15, name: L('Shop Apprentice', 'Aprendiz da Loja') }, { at: 0.4, name: L('Table Reader', 'Leitora de Tabelas') },
@@ -316,7 +316,6 @@ function buildDataTrack(L, shared) {
       'Relatórios também são código: consultas têm commits, revisão e histórico, e assim qualquer pessoa consegue repetir os números. As mensagens de commit são escritas em inglês.'),
   };
   const levels = [
-    { id: 601, module: 'data', git: true, name: L('Get the code', 'Pegue o código'), topic: L('Git in VS Code', 'Git no VS Code'), badge: 'git' },
     { id: 61, module: 'data', name: L('Reading the Data', 'Lendo os Dados'), topic: L('Count, sum and average', 'Contar, somar e média'), badge: 'Σ' },
     { id: 62, module: 'data', name: L('Group and Summarise', 'Agrupar e Resumir'), topic: L('By category and by day', 'Por categoria e por dia'), badge: '▦' },
     { id: 63, module: 'data', name: L('SQL and Charts', 'SQL e Gráficos'), topic: L('Queries and visualisations', 'Consultas e visualizações'), badge: '📊' },
@@ -503,6 +502,187 @@ function buildDataTrack(L, shared) {
       answer: [2, 0, 3, 1],
       hints: [L('Time → line. Compare → bars. Part of a whole → donut. Two numbers together → scatter.', 'Tempo → linha. Comparar → barras. Parte de um todo → rosca. Dois números juntos → dispersão.')],
       ok: L('Perfect: line, bars, donut and scatter.', 'Perfeito: linha, barras, rosca e dispersão.'),
+    }),
+  ];
+  return { module, ranks, git, levels, exercises };
+}
+
+// The Git track: the terminal exercises of "Get the code" (made by makeGitExercises in index.html from `git`),
+// then the ideas behind them, in the same logic kinds as the Start Track.
+function buildGitTrack(L, shared) {
+  const h = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const c = s => '<code>' + h(s) + '</code>';
+  let n = 0;
+  const id = () => 'gt' + String(++n).padStart(2, '0');
+  const X = (level, xp, d) => Object.assign({ id: id(), level, xp, type: 'logic', conceptTag: d.tag, hints: [],
+    action: { method: 'GIT', path: d.tag, label: L('Concept', 'Conceito') } }, d);
+
+  const module = {
+    id: 'git', name: 'Git', image: 'assets/track-git.webp',
+    imageAlt: L('Pixel art: Geekie Jackie at a laptop in front of a board with main, develop and feature branches, and books about Git, GitHub, GitLab and Bitbucket', 'Pixel art: a Geekie Jackie no notebook diante de um quadro com as branches main, develop e feature, e livros de Git, GitHub, GitLab e Bitbucket'),
+    stack: L('Version control · Git and GitHub', 'Controle de versão · Git e GitHub'), color: 'var(--m-git)',
+    art: 'git switch -c <b>feature/123_coupon</b>\ngit commit -m <b>"feat: …"</b>\ngit push -u origin …\n// Every change has a story.',
+    bullets: [L('Clone, branch, commit and push in the terminal and in VS Code', 'Clone, branch, commit e push no terminal e no VS Code'), L('init, status, add, commit and log', 'init, status, add, commit e log'),
+      L('Branches: main, develop and feature/*', 'Branches: main, develop e feature/*'), L('Merge, conflicts and pull requests', 'Merge, conflitos e pull requests')],
+  };
+  const ranks = [
+    { at: 0, name: L('New Intern', 'Novo Estagiário') }, { at: 0.15, name: L('Shop Apprentice', 'Aprendiz da Loja') }, { at: 0.4, name: L('Commit Keeper', 'Guardiã dos Commits') },
+    { at: 0.7, name: L('Branch Weaver', 'Tecelã de Branches') }, { at: 0.95, name: L('Git Master', 'Mestre do Git') },
+  ];
+  const git = {
+    repo: 'geekiejackieacademy', tool: L('academy', 'da academia'),
+    url: shared.FORK_URL, urlPattern: shared.FORK_PATTERN, forkNote: shared.FORK_NOTE,
+    folder: 'geekiejackieacademy',
+    pullWhy: L('For example, Bruxa Maria added a new rule to the Rulebook yesterday. Without <code>git pull</code> you would fix a typo in an old version of the file.',
+      'Por exemplo, a Bruxa Maria acrescentou uma regra nova nas Regras da Loja ontem. Sem <code>git pull</code> você corrigiria um erro de digitação numa versão antiga do arquivo.'),
+    pullFile: 'docs/rulebook.md',
+    task: L('fix a typo in the Shop Rulebook', 'corrigir um erro de digitação nas Regras da Loja'),
+    branch: 'feature/123_fix-rulebook-typo',
+    branchNote: L('Branches start with <code>feature/</code> and the ticket number, like <code>feature/101_coupon-rules</code>.',
+      'As branches começam com <code>feature/</code> e o número do ticket, como <code>feature/101_coupon-rules</code>.'),
+    file: 'docs/rulebook.md',
+    commitMsg: 'docs: fix typo in the rulebook',
+    commitNote: L('The shop uses <b>conventional commits</b>: a type, a colon and what changed. <code>docs:</code> is for documentation, <code>feat:</code> for something new, <code>fix:</code> for repairs.',
+      'A loja usa <b>conventional commits</b>: um tipo, dois-pontos e o que mudou. <code>docs:</code> é para documentação, <code>feat:</code> para algo novo, <code>fix:</code> para correções. As mensagens de commit são escritas em inglês.'),
+  };
+  const levels = [
+    { id: 701, module: 'git', git: true, name: L('Get the code', 'Pegue o código'), topic: L('Clone, branch, commit and push', 'Clone, branch, commit e push'), badge: 'git' },
+    { id: 71, module: 'git', name: L('First Spells', 'Primeiros Feitiços'), topic: 'init, status, add, commit, log', badge: '✦' },
+    { id: 72, module: 'git', name: 'Branches', topic: 'main, develop, feature/*', badge: '⑂' },
+    { id: 73, module: 'git', name: L('Bringing Work Together', 'Juntando o Trabalho'), topic: L('Pull, push, merge and PR', 'Pull, push, merge e PR'), badge: '⇄' },
+  ];
+
+  const exercises = [
+    /* ---------- 71 · first spells ---------- */
+    X(71, 15, {
+      kind: 'match', title: L('Five commands to start', 'Cinco comandos para começar'), tag: L('Git commands', 'Comandos do Git'),
+      story: L('Every project of the shop is a Git repository. These five commands are the ones you will type every day.', 'Todo projeto da loja é um repositório Git. Estes cinco comandos são os que você vai digitar todo dia.'),
+      what: L('<p><b>Git</b> keeps the history of a project as a series of <b>commits</b>, like photos of every version. A folder with that history is a <b>repository</b>.</p>',
+        '<p>O <b>Git</b> guarda o histórico de um projeto como uma série de <b>commits</b>, como fotos de cada versão. Uma pasta com esse histórico é um <b>repositório</b>.</p>'),
+      why: L('<p>With the history you can see who changed what and why, and go back when something breaks.</p>',
+        '<p>Com o histórico você vê quem mudou o quê e por quê, e consegue voltar atrás quando algo quebra.</p>'),
+      task: L('Match each command with what it does.', 'Ligue cada comando ao que ele faz.'),
+      left: [c('git init'), c('git status'), c('git add cart.js'), c('git commit -m "feat: …"'), c('git log')],
+      right: [L('shows the history of commits', 'mostra o histórico de commits'), L('chooses a file to go into the next commit', 'escolhe um arquivo para entrar no próximo commit'), L('creates a new repository in the folder', 'cria um repositório novo na pasta'),
+        L('saves the chosen changes in the history', 'salva no histórico as mudanças escolhidas'), L('shows what changed and what is chosen', 'mostra o que mudou e o que está escolhido')],
+      answer: [2, 4, 1, 3, 0],
+      hints: [L('<code>add</code> chooses, <code>commit</code> saves, <code>log</code> looks back.', '<code>add</code> escolhe, <code>commit</code> salva, <code>log</code> olha para trás.')],
+      ok: L('Right! init creates, status shows, add chooses, commit saves, log remembers.', 'Isso! init cria, status mostra, add escolhe, commit salva, log lembra.'),
+    }),
+    X(71, 15, {
+      kind: 'order', title: L('The first commit of a project', 'O primeiro commit de um projeto'), tag: L('A new repository', 'Um repositório novo'),
+      story: L('Bruxa Maria wants a little project for the shop’s newsletter. Let’s start it from zero.', 'A Bruxa Maria quer um projetinho para a newsletter da loja. Vamos começar do zero.'),
+      what: L('<p>A repository starts with <code>git init</code> inside the project folder. Then each change goes through two steps: <code>git add</code> (choose) and <code>git commit</code> (save).</p>',
+        '<p>Um repositório começa com <code>git init</code> dentro da pasta do projeto. Depois cada mudança passa por dois passos: <code>git add</code> (escolher) e <code>git commit</code> (salvar).</p>'),
+      why: L('<p>Running <code>git init</code> in the wrong folder (like your whole Documents folder) is a classic beginner trap.</p>',
+        '<p>Rodar <code>git init</code> na pasta errada (como a sua pasta Documentos inteira) é uma armadilha clássica de quem está começando.</p>'),
+      task: L('Put the steps in order.', 'Coloque os passos em ordem.'),
+      steps: [c('mkdir newsletter'), c('cd newsletter'), c('git init'), L('Create the file README.md', 'Criar o arquivo README.md'), c('git add README.md'), c('git commit -m "docs: add readme"')],
+      start: [2, 4, 0, 5, 1, 3],
+      hints: [L('First the folder exists, then you go inside it, then it becomes a repository.', 'Primeiro a pasta existe, depois você entra nela, depois ela vira um repositório.')],
+      ok: L('Perfect: folder, enter, init, file, add, commit.', 'Perfeito: pasta, entrar, init, arquivo, add, commit.'),
+    }),
+    X(71, 20, {
+      kind: 'predict', title: L('What goes into the commit?', 'O que entra no commit?'), tag: L('Staging area', 'Área de stage'),
+      story: L('I changed two files but I only want to save one of them now. Let’s see what Git does.', 'Mudei dois arquivos, mas quero salvar só um agora. Vamos ver o que o Git faz.'),
+      what: L('<p>Git has three places: your <b>working folder</b> (what you edit), the <b>stage</b> (what you chose with <code>git add</code>) and the <b>history</b> (what <code>git commit</code> saved). A commit takes only what is in the stage.</p>',
+        '<p>O Git tem três lugares: a <b>pasta de trabalho</b> (o que você edita), o <b>stage</b> (o que você escolheu com <code>git add</code>) e o <b>histórico</b> (o que o <code>git commit</code> salvou). Um commit leva só o que está no stage.</p>'),
+      why: L('<p>Choosing what goes into each commit keeps every commit about one thing, which makes review and history easy to read.</p>',
+        '<p>Escolher o que entra em cada commit deixa cada commit sobre uma coisa só, o que facilita a revisão e a leitura do histórico.</p>'),
+      task: L('Read what happened and answer.', 'Leia o que aconteceu e responda.'),
+      data: '<pre class="lg-pseudo">' + L('1. edited  cart.js  and  styles.css\n2. git add cart.js\n3. git commit -m "fix: round the cart total"', '1. editou  cart.js  e  styles.css\n2. git add cart.js\n3. git commit -m "fix: round the cart total"') + '</pre>',
+      questions: [
+        { q: L('Which file goes into the commit?', 'Qual arquivo entra no commit?'), code: true, options: ['cart.js', 'styles.css', 'cart.js + styles.css'], answer: 0 },
+        { q: L('After the commit, what does <code>git status</code> say about styles.css?', 'Depois do commit, o que o <code>git status</code> diz sobre styles.css?'), options: [L('Modified, not staged', 'Modificado, fora do stage'), L('Saved in the history', 'Salvo no histórico'), L('Deleted', 'Apagado')], answer: 0 },
+        { q: L('Is the change in styles.css lost?', 'A mudança em styles.css se perdeu?'), options: [L('No: it is still in the folder, waiting for its own commit', 'Não: ela continua na pasta, esperando o próprio commit'), L('Yes: Git threw it away', 'Sim: o Git jogou fora')], answer: 0 },
+      ],
+      hints: [L('Only what went through <code>git add</code> goes into the commit.', 'Só entra no commit o que passou pelo <code>git add</code>.')],
+      ok: L('Exactly: only cart.js; styles.css waits in the folder, still modified.', 'Exato: só cart.js; styles.css espera na pasta, ainda modificado.'),
+    }),
+
+    /* ---------- 72 · branches ---------- */
+    X(72, 15, {
+      kind: 'match', title: L('Which branch is which?', 'Cada branch para quê?'), tag: L('Branch flow', 'Fluxo de branches'),
+      story: L('The board in my office shows main, develop and feature branches. What is each one for?', 'O quadro do meu escritório mostra as branches main, develop e feature. Para que serve cada uma?'),
+      what: L('<p>A <b>branch</b> is a separate line of work. Many teams use <code>main</code> for what is live, <code>develop</code> to gather finished work, and one <code>feature/*</code> branch per task.</p>',
+        '<p>Uma <b>branch</b> é uma linha de trabalho separada. Muitos times usam <code>main</code> para o que está no ar, <code>develop</code> para juntar o trabalho pronto, e uma branch <code>feature/*</code> para cada tarefa.</p>'),
+      why: L('<p>Working on your own branch means you never break what customers are using while you experiment.</p>',
+        '<p>Trabalhar na sua própria branch quer dizer que você nunca quebra o que as clientes estão usando enquanto experimenta.</p>'),
+      task: L('Match each branch with its job.', 'Ligue cada branch ao trabalho dela.'),
+      left: [c('main'), c('develop'), c('feature/123_coupon-rules'), c('hotfix/124_checkout-crash')],
+      right: [L('one task, on its own', 'uma tarefa, sozinha'), L('an urgent fix of what is live', 'uma correção urgente do que está no ar'), L('the code that is live for customers', 'o código que está no ar para as clientes'), L('where finished features meet before going live', 'onde as features prontas se juntam antes de ir para o ar')],
+      answer: [2, 3, 0, 1],
+      hints: [L('“main” is the main one; “hotfix” is hot, it can’t wait.', '“main” é a principal; “hotfix” é quente, não pode esperar.')],
+      ok: L('Right! main live, develop gathering, feature one task, hotfix urgent.', 'Isso! main no ar, develop juntando, feature uma tarefa, hotfix urgente.'),
+    }),
+    X(72, 15, {
+      kind: 'pick', title: L('Good branch names', 'Bons nomes de branch'), tag: L('Naming', 'Nomes'),
+      story: L('The shop’s rule: <code>feature/</code>, the ticket number, an underscore and a short description in English, in lower case with hyphens.', 'A regra da loja: <code>feature/</code>, o número do ticket, um underline e uma descrição curta em inglês, em minúsculas com hífens.'),
+      what: L('<p>A naming rule lets anyone know, just from the name, what a branch is for and which ticket it belongs to.</p>',
+        '<p>Uma regra de nomes faz qualquer pessoa saber, só pelo nome, para que serve a branch e de qual ticket ela é.</p>'),
+      why: L('<p>Tools can also read the ticket number from the name and link the branch to the task automatically.</p>',
+        '<p>Ferramentas também conseguem ler o número do ticket no nome e ligar a branch à tarefa automaticamente.</p>'),
+      task: L('Mark the names that follow the rule.', 'Marque os nomes que seguem a regra.'),
+      options: [c('feature/123_coupon-rules'), c('feature/124_sold-out-badge'), c('my-branch'), c('feature/coupon'), c('Feature/125 Coupon Rules')],
+      correct: [true, true, false, false, false],
+      hints: [L('Three of them miss something: a ticket number, the <code>feature/</code> part, or lower case and hyphens.', 'Três deles esquecem algo: o número do ticket, o <code>feature/</code>, ou as minúsculas e os hífens.')],
+      ok: L('Exactly: only the two with feature/, number, underscore and lower case.', 'Exato: só os dois com feature/, número, underline e minúsculas.'),
+    }),
+    X(72, 20, {
+      kind: 'order', title: L('A task from start to PR', 'Uma tarefa do começo ao PR'), tag: L('Feature flow', 'Fluxo de uma feature'),
+      story: L('Ticket 123: “Coupons give 1% to 50% off”. Let’s go from the ticket to the pull request.', 'Ticket 123: “Cupons dão de 1% a 50% de desconto”. Vamos do ticket até o pull request.'),
+      what: L('<p>Every task follows the same path: update your copy, open a branch, change, choose, save, send and ask for review.</p>',
+        '<p>Toda tarefa segue o mesmo caminho: atualizar a sua cópia, abrir uma branch, mudar, escolher, salvar, enviar e pedir revisão.</p>'),
+      why: L('<p>Skipping <code>git pull</code> at the start is how most conflicts are born.</p>',
+        '<p>Pular o <code>git pull</code> no começo é como nasce a maioria dos conflitos.</p>'),
+      task: L('Put the steps in order.', 'Coloque os passos em ordem.'),
+      steps: [c('git pull'), c('git switch -c feature/123_coupon-rules'), L('Change the code and test it', 'Mudar o código e testar'), c('git add .'), c('git commit -m "feat: limit coupons to 1-50%"'), c('git push -u origin feature/123_coupon-rules'), L('Open the pull request on GitHub', 'Abrir o pull request no GitHub')],
+      start: [4, 0, 6, 2, 5, 1, 3],
+      hints: [L('It starts by getting the newest code and ends by asking someone to review it.', 'Começa pegando o código mais novo e termina pedindo para alguém revisar.')],
+      ok: L('Perfect: pull, branch, change, add, commit, push, PR.', 'Perfeito: pull, branch, mudar, add, commit, push, PR.'),
+    }),
+
+    /* ---------- 73 · bringing work together ---------- */
+    X(73, 15, {
+      kind: 'match', title: L('Up and down with GitHub', 'Subindo e descendo com o GitHub'), tag: L('Remote', 'Remoto'),
+      story: L('My computer and GitHub each keep a copy of the project. Which command moves things where?', 'O meu computador e o GitHub guardam cada um uma cópia do projeto. Qual comando leva o quê para onde?'),
+      what: L('<p>The copy on GitHub is the <b>remote</b> (<code>origin</code>). Commands move commits between your computer and it, or between branches.</p>',
+        '<p>A cópia no GitHub é o <b>remoto</b> (<code>origin</code>). Os comandos levam commits entre o seu computador e ele, ou entre branches.</p>'),
+      why: L('<p>A commit that was never pushed exists only on your computer. If the laptop dies, the work dies with it.</p>',
+        '<p>Um commit que nunca foi enviado existe só no seu computador. Se o notebook quebrar, o trabalho vai junto.</p>'),
+      task: L('Match each command with what it does.', 'Ligue cada comando ao que ele faz.'),
+      left: [c('git clone <url>'), c('git pull'), c('git push'), c('git merge develop')],
+      right: [L('sends your commits to GitHub', 'envia os seus commits para o GitHub'), L('joins the develop branch into the current one', 'junta a branch develop na branch atual'), L('downloads the repository for the first time', 'baixa o repositório pela primeira vez'), L('brings the new commits from GitHub', 'traz os commits novos do GitHub')],
+      answer: [2, 3, 0, 1],
+      hints: [L('<code>pull</code> pulls towards you, <code>push</code> pushes away from you.', '<code>pull</code> puxa para você, <code>push</code> empurra para longe de você.')],
+      ok: L('Right! clone the first time, pull to bring, push to send, merge to join.', 'Isso! clone na primeira vez, pull para trazer, push para enviar, merge para juntar.'),
+    }),
+    X(73, 20, {
+      kind: 'bug', style: 'pseudo', title: L('Solve the conflict', 'Resolva o conflito'), tag: L('Merge conflict', 'Conflito de merge'),
+      story: L('Two people changed the shipping rule at the same time, and Git stopped the merge. Which version breaks the shop’s rule?', 'Duas pessoas mudaram a regra do frete ao mesmo tempo, e o Git parou o merge. Qual versão quebra a regra da loja?'),
+      what: L('<p>A <b>conflict</b> happens when two branches change the same lines. Git shows both versions between ' + c('<<<<<<<') + ', ' + c('=======') + ' and ' + c('>>>>>>>') + ', and a person decides.</p>',
+        '<p>Um <b>conflito</b> acontece quando duas branches mudam as mesmas linhas. O Git mostra as duas versões entre ' + c('<<<<<<<') + ', ' + c('=======') + ' e ' + c('>>>>>>>') + ', e uma pessoa decide.</p>'),
+      why: L('<p>Solving a conflict is not choosing “mine”: it is checking which version follows the rule. Here, BR-SHP-03: free shipping from €50, €50 included.</p>',
+        '<p>Resolver um conflito não é escolher “o meu”: é conferir qual versão segue a regra. Aqui, a BR-SHP-03: frete grátis a partir de €50, com €50 incluído.</p>'),
+      task: L('Click the line that breaks BR-SHP-03.', 'Clique na linha que quebra a BR-SHP-03.'),
+      lines: [h('function shipping(total) {'), h('<<<<<<< HEAD'), h('  return total >= 50 ? 0 : 4.9;'), h('======='), h('  return total > 50 ? 0 : 4.9;'), h('>>>>>>> feature/123_shipping'), h('}')],
+      answer: 4,
+      hints: [L('With a total of exactly €50.00, which line still charges €4.90?', 'Com um total de exatamente €50,00, qual linha ainda cobra €4,90?')],
+      ok: L('Found it! <code>&gt; 50</code> charges shipping at €50. Keep <code>&gt;= 50</code> and delete the markers.', 'Achou! <code>&gt; 50</code> cobra frete em €50. Fique com <code>&gt;= 50</code> e apague as marcas.'),
+    }),
+    X(73, 20, {
+      kind: 'pick', title: L('A pull request people want to review', 'Um pull request que dá vontade de revisar'), tag: L('Pull request', 'Pull request'),
+      story: L('Your branch is pushed. Before asking for review, let’s check the pull request.', 'A sua branch foi enviada. Antes de pedir revisão, vamos conferir o pull request.'),
+      what: L('<p>A <b>pull request</b> (PR) asks to bring your branch into another one, with a review by someone from the team.</p>',
+        '<p>Um <b>pull request</b> (PR) pede para levar a sua branch para outra, com a revisão de alguém do time.</p>'),
+      why: L('<p>A small, clear PR is reviewed in minutes. A giant one waits for days and lets bugs slip through.</p>',
+        '<p>Um PR pequeno e claro é revisado em minutos. Um gigante espera dias e deixa bugs passarem.</p>'),
+      task: L('Mark what makes a good pull request.', 'Marque o que faz um bom pull request.'),
+      options: [L('A title that says what changed', 'Um título que diz o que mudou'), L('Small: one task only', 'Pequeno: uma tarefa só'), L('The tests pass', 'Os testes passando'),
+        L('40 files from three different tasks', '40 arquivos de três tarefas diferentes'), L('Commits called “stuff” and “fixes”', 'Commits chamados “coisas” e “ajustes”'), L('A link to the ticket', 'Um link para o ticket')],
+      correct: [true, true, true, false, false, true],
+      hints: [L('Think of the person reviewing it: what helps them understand fast?', 'Pense em quem vai revisar: o que ajuda essa pessoa a entender rápido?')],
+      ok: L('Exactly: clear title, small, tests passing and the ticket link.', 'Exato: título claro, pequeno, testes passando e o link do ticket.'),
     }),
   ];
   return { module, ranks, git, levels, exercises };
