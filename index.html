@@ -763,7 +763,7 @@ pre.cat-json { margin: 0; background: var(--code-bg); color: var(--code-ink); bo
   .top .brand { order: 3; }
 }
 
-/* Start Track: featured card, unlock meter with the 80% mark, locked tracks */
+/* Start Track: featured card, meter with the 60% mark */
 .home-cards .mod-card.is-start { grid-column: 1 / -1; }
 @media (min-width: 901px) {
   .home-cards .mod-card.is-start { flex-direction: row; }
@@ -782,7 +782,7 @@ pre.cat-json { margin: 0; background: var(--code-bg); color: var(--code-ink); bo
 .mod-card.is-locked .mod-card-body { opacity: .75; }
 .mod-card.is-locked .guide-pill { opacity: .7; }
 .mod-card.is-locked .mod-cta { color: var(--muted); }
-.lock-note { font-size: 13.5px; color: var(--ink); background: var(--bg); border: 1px dashed var(--fail); border-radius: 10px; padding: 8px 10px; }
+.lock-note { font-size: 13.5px; color: var(--ink); background: var(--bg); border: 1px dashed var(--xp); border-radius: 10px; padding: 8px 10px; }
 .locked-view { width: 100%; max-width: 1000px; margin: 0 auto; padding-top: 16px; display: flex; flex-direction: column; gap: 14px; }
 /* the whole scene fits the screen height (header and back link take ~300px), so the question is never below the fold */
 .gj-scene { width: 100%; max-width: calc((100dvh / var(--ui-scale, 1) - 300px) * 1.78); margin-inline: auto; }
@@ -1205,8 +1205,8 @@ body { zoom: var(--ui-scale, 1); }
     <a class="back-link" href="#" data-i18n="allTracks">← Homepage</a>
     <!-- Geekie Jackie asks if the learner is sure about starting this track before the Start Track. The art is
          assets/geekie-desk.webp (1672 x 941); the text sits in its empty dialog box, placed in % and sized in cqw. -->
-    <div class="gj-scene">
-      <div class="gj-art"><img src="assets/geekie-desk.webp" width="1672" height="941" alt="" data-i18n-alt="gjAlt"></div>
+    <div class="gj-scene" style="--bx: 15.4%; --by: 80.6%; --bw: 71.4%; --bh: 14.2%; --gj-crop: 1671 / 748">
+      <div class="gj-art"><img src="assets/geekie-loading.webp" width="1671" height="941" alt="" data-i18n-alt="gjLoadAlt"></div>
       <div class="gj-box" role="group" aria-labelledby="locked-title">
         <h2 class="visually-hidden" id="locked-title"></h2>
         <div class="gj-name" aria-hidden="true">Geekie Jackie</div>
@@ -2397,8 +2397,8 @@ CONFIG = {
     'Seu primeiro estágio em tecnologia na lojinha de tarot e baralho cigano da Bruxa Maria.'),
   company: L('Bruxa Maria’s Shop', 'na lojinha da Bruxa Maria'),
   learnerLabel: L('Apprentice', 'Aprendiz'),
-  homeIntro: L('Start with the Start Track: 40 logic exercises set in the shop, with no code to write. Complete 80% of it and DEV, QA and AI open. Those three tracks start with Git and solve real problems of the shop: products, stock, orders and coupons. Everything runs here with mock data, so there is nothing to install.',
-    'Comece pela Trilha Inicial: 40 exercícios de lógica no contexto da loja, sem código para escrever. Complete 80% dela e as trilhas DEV, QA e IA se abrem. Essas três começam com Git e resolvem problemas reais da loja: produtos, estoque, pedidos e cupons. Tudo roda aqui com dados de mentira, então não há nada para instalar.'),
+  homeIntro: L('Start with the Start Track: 40 logic exercises set in the shop, with no code to write. The ideal is to complete at least 60% of it before DEV, QA and AI. Those three tracks start with Git and solve real problems of the shop: products, stock, orders and coupons. Everything runs here with mock data, so there is nothing to install.',
+    'Comece pela Trilha Inicial: 40 exercícios de lógica no contexto da loja, sem código para escrever. O ideal é completar pelo menos 60% dela antes de ir para DEV, QA e IA. Essas três começam com Git e resolvem problemas reais da loja: produtos, estoque, pedidos e cupons. Tudo roda aqui com dados de mentira, então não há nada para instalar.'),
   // Welcome letter at the top of the how-to page (#how-to), before the list of steps. The title opens and closes the card.
   welcomeLetterTitle: L('🧙‍♀️ Welcome to Bruxa Maria’s Shop!', '🧙‍♀️ Bem-vindo à Lojinha da Bruxa Maria!'),
   welcomeLetter: L(`<p class="letter-lead"><strong>Your adventure in the world of technology starts here!</strong></p><p class="with-sprite"><img class="sprite" src="assets/bruxa-maria.webp" width="196" height="240" alt="Bruxa Maria">Hello, apprentice! I’m so glad you made it!</p><p>I’m Maria, but you can call me Bruxa Maria! I own this little shop of esoteric goods. Here we work with Tarot decks, oracles, crystals, candles and many other special products.</p><p>Lately the shop has grown a lot. We have more products, orders to organise, customers to serve and a few problems that not even magic can solve.</p><p>That’s why I decided to grow my team!</p><p>But don’t worry: you won’t be alone on this adventure. I want to introduce someone very special who will be with you for the whole journey.</p><h3>💜 Meet the Code Guardian!</h3><p class="with-sprite">This is Geekie Jackie!<img class="sprite" src="assets/geekie-jackie.webp" width="203" height="240" alt="Geekie Jackie"></p><p>She is our Code Guardian, a technology expert who keeps all of the shop’s tech running.</p><p>Programming, development, software quality and artificial intelligence are some of her domains.</p><p>Besides looking after our systems, Jackie will be your mentor and Tech Lead during the internship.</p><p>She will help you understand the problems, learn new concepts, grow your skills and find solutions to the challenges along the way.</p><p><strong>You can trust her!</strong> Just don’t ask her to review code at three in the morning... she’ll probably be arguing with a bug. 😂</p><h3>🔮 Your mission starts now!</h3><p>From today on, you are our new intern!</p><p>Your mission is to learn how technology works and discover how we can use it to solve real problems.</p><p>During your journey, you will build knowledge in:</p><ul><li>Programming logic and algorithm fundamentals.</li><li>Business rules and problem solving.</li><li>Git, GitHub and development tools.</li><li>Programming principles and data structures.</li><li>Software quality and testing.</li><li>Artificial intelligence and how it is used.</li></ul><p>We don’t expect you to know everything on day one. After all, you are here precisely to learn!</p><h3>📚 Choose your path</h3><p>At Geekie Jackie Academy there are three big learning tracks:</p><p class="letter-lead"><strong>DEV — Development</strong></p><p>Learn to build solutions, write code and turn ideas into applications.</p><p class="letter-lead"><strong>QA — Software Quality</strong></p><p>Learn to investigate problems, find bugs, test applications and make sure solutions have quality.</p><p class="letter-lead"><strong>AI — Artificial Intelligence</strong></p><p>Explore the world of artificial intelligence, learn to work with intelligent models and discover how to build solutions with AI.</p><p>Each track has its own missions, challenges and achievements.</p><h3>🎮 How does the internship work?</h3><p>Here you won’t just watch lessons. You’ll get your hands dirty!</p><p>Each mission presents a situation at the shop, introduces the concepts you need and gives you a challenge to solve.</p><p>You will write code, run commands, analyse results, test solutions and investigate problems.</p><p>With every challenge you complete, you earn XP, level up, win badges and unlock new missions.</p><p>And remember: mistakes are part of the process. A bug isn’t the end of the journey, but a chance to discover something new.</p><h3>✨ Are you ready, apprentice?</h3><p>Bruxa Maria has a shop to run.</p><p>Geekie Jackie has a lot of knowledge to share.</p><p>And you have a whole universe of technology to discover!</p><p>Get your grimoire ready, open your code editor and choose your first mission.</p><p class="letter-lead"><strong>Magic happens when knowledge meets practice.</strong></p><p>Good luck with your internship!</p><p class="letter-sign">— Bruxa Maria &amp; Geekie Jackie 💜<br>Shop Founder &amp; Code Guardian</p>`,
@@ -2409,7 +2409,7 @@ CONFIG = {
   feedbackUrl: '',
   feedbackLabel: L('Found a bug?', 'Achou um bug?'),
   hintCost: 3,
-  // Preview switch: true shows DEV, QA and AI and opens them for everyone. false = the 80% rule of the Start Track.
+  // Preview switch: true opens DEV, QA and AI for everyone with no question. false = the 60% recommendation of the Start Track.
   unlockAllTracks: false,
   storageKey: 'geekie-jackie-academy-v1',
   showTemplateNotice: false,
@@ -3515,7 +3515,7 @@ const ALGO = buildAlgoChallenges(L);
 LEVELS.push(...ALGO.levels);
 EXERCISES.push(...ALGO.exercises);
 
-// The Start Track (logic, start-track.js) comes first. DEV, QA and AI require it (80%, see ACCESS-RULES).
+// The Start Track (logic, start-track.js) comes first. DEV, QA and AI recommend 60% of it (see ACCESS-RULES).
 const START = buildStartTrack(L);
 MODULES.forEach(m => { m.requires = START.module.id; });
 MODULES.unshift(START.module);
@@ -3555,8 +3555,11 @@ const UI = {
     drawerTitle: 'My work', drawerSub: 'Your progress as a Markdown file, to keep or to share with your lead.', tracks: 'Tracks', include: 'Include',
     incCode: 'My code and commands', incTodo: 'Exercises not started', preview: 'Preview', copy: 'Copy', copied: 'Copied', download: 'Download .md', close: 'Close',
     startTrack: 'Start with the Start Track',
-    lockedBadge: 'After the Start Track', lockedNote: 'Best after {r} of the {t} Start Track exercises: {f}. You can also start it now.', missN: '{n} to go', miss1: '1 to go',
-    unlockCount: '{d} / {t} exercises', unlockText: '{n} more to reach {p}% and open DEV, QA and AI.', unlockedText: 'DEV, QA and AI are open. Keep going to finish the track!',
+    lockedBadge: 'Ideal: 60% of the Start Track', lockedNote: 'The ideal is at least {r} of the {t} Start Track exercises ({p}%) first: {f}. You can still start now.', missN: '{n} to go', miss1: '1 to go',
+    unlockCount: '{d} / {t} exercises', unlockText: '{n} more to reach the {p}% recommended before DEV, QA and AI.', unlockedText: 'You have the {p}% recommended for DEV, QA and AI. Keep going to finish the track!',
+    gateDev: 'Hey, {name}! In the DEV track you write real JavaScript: objects, loops and the shop’s rules as code. The ideal is to have done at least {p}% of the {s} first, and you have {now}%. Do you want to start the DEV track now?',
+    gateQa: 'Hey, {name}! In the QA track you test the shop: test cases, bad data and boundary values with expect(). The ideal is to have done at least {p}% of the {s} first, and you have {now}%. Do you want to start the QA track now?',
+    gateAi: 'Hey, {name}! In the AI track you build prompts from the shop’s data and review what the AI gives back. The ideal is to have done at least {p}% of the {s} first, and you have {now}%. Do you want to start the AI track now?',
     lockedTitle: 'Start the {m} before the Start Track?', lockedText: 'Hey, {name}! You haven’t finished the {s} yet: you did {d} of its {t} exercises, and it is the logic foundation of the {m}. Are you sure you want to start the {m} now?',
     lockedGo: 'No, back to the {s}', earlyYes: 'Yes, start the {m}', earlyDone: 'The {m} is open. Good luck!', gjFriend: 'apprentice', gjAlt: 'Pixel art: Geekie Jackie at her desk, looking at you seriously',
     reinforces: 'Reinforces {x}', hintN: '<b>Hint {n} of {t}.</b> ',
@@ -3605,8 +3608,8 @@ const UI = {
     lgDecCases: 'The question is right, but some test case isn’t. Follow the flowchart with the numbers of each row.', lgWrong: '{r} of {t} right. The ones in red need another look.',
     startHere: 'Start here', guidePill: 'Start here', guideTitle: 'How the academy works',
     guideLead: 'You were just hired at Bruxa Maria’s little tarot shop. Before the first exercise, read the guide: tracks, XP, hints and the rules of the game.',
-    guideText: 'Start with the Start Track. When you complete 80% of it, the DEV, QA and AI tracks open.',
-    guideTags: ['Start Track', 'Unlock at 80%', 'Hints and solutions', 'Glossary', 'The mock shop'], guideCta: 'Read the guide →',
+    guideText: 'Start with the Start Track. The ideal is to complete at least 60% of it before the DEV, QA and AI tracks.',
+    guideTags: ['Start Track', 'Ideal: 60% first', 'Hints and solutions', 'Glossary', 'The mock shop'], guideCta: 'Read the guide →',
     shopAlt: 'Pixel art of Bruxa Maria’s tarot shop, with the witch, Geekie Jackie, a friend and two cats at the door',
     howIntro: 'Everything you need to know before your first exercise at Bruxa Maria’s shop.', howGo: 'Start the Start Track →',
     glossaryLink: 'Glossary', glTitle: '📚 Programming glossary', glSearchLbl: 'Search the glossary',
@@ -3623,12 +3626,12 @@ const UI = {
     cursesTitle: 'Common curses', cursesSub: 'Error messages you will meet, what they mean and the counter-spell.',
     forbTitle: 'Forbidden spells', forbSub: 'Things nobody casts at Bruxa Maria’s shop.', grEmpty: 'No spell matches this search.', selectCmd: 'Select the command and copy it',
     howSteps: [
-      ['Start with the Start Track', '40 logic exercises set in the shop, in plain language, with boxes, flowcharts and step-by-step tables: no code to write. You go from algorithms and variables to conditions, loops, recipes, tests and the tools of the trade, and every exercise lets you peek at the same idea in JavaScript. Complete 32 of them (80%), reinforcement included, and DEV, QA and AI open; until then their cards show a lock.'],
+      ['Start with the Start Track', '40 logic exercises set in the shop, in plain language, with boxes, flowcharts and step-by-step tables: no code to write. You go from algorithms and variables to conditions, loops, recipes, tests and the tools of the trade, and every exercise lets you peek at the same idea in JavaScript. The ideal is to complete at least 24 of them (60%), reinforcement included, before DEV, QA and AI. You can open those tracks earlier: Geekie Jackie asks if you are sure first.'],
       ['Then pick DEV, QA or AI', 'Each track is one journey and starts with Git: cloning the repo, opening a branch and sending your work. DEV also has 30 algorithm challenges in JavaScript, the same ideas of the Start Track now written in code. Your XP and rank are counted per track.'],
       ['Follow the four steps', 'Every exercise starts with a message from Bruxa Maria and reads the same way: the action, what it is, why we do it at {c}, and your exercise.'],
       ['Write code or type commands', 'In DEV, QA and AI, code exercises have an editor and a <b>Run tests</b> button (or <code>Ctrl/⌘ + Enter</code>). Some tests are hidden, like on an online judge: think about empty lists, ties and very large values. Git exercises have a terminal where you type each command.'],
       ['Use hints wisely', 'Hints come one at a time, from a nudge to almost the answer. Each one costs {h} XP.'],
-      ['The solution has a price', 'After 2 wrong attempts you can see the solution, but the exercise then gives 0 XP. In the Start Track it also does not count toward the 80%: press <b>Solve it again on my own</b> and solve it without help to make it count.'],
+      ['The solution has a price', 'After 2 wrong attempts you can see the solution, but the exercise then gives 0 XP. In the Start Track it also does not count toward the 60%: press <b>Solve it again on my own</b> and solve it without help to make it count.'],
       ['Earn badges and ranks', 'Finish every exercise in a level to unlock its badge. Ranks grow with the XP of each track. The Achievements page (link under your XP) shows every medal and how to earn it.'],
       ['Look words up in the Glossary', 'The <a href="#glossary">Glossary</a> explains programming words simply, with examples from the shop: search, jump to a letter or filter by track.'],
       ['Keep the Git grimoire open', 'The <a href="#grimoire">Git grimoire</a> has every command of the Git exercises and a few more, with the VS Code equivalent, common errors and a glossary of Git words.'],
@@ -3663,8 +3666,11 @@ const UI = {
     drawerTitle: 'Meu trabalho', drawerSub: 'O seu progresso como um arquivo Markdown, para guardar ou mostrar para a sua liderança.', tracks: 'Trilhas', include: 'Incluir',
     incCode: 'Meu código e comandos', incTodo: 'Exercícios não começados', preview: 'Prévia', copy: 'Copiar', copied: 'Copiado', download: 'Baixar .md', close: 'Fechar',
     startTrack: 'Comece pela Trilha Inicial',
-    lockedBadge: 'Depois da Trilha Inicial', lockedNote: 'Melhor depois de {r} dos {t} exercícios da Trilha Inicial. {f}, mas também dá para começar agora.', missN: 'Faltam {n}', miss1: 'Falta 1',
-    unlockCount: '{d} / {t} exercícios', unlockText: '{f} para chegar a {p}% e abrir DEV, QA e IA.', unlockedText: 'DEV, QA e IA estão abertas. Continue até terminar a trilha!',
+    lockedBadge: 'Ideal: 60% da Trilha Inicial', lockedNote: 'O ideal é fazer pelo menos {r} dos {t} exercícios da Trilha Inicial ({p}%) antes. {f}, mas você já pode começar.', missN: 'Faltam {n}', miss1: 'Falta 1',
+    unlockCount: '{d} / {t} exercícios', unlockText: '{f} para chegar aos {p}% recomendados antes de DEV, QA e IA.', unlockedText: 'Você já tem os {p}% recomendados para DEV, QA e IA. Continue até terminar a trilha!',
+    gateDev: 'Ei, {name}! Na trilha DEV você escreve JavaScript de verdade: objetos, loops e as regras da loja em código. O ideal é ter feito pelo menos {p}% da {s} antes, e você está com {now}%. Quer começar a trilha DEV agora?',
+    gateQa: 'Ei, {name}! Na trilha QA você testa a loja: casos de teste, dados ruins e valores-limite com expect(). O ideal é ter feito pelo menos {p}% da {s} antes, e você está com {now}%. Quer começar a trilha QA agora?',
+    gateAi: 'Ei, {name}! Na trilha IA você monta prompts a partir dos dados da loja e revisa o que a IA entrega. O ideal é ter feito pelo menos {p}% da {s} antes, e você está com {now}%. Quer começar a trilha IA agora?',
     lockedTitle: 'Começar a {m} antes da Trilha Inicial?', lockedText: 'Ei, {name}! Você ainda não terminou a {s}: fez {d} dos {t} exercícios, e ela é a base de lógica para a {m}. Tem certeza que quer começar a {m} agora?',
     lockedGo: 'Não, voltar para a {s}', earlyYes: 'Sim, quero começar a {m}', earlyDone: 'A {m} está liberada. Boa sorte!', gjFriend: 'aprendiz', gjAlt: 'Pixel art: a Geekie Jackie na mesa dela, olhando séria para você',
     reinforces: 'Reforça {x}', hintN: '<b>Dica {n} de {t}.</b> ',
@@ -3713,8 +3719,8 @@ const UI = {
     lgDecCases: 'A pergunta está certa, mas algum caso de teste não. Siga o fluxograma com os números de cada linha.', lgWrong: '{r} de {t} certas. As que estão em vermelho precisam de outra olhada.',
     startHere: 'Comece por aqui', guidePill: 'Comece por aqui', guideTitle: 'Como funciona a academia',
     guideLead: 'Você acabou de ser contratado na lojinha de tarot da Bruxa Maria. Antes do primeiro exercício, leia o guia: trilhas, XP, dicas e as regras do jogo.',
-    guideText: 'Comece pela Trilha Inicial. Quando você completar 80% dela, as trilhas DEV, QA e IA se abrem.',
-    guideTags: ['Trilha Inicial', 'Desbloqueio com 80%', 'Dicas e soluções', 'Glossário', 'A lojinha'], guideCta: 'Ler o guia →',
+    guideText: 'Comece pela Trilha Inicial. O ideal é completar pelo menos 60% dela antes das trilhas DEV, QA e IA.',
+    guideTags: ['Trilha Inicial', 'Ideal: 60% antes', 'Dicas e soluções', 'Glossário', 'A lojinha'], guideCta: 'Ler o guia →',
     shopAlt: 'Pixel art da loja de tarot A Bruxa Maria, com a bruxa, a Geekie Jackie, um amigo e dois gatos na porta',
     howIntro: 'Tudo o que você precisa saber antes do primeiro exercício na lojinha da Bruxa Maria.', howGo: 'Começar a Trilha Inicial →',
     glossaryLink: 'Glossário', glTitle: '📚 Glossário de programação', glSearchLbl: 'Buscar no glossário',
@@ -3731,12 +3737,12 @@ const UI = {
     cursesTitle: 'Maldições comuns', cursesSub: 'Mensagens de erro que você vai encontrar, o que significam e o contrafeitiço.',
     forbTitle: 'Feitiços proibidos', forbSub: 'Coisas que ninguém faz na lojinha da Bruxa Maria.', grEmpty: 'Nenhum feitiço corresponde a esta busca.', selectCmd: 'Selecione o comando e copie',
     howSteps: [
-      ['Comece pela Trilha Inicial', '40 exercícios de lógica no contexto da loja, em português, com caixinhas, fluxogramas e tabelas passo a passo: sem código para escrever. Você vai de algoritmos e variáveis até condições, repetições, receitas, testes e as ferramentas do dia a dia, e em todo exercício dá para espiar a mesma ideia em JavaScript. Complete 32 deles (80%), os de reforço incluídos, e as trilhas DEV, QA e IA se abrem; até lá os cartões delas aparecem com um cadeado.'],
+      ['Comece pela Trilha Inicial', '40 exercícios de lógica no contexto da loja, em português, com caixinhas, fluxogramas e tabelas passo a passo: sem código para escrever. Você vai de algoritmos e variáveis até condições, repetições, receitas, testes e as ferramentas do dia a dia, e em todo exercício dá para espiar a mesma ideia em JavaScript. O ideal é completar pelo menos 24 deles (60%), os de reforço incluídos, antes de DEV, QA e IA. Dá para abrir essas trilhas antes: a Geekie Jackie pergunta se você tem certeza.'],
       ['Depois escolha DEV, QA ou IA', 'Cada trilha é uma jornada e começa com Git: clonar o repositório, abrir uma branch e enviar o seu trabalho. A DEV também tem 30 desafios de algoritmos em JavaScript, as mesmas ideias da Trilha Inicial agora escritas em código. O seu XP e o seu título são contados por trilha.'],
       ['Siga os quatro passos', 'Todo exercício começa com uma mensagem da Bruxa Maria e segue a mesma ordem: a ação, o que é, por que fazemos isso {c}, e o seu exercício.'],
       ['Escreva código ou digite comandos', 'Em DEV, QA e IA, os exercícios de código têm um editor e o botão <b>Rodar testes</b> (ou <code>Ctrl/⌘ + Enter</code>). Alguns testes são ocultos, como num juiz online: pense em listas vazias, empates e valores muito grandes. Exercícios de Git têm um terminal onde você digita cada comando.'],
       ['Use as dicas com sabedoria', 'As dicas vêm uma de cada vez, de um empurrãozinho até quase a resposta. Cada uma custa {h} XP.'],
-      ['A solução tem um preço', 'Depois de 2 tentativas erradas você pode ver a solução, mas o exercício passa a valer 0 XP. Na Trilha Inicial ele também não conta para os 80%: clique em <b>Resolver de novo sozinho</b> e resolva sem ajuda para ele contar.'],
+      ['A solução tem um preço', 'Depois de 2 tentativas erradas você pode ver a solução, mas o exercício passa a valer 0 XP. Na Trilha Inicial ele também não conta para os 60%: clique em <b>Resolver de novo sozinho</b> e resolva sem ajuda para ele contar.'],
       ['Ganhe medalhas e títulos', 'Termine todos os exercícios de um nível para desbloquear a medalha dele. O título cresce com o XP de cada trilha. A página Conquistas (link embaixo do seu XP) mostra todas as medalhas e como ganhar cada uma.'],
       ['Consulte o Glossário', 'O <a href="#glossary">Glossário</a> explica as palavras de programação de um jeito simples, com exemplos da lojinha: busque, pule para uma letra ou filtre por trilha.'],
       ['Deixe o grimório do Git aberto', 'O <a href="#grimoire">Grimório do Git</a> tem todos os comandos dos exercícios de Git e mais alguns, com o equivalente no VS Code, erros comuns e um glossário de Git.'],
@@ -3761,12 +3767,13 @@ function t(key, vars) {
 /* ACCESS-RULES:BEGIN
    Who can open which track. Pure functions (no DOM, no storage) so they are tested in tests/
    and can move to the backend later. Until then they run in the browser only.
-   - DEV, QA and AI have `requires: 'start'`: they open once the learner completes 80% of the Start Track.
-   - An exercise solved after revealing the solution gives 0 XP and does not count toward the 80%.
+   - DEV, QA and AI have `requires: 'start'`: the recommended base is 60% of the Start Track. At 60% they open
+     straight away; below it, opening one shows Geekie Jackie asking if the learner wants to start anyway.
+   - An exercise solved after revealing the solution gives 0 XP and does not count toward the 60%.
    - A learner may also open a track early: the page asks if they are sure, and the choice is kept
      per track (state.earlyAccess). `early` below is that choice. */
 const START_TRACK_ID = 'start';
-const UNLOCK_PERCENT = 80;
+const UNLOCK_PERCENT = 60; // the recommended share of the Start Track before DEV, QA and AI
 function countsForUnlock(ex, st) { return !!(st.done && st.done[ex.id]) && !(st.solutions && st.solutions[ex.id]); }
 function startTrackProgress(exercises, st) {
   const total = exercises.length;
@@ -3810,9 +3817,9 @@ function buildAchievements(L) {
       rank('master', 'Master', 'Mestre', 'Earn 75% of all the XP in the academy.', 'Ganhe 75% de todo o XP da academia.'),
       rank('archmage', 'Archmage', 'Arquimago(a)', 'Earn 95% of all the XP in the academy.', 'Ganhe 95% de todo o XP da academia.'),
 
-      B('tracks', 'track-dev', 'Development (DEV)', 'DEV', 'Unlock the DEV track (80% of the Start Track).', 'Desbloqueie a trilha DEV (80% da Trilha Inicial).', f => !!f.unlocked.dev),
-      B('tracks', 'track-qa', 'Quality Assurance (QA)', 'QA', 'Unlock the QA track (80% of the Start Track).', 'Desbloqueie a trilha QA (80% da Trilha Inicial).', f => !!f.unlocked.qa),
-      B('tracks', 'track-ai', 'Artificial Intelligence (AI)', 'IA', 'Unlock the AI track (80% of the Start Track).', 'Desbloqueie a trilha IA (80% da Trilha Inicial).', f => !!f.unlocked.ai),
+      B('tracks', 'track-dev', 'Development (DEV)', 'DEV', 'Reach 60% of the Start Track, the recommended base for DEV.', 'Chegue a 60% da Trilha Inicial, a base recomendada para a DEV.', f => !!f.unlocked.dev),
+      B('tracks', 'track-qa', 'Quality Assurance (QA)', 'QA', 'Reach 60% of the Start Track, the recommended base for QA.', 'Chegue a 60% da Trilha Inicial, a base recomendada para a QA.', f => !!f.unlocked.qa),
+      B('tracks', 'track-ai', 'Artificial Intelligence (AI)', 'IA', 'Reach 60% of the Start Track, the recommended base for AI.', 'Chegue a 60% da Trilha Inicial, a base recomendada para a IA.', f => !!f.unlocked.ai),
       B('tracks', 'module-completed', 'Module Completed', 'Módulo Concluído', 'Finish every exercise of a level, in any track.', 'Termine todos os exercícios de um nível, em qualquer trilha.', f => Object.values(f.levelDone).some(Boolean)),
       B('tracks', 'track-completed', 'Learning Path Completed', 'Trilha Concluída', 'Finish a whole track.', 'Termine uma trilha inteira.', f => Object.values(f.moduleDone).some(Boolean)),
       B('tracks', 'multi-track', 'Multi-Track', 'Multitrilha', 'Finish the DEV, QA and AI tracks.', 'Termine as trilhas DEV, QA e IA.', f => ['dev', 'qa', 'ai'].every(m => f.moduleDone[m])),
@@ -4126,7 +4133,7 @@ function trackOpen(modId) {
   const m = MODULES.find(x => x.id === modId);
   return !m || canAccessTrack(m, startProgress(), !!(state.earlyAccess && state.earlyAccess[modId]));
 }
-// The 80% rule alone, without the early access (the "Unlock the DEV track" badges follow this one).
+// The 60% rule alone, without the early access (the "Unlock the DEV track" badges follow this one).
 function trackUnlockedByRule(modId) { const m = MODULES.find(x => x.id === modId); return !m || canAccessTrack(m, startProgress()); }
 // A rank's XP is its share of the module's total XP, so ranks stay balanced when you add or remove exercises.
 function moduleRanks(mod) {
@@ -4150,13 +4157,14 @@ function renderHomeProgress() {
     if (m.requires) {
       const open = trackOpen(m.id);
       // Locked tracks stay on the home page, faded, with a lock badge; clicking opens the page that explains the lock.
-      $('mod-card-' + m.id).classList.toggle('is-locked', !open);
-      $('lock-badge-' + m.id).hidden = open;
+      // The cards are always open: below 60% they only show the tip (and opening asks first).
+      $('mod-card-' + m.id).classList.remove('is-locked');
+      $('lock-badge-' + m.id).hidden = true;
       $('lock-note-' + m.id).hidden = open;
-      $('lock-note-' + m.id).textContent = open ? '' : t('lockedNote', { r: p.required, t: p.total, n: p.missing, f: missingText(p) });
+      $('lock-note-' + m.id).textContent = open ? '' : t('lockedNote', { r: p.required, t: p.total, p: UNLOCK_PERCENT, n: p.missing, f: missingText(p) });
     }
   });
-  // The Start Track card: exercises done, the 80% mark and what is missing.
+  // The Start Track card: exercises done, the 60% mark and what is missing.
   $('unlock-count').textContent = t('unlockCount', { d: p.done, t: p.total });
   $('unlock-percent').textContent = p.percent + '%';
   $('unlock-bar').style.width = p.percent + '%';
@@ -4543,7 +4551,7 @@ function renderWin() {
   if (next) $('next-btn').addEventListener('click', () => selectExercise(next.id));
   if ($('redo-btn')) $('redo-btn').addEventListener('click', () => redoAlone(ex));
 }
-// Start the exercise again from the starter code. Solved this way it counts for the 80%, still with 0 XP (revealed stays).
+// Start the exercise again from the starter code. Solved this way it counts for the 60%, still with 0 XP (revealed stays).
 function redoAlone(ex) {
   delete state.done[ex.id]; delete state.solutions[ex.id]; delete state.fails[ex.id];
   if (ex.type === 'logic') { state.logic[ex.id] = logicInitial(ex); delete logicMarks[ex.id]; delete logicFeedback[ex.id]; }
@@ -4857,7 +4865,7 @@ function showView() {
   renderAll();
   window.scrollTo(0, 0);
 }
-// A locked track (DEV, QA or AI before 80% of the Start Track): explain why and show the progress.
+// A track opened before 60% of the Start Track: Geekie Jackie asks if the learner wants to start it anyway.
 function renderLocked(mod) {
   const p = startProgress();
   const start = MODULES.find(m => m.id === START_TRACK_ID);
@@ -4866,7 +4874,8 @@ function renderLocked(mod) {
   $('locked-view').hidden = false;
   $('locked-title').textContent = t('lockedTitle', { m: t('moduleTitle', { m: mod.name }) });
   const trackName = t('moduleTitle', { m: mod.name }), startName = t('moduleTitle', { m: start.name });
-  $('locked-text').textContent = t('lockedText', { name: (state.name || '').trim() || t('gjFriend'), d: p.done, t: p.total, s: startName, m: trackName });
+  const gateKey = { dev: 'gateDev', qa: 'gateQa', ai: 'gateAi' }[mod.id] || 'lockedText';
+  $('locked-text').textContent = t(gateKey, { name: (state.name || '').trim() || t('gjFriend'), p: UNLOCK_PERCENT, now: p.percent, d: p.done, t: p.total, s: startName, m: trackName });
   $('early-yes').textContent = t('earlyYes', { m: trackName });
   $('early-yes').dataset.track = mod.id;
   $('locked-count').textContent = t('unlockCount', { d: p.done, t: p.total });
@@ -4875,7 +4884,7 @@ function renderLocked(mod) {
   $('locked-mark').style.left = UNLOCK_PERCENT + '%';
   $('locked-go').textContent = t('lockedGo', { s: startName });
   renderHeader();
-  document.title = CONFIG.name + ': ' + mod.name + ' 🔒';
+  document.title = CONFIG.name + ': ' + mod.name;
   window.scrollTo(0, 0);
 }
 $('early-yes').addEventListener('click', () => {
