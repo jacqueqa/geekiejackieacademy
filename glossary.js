@@ -362,4 +362,90 @@ var GLOSSARY = [
       example: "// Attackers find a flaw in the shop’s payments\n// before the team does. There is no fix yet:\n// that is a zero-day vulnerability.",
     },
   },
+  {
+    term: 'Controle de Qualidade', abbr: 'QC (Quality Control)', category: 'Qualidade e testes', tracks: ['qa'],
+    definition: 'Verificar o produto para encontrar defeitos antes das clientes. O teste é a principal atividade do controle de qualidade.',
+    example: '// QA (garantia): revisar a regra do frete antes do código\n// QC (controle): testar o checkout com €49,99, €50 e €50,01',
+    en: {
+      term: "Quality Control", abbr: "QC",
+      definition: "Checking the product to find defects before customers do. Testing is the main activity of quality control.",
+      example: "// QA (assurance): review the shipping rule before the code\n// QC (control): test the checkout with €49.99, €50 and €50.01",
+    },
+  },
+  {
+    term: 'Erro, defeito e falha', abbr: 'error, defect, failure', category: 'Qualidade e testes', tracks: ['qa'],
+    definition: 'Uma pessoa comete um erro, que deixa um defeito (bug) no código ou no documento. Quando o código com defeito roda, pode causar uma falha: o que a usuária vê dar errado.',
+    example: '// erro:   ler a regra do frete errado\n// defeito: return total > 50 ? 0 : 4.9;\n// falha:  a cliente paga frete num pedido de €50',
+    en: {
+      term: "Error, Defect and Failure",
+      definition: "A person makes an error, which leaves a defect (bug) in the code or the document. When the defective code runs, it may cause a failure: what the user sees go wrong.",
+      example: "// error:   misreading the shipping rule\n// defect:  return total > 50 ? 0 : 4.9;\n// failure: the customer pays shipping on a €50 order",
+    },
+  },
+  {
+    term: 'Princípios de teste', abbr: 'testing principles', category: 'Qualidade e testes', tracks: ['qa'],
+    definition: 'Ideias que valem em qualquer projeto: o teste mostra a presença de defeitos, não a ausência; testar tudo é impossível; defeitos se agrupam; testes se desgastam e precisam ser renovados.',
+    en: {
+      term: "Testing Principles",
+      definition: "Ideas that hold in any project: testing shows the presence of defects, not their absence; testing everything is impossible; defects cluster; tests wear out and need renewing.",
+    },
+  },
+  {
+    term: 'Shift left', abbr: 'testar cedo', category: 'Qualidade e testes', tracks: ['qa', 'dev'],
+    definition: 'Trazer o teste para o começo do trabalho: revisar requisitos, conversar antes do código e testar enquanto a funcionalidade é feita. Quanto mais cedo um defeito aparece, mais barato é corrigir.',
+    en: {
+      term: "Shift Left", abbr: "testing early",
+      definition: "Bringing testing to the start of the work: reviewing requirements, talking before the code and testing while the feature is built. The earlier a defect shows up, the cheaper it is to fix.",
+    },
+  },
+  {
+    term: 'Ciclo de vida do software', abbr: 'SDLC', category: 'Qualidade e testes', tracks: ['qa', 'dev'],
+    definition: 'O caminho de um software, da ideia até o uso e a manutenção. Os times percorrem esse caminho em sequência (cascata), em ciclos curtos (ágil) ou como fluxo contínuo.',
+    en: {
+      term: "Software Development Lifecycle", abbr: "SDLC",
+      definition: "The path of a piece of software, from the idea to its use and maintenance. Teams walk it in sequence (waterfall), in short cycles (agile) or as a continuous flow.",
+    },
+  },
+  {
+    term: 'Ciclo de vida dos testes', abbr: 'STLC', category: 'Qualidade e testes', tracks: ['qa'],
+    definition: 'As etapas do trabalho de teste: analisar o requisito, planejar, desenhar os casos, preparar o ambiente, executar e encerrar com um relatório.',
+    en: {
+      term: "Software Testing Lifecycle", abbr: "STLC",
+      definition: "The steps of testing work: analyse the requirement, plan, design the cases, prepare the environment, execute and close with a report.",
+    },
+  },
+  {
+    term: 'Scrum', category: 'Ferramentas', tracks: ['qa', 'dev'],
+    definition: 'Um jeito ágil de organizar o trabalho em sprints curtas, com reuniões fixas para planejar, sincronizar, mostrar o resultado e melhorar o time.',
+    example: '// Refinement → Sprint Planning → Daily (todo dia)\n// → Sprint Review → Retrospectiva',
+    en: {
+      term: "Scrum",
+      definition: "An agile way of organising work in short sprints, with fixed meetings to plan, sync, show the result and improve the team.",
+      example: "// Refinement → Sprint Planning → Daily (every day)\n// → Sprint Review → Retrospective",
+    },
+  },
+  {
+    term: 'Sprint', category: 'Ferramentas', tracks: ['qa', 'dev'],
+    definition: 'Um ciclo curto e de tamanho fixo (em geral de uma a quatro semanas) em que o time entrega algo que dá para usar.',
+    en: {
+      term: "Sprint",
+      definition: "A short cycle of fixed length (usually one to four weeks) in which the team delivers something usable.",
+    },
+  },
+  {
+    term: 'Kanban', category: 'Ferramentas', tracks: ['qa', 'dev'],
+    definition: 'Um jeito de trabalhar como fluxo contínuo, num quadro com colunas (A fazer, Fazendo, Teste, Pronto) e um limite de tarefas em andamento.',
+    en: {
+      term: "Kanban",
+      definition: "A way of working as a continuous flow, on a board with columns (To do, Doing, Testing, Done) and a limit of tasks in progress.",
+    },
+  },
+  {
+    term: 'Definition of Done', abbr: 'DoD', category: 'Qualidade e testes', tracks: ['qa', 'dev'],
+    definition: 'O combinado do time sobre o que significa “pronto”. Em geral inclui critérios de aceite verificados, testes passando e código revisado.',
+    en: {
+      term: "Definition of Done", abbr: "DoD",
+      definition: "The team’s agreement on what “done” means. It usually includes acceptance criteria checked, tests passing and code reviewed.",
+    },
+  },
 ];
