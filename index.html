@@ -308,6 +308,42 @@ pre.t-out { margin: 0; font-size: 12.5px; color: var(--muted); white-space: pre-
   opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; z-index: 20;
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast { display: flex; align-items: center; gap: 10px; }
+.toast img { flex: none; width: auto; height: 40px; }
+/* Achievements */
+.ach-link { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px 5px 6px; border-radius: 99px; border: 1px solid var(--line); color: var(--ink); text-decoration: none; font-size: 13px; font-weight: 600; }
+.ach-link img { width: 24px; height: 24px; }
+.ach-link b { color: var(--xp); font-family: var(--font-mono); font-weight: 500; }
+.ach-link:hover, .ach-link:focus-visible { border-color: var(--accent); color: var(--accent); }
+.ach-hero { display: flex; align-items: center; gap: 22px; padding: 18px 22px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+.ach-hero > img { flex: none; width: 150px; height: auto; }
+.ach-hero-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.ach-hero-body strong { font-family: var(--font-display); font-size: 26px; }
+.ach-hero-xp { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 14px; }
+.ach-hero-xp img { flex: none; width: 34px; height: auto; }
+.ach-hero .bar { max-width: 420px; }
+.ach-group { display: flex; flex-direction: column; gap: 10px; }
+.ach-group h3 { font-size: 20px; }
+.ach-group > p { color: var(--muted); font-size: 14px; margin-top: -4px; }
+.ach-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+.ach { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; padding: 14px 10px 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.ach-img { height: 112px; display: grid; place-items: center; }
+.ach-img img { max-height: 112px; max-width: 100%; width: auto; height: auto; }
+.ach strong { font-size: 15px; }
+.ach .ach-rule { color: var(--muted); font-size: 13px; line-height: 1.4; }
+.ach .ach-date { color: var(--xp); font-size: 12px; font-family: var(--font-mono); }
+.ach .ach-chip { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); border: 1px dashed var(--line); border-radius: 99px; padding: 2px 8px; }
+.ach.earned { border-color: var(--xp); box-shadow: 0 0 0 1px var(--xp-soft) inset; }
+.ach.locked .ach-img img, .ach.soon .ach-img img { opacity: 0.55; max-height: 84px; }
+.ach.soon { border-style: dashed; }
+@media (max-width: 600px) {
+  .ach-hero { flex-direction: column; text-align: center; }
+  .ach-hero > img { width: 120px; }
+  .ach-hero-xp { justify-content: center; }
+  .ach-hero .bar { margin: 0 auto; width: 100%; }
+  .ach-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .ach-img { height: 96px; } .ach-img img { max-height: 96px; }
+}
 .foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; color: var(--muted); font-size: 12px; margin-top: 310px; padding-top: 24px; border-top: 1px solid var(--line); }
 .link-btn { background: none; border: 0; color: var(--muted); text-decoration: underline; padding: 0; font-size: 12px; }
 .link-btn:hover { color: var(--accent); }
@@ -810,6 +846,7 @@ body { zoom: var(--ui-scale, 1); }
         <div class="bar"><span id="xpbar" style="width:0%"></span></div>
       </div>
       <div class="badges" id="badges" aria-label="Level badges"></div>
+      <a class="ach-link" id="ach-link" href="#achievements"></a>
     </div>
   </header>
 
@@ -828,6 +865,17 @@ body { zoom: var(--ui-scale, 1); }
       </div>
       <div class="home-cards resources" id="resource-cards" style="margin-top:22px"></div>
     </div>
+  </section>
+
+  <section class="rulebook achievements" id="achievements-view" hidden data-test="achievements-view">
+    <a class="back-link" href="#" data-i18n="allTracks">← Homepage</a>
+    <div class="rb-head">
+      <div class="rb-stats" id="ach-stats"></div>
+      <h2 data-i18n="achTitle">🏅 Achievements</h2>
+      <p data-i18n="achIntro">Every badge you can earn in the academy. Earned badges are in colour; the others show what to do to get them.</p>
+    </div>
+    <div class="ach-hero" id="ach-hero"></div>
+    <div id="ach-groups" class="ach-groups" style="display:flex;flex-direction:column;gap:26px"></div>
   </section>
 
   <section class="howto" id="howto-view" hidden data-test="howto-view">
@@ -1303,6 +1351,7 @@ let LANG = (() => {
 })();
 function L(en, pt) { return LANG === 'pt' && pt != null ? pt : en; }
 
+let ACH;
 let CONFIG, MODULES, RESOURCES, RANKS, GIT_CONTEXT, LEVELS, EXERCISES, RULEBOOK, CATALOG, GRIMOIRE;
 
 function cmdTable(rows, headers) {
@@ -3208,6 +3257,8 @@ RANKS[START.module.id] = START.ranks;
 LEVELS.unshift(...START.levels);
 EXERCISES.unshift(...START.exercises);
 
+ACH = buildAchievements(L);
+
 } // end of buildContent()
 buildContent();
 
@@ -3215,6 +3266,9 @@ buildContent();
 const UI = {
   en: {
     rank: 'Rank', apprenticeName: '+ Add your name', changeName: 'Change your name', yourName: 'Your name', save: 'Save',
+    achLink: 'Achievements', achLinkAria: 'Achievements: {n} of {t} badges', achTitle: '🏅 Achievements', achIntro: 'Every badge you can earn in the academy. Earned badges are in colour; the others show what to do to get them.',
+    achCount: '{n} of {t} badges earned', achAcademyTitle: 'Your academy title', achXp: '{x} of {m} XP in the academy', achNext: '{n} XP to {r}', achTop: 'You reached the highest title!',
+    achEarnedOn: 'Earned on {d}', achLocked: 'Locked', achSoon: 'Coming soon', achNew: 'New badge: {b}', achMany: '{n} new badges! See them in Achievements.',
     avatarTitle: 'Choose your avatar', avatarSub: 'It shows next to your name. You can change it whenever you like.', chooseAvatar: 'Choose your avatar', changeAvatar: 'Change your avatar', avatarSaved: 'Avatar saved',
     chooseTrack: 'Choose your track', resources: 'Technical resources', welcomeWho: 'Bruxa Maria says', storyWho: 'Message from Bruxa Maria',
     allTracks: '← Homepage', howTitle: 'How to play', heroAlt: 'Geekie Jackie Academy · Learn. Build. Test. Evolve. Geekie Jackie waves while walking to the academy with two cats, under banners for DEV, QA and AI',
@@ -3300,7 +3354,7 @@ const UI = {
       ['Write code or type commands', 'In DEV, QA and AI, code exercises have an editor and a <b>Run tests</b> button (or <code>Ctrl/⌘ + Enter</code>). Some tests are hidden, like on an online judge: think about empty lists, ties and very large values. Git exercises have a terminal where you type each command.'],
       ['Use hints wisely', 'Hints come one at a time, from a nudge to almost the answer. Each one costs {h} XP.'],
       ['The solution has a price', 'After 2 wrong attempts you can see the solution, but the exercise then gives 0 XP. In the Start Track it also does not count toward the 80%: press <b>Solve it again on my own</b> and solve it without help to make it count.'],
-      ['Earn badges and ranks', 'Finish every exercise in a level to unlock its badge. Ranks grow with the XP of each track.'],
+      ['Earn badges and ranks', 'Finish every exercise in a level to unlock its badge. Ranks grow with the XP of each track. The Achievements page (link under your XP) shows every medal and how to earn it.'],
       ['Look words up in the Glossary', 'The <a href="#glossary">Glossary</a> explains programming words simply, with examples from the shop: search, jump to a letter or filter by track.'],
       ['Keep the Git grimoire open', 'The <a href="#grimoire">Git grimoire</a> has every command of the Git exercises and a few more, with the VS Code equivalent, common errors and a glossary of Git words.'],
       ['Check the shop’s data and rules', 'The <a href="#catalog">Product catalog</a> shows every product the exercises use. Every exercise comes from a rule of the <a href="#rulebook">Shop Rulebook</a>: click a rule id like <code>BR-STK-01</code> on an exercise to read it.'],
@@ -3311,6 +3365,9 @@ const UI = {
   },
   pt: {
     rank: 'Título', apprenticeName: '+ Adicione seu nome', changeName: 'Mudar seu nome', yourName: 'Seu nome', save: 'Salvar',
+    achLink: 'Conquistas', achLinkAria: 'Conquistas: {n} de {t} medalhas', achTitle: '🏅 Conquistas', achIntro: 'Todas as medalhas que dá para ganhar na academia. As conquistadas aparecem coloridas; as outras mostram o que fazer para ganhar.',
+    achCount: '{n} de {t} medalhas conquistadas', achAcademyTitle: 'Seu título na academia', achXp: '{x} de {m} XP na academia', achNext: 'Faltam {n} XP para {r}', achTop: 'Você chegou ao título mais alto!',
+    achEarnedOn: 'Conquistada em {d}', achLocked: 'Bloqueada', achSoon: 'Em breve', achNew: 'Nova medalha: {b}', achMany: '{n} medalhas novas! Veja em Conquistas.',
     avatarTitle: 'Escolha seu avatar', avatarSub: 'Ele aparece ao lado do seu nome. Você pode trocar quando quiser.', chooseAvatar: 'Escolher seu avatar', changeAvatar: 'Trocar seu avatar', avatarSaved: 'Avatar salvo',
     chooseTrack: 'Escolha sua trilha', resources: 'Recursos técnicos', welcomeWho: 'A Bruxa Maria diz', storyWho: 'Mensagem da Bruxa Maria',
     allTracks: '← Homepage', howTitle: 'Como jogar', heroAlt: 'Geekie Jackie Academy · Learn. Build. Test. Evolve. A Geekie Jackie acena a caminho da academia com dois gatos, sob bandeiras de DEV, QA e IA',
@@ -3396,7 +3453,7 @@ const UI = {
       ['Escreva código ou digite comandos', 'Em DEV, QA e IA, os exercícios de código têm um editor e o botão <b>Rodar testes</b> (ou <code>Ctrl/⌘ + Enter</code>). Alguns testes são ocultos, como num juiz online: pense em listas vazias, empates e valores muito grandes. Exercícios de Git têm um terminal onde você digita cada comando.'],
       ['Use as dicas com sabedoria', 'As dicas vêm uma de cada vez, de um empurrãozinho até quase a resposta. Cada uma custa {h} XP.'],
       ['A solução tem um preço', 'Depois de 2 tentativas erradas você pode ver a solução, mas o exercício passa a valer 0 XP. Na Trilha Inicial ele também não conta para os 80%: clique em <b>Resolver de novo sozinho</b> e resolva sem ajuda para ele contar.'],
-      ['Ganhe medalhas e títulos', 'Termine todos os exercícios de um nível para desbloquear a medalha dele. O título cresce com o XP de cada trilha.'],
+      ['Ganhe medalhas e títulos', 'Termine todos os exercícios de um nível para desbloquear a medalha dele. O título cresce com o XP de cada trilha. A página Conquistas (link embaixo do seu XP) mostra todas as medalhas e como ganhar cada uma.'],
       ['Consulte o Glossário', 'O <a href="#glossary">Glossário</a> explica as palavras de programação de um jeito simples, com exemplos da lojinha: busque, pule para uma letra ou filtre por trilha.'],
       ['Deixe o grimório do Git aberto', 'O <a href="#grimoire">Grimório do Git</a> tem todos os comandos dos exercícios de Git e mais alguns, com o equivalente no VS Code, erros comuns e um glossário de Git.'],
       ['Conheça os dados e as regras da loja', 'O <a href="#catalog">Catálogo de produtos</a> mostra todos os produtos que os exercícios usam. Todo exercício nasce de uma regra das <a href="#rulebook">Regras da Loja</a>: clique num id como <code>BR-STK-01</code> num exercício para lê-la.'],
@@ -3438,6 +3495,119 @@ function startTrackProgress(exercises, st) {
 }
 function canAccessTrack(module, progress) { return !module.requires || progress.unlocked; }
 /* ACCESS-RULES:END */
+
+/* ACHIEVEMENTS:BEGIN
+   The badges of the Achievements page. Pure functions (no DOM, no storage), tested in tests/achievements.test.mjs.
+   achievementFacts() turns the learner's state into plain facts; each badge's test() reads only those facts.
+   Badges with `soon: true` can't be earned yet (they need student accounts, a backend or new exercises).
+   Images: assets/badges/<lang>/<id>.webp, or assets/badges/<id>.webp for the `shared` ones without text. */
+function buildAchievements(L) {
+  // share of all the academy's XP needed for each title (a function runs before this block's constants exist)
+  const ACH_TITLE_STEPS = { intern: 0, apprentice: 0.10, assistant: 0.25, specialist: 0.50, master: 0.75, archmage: 0.95 };
+  const lv = (f, ids) => ids.every(id => f.levelDone[id]);
+  const rank = (id, en, pt, ruleEn, rulePt) => ({ id, group: 'titles', name: L(en, pt), rule: L(ruleEn, rulePt), at: ACH_TITLE_STEPS[id], test: f => f.xpShare >= ACH_TITLE_STEPS[id] });
+  const soon = (id, en, pt, ruleEn, rulePt, shared) => ({ id, group: 'soon', soon: true, shared: !!shared, name: L(en, pt), rule: L(ruleEn, rulePt), test: () => false });
+  const B = (group, id, en, pt, ruleEn, rulePt, test) => ({ id, group, name: L(en, pt), rule: L(ruleEn, rulePt), test });
+  return {
+    groups: [
+      { id: 'titles', name: L('Academy titles', 'Títulos da academia'), note: L('They grow with your XP in all tracks together.', 'Eles crescem com o seu XP de todas as trilhas juntas.') },
+      { id: 'tracks', name: L('Tracks', 'Trilhas'), note: '' },
+      { id: 'habits', name: L('First steps and habits', 'Primeiros passos e hábitos'), note: L('A study day counts when you solve at least one exercise that day.', 'Um dia de estudo conta quando você resolve pelo menos um exercício naquele dia.') },
+      { id: 'topics', name: L('Topics', 'Assuntos'), note: '' },
+      { id: 'soon', name: L('Coming soon', 'Em breve'), note: L('These need student accounts or new exercises. They arrive with the next versions of the academy.', 'Estas precisam de contas de aluno ou de exercícios novos. Chegam nas próximas versões da academia.') },
+    ],
+    list: [
+      rank('intern', 'Intern', 'Estagiário(a)', 'Start the academy.', 'Comece a academia.'),
+      rank('apprentice', 'Apprentice', 'Aprendiz', 'Earn 10% of all the XP in the academy.', 'Ganhe 10% de todo o XP da academia.'),
+      rank('assistant', 'Assistant', 'Assistente', 'Earn 25% of all the XP in the academy.', 'Ganhe 25% de todo o XP da academia.'),
+      rank('specialist', 'Specialist', 'Especialista', 'Earn 50% of all the XP in the academy.', 'Ganhe 50% de todo o XP da academia.'),
+      rank('master', 'Master', 'Mestre', 'Earn 75% of all the XP in the academy.', 'Ganhe 75% de todo o XP da academia.'),
+      rank('archmage', 'Archmage', 'Arquimago(a)', 'Earn 95% of all the XP in the academy.', 'Ganhe 95% de todo o XP da academia.'),
+
+      B('tracks', 'track-dev', 'Development (DEV)', 'DEV', 'Unlock the DEV track (80% of the Start Track).', 'Desbloqueie a trilha DEV (80% da Trilha Inicial).', f => !!f.unlocked.dev),
+      B('tracks', 'track-qa', 'Quality Assurance (QA)', 'QA', 'Unlock the QA track (80% of the Start Track).', 'Desbloqueie a trilha QA (80% da Trilha Inicial).', f => !!f.unlocked.qa),
+      B('tracks', 'track-ai', 'Artificial Intelligence (AI)', 'IA', 'Unlock the AI track (80% of the Start Track).', 'Desbloqueie a trilha IA (80% da Trilha Inicial).', f => !!f.unlocked.ai),
+      B('tracks', 'module-completed', 'Module Completed', 'Módulo Concluído', 'Finish every exercise of a level, in any track.', 'Termine todos os exercícios de um nível, em qualquer trilha.', f => Object.values(f.levelDone).some(Boolean)),
+      B('tracks', 'track-completed', 'Learning Path Completed', 'Trilha Concluída', 'Finish a whole track.', 'Termine uma trilha inteira.', f => Object.values(f.moduleDone).some(Boolean)),
+      B('tracks', 'multi-track', 'Multi-Track', 'Multitrilha', 'Finish the DEV, QA and AI tracks.', 'Termine as trilhas DEV, QA e IA.', f => ['dev', 'qa', 'ai'].every(m => f.moduleDone[m])),
+      B('tracks', 'academy-completed', 'Academy Completed', 'Academia Concluída', 'Finish every track in the academy.', 'Termine todas as trilhas da academia.', f => Object.keys(f.moduleDone).length > 0 && Object.values(f.moduleDone).every(Boolean)),
+
+      B('habits', 'first-access', 'First Access', 'Primeiro Acesso', 'Open the academy for the first time.', 'Abra a academia pela primeira vez.', () => true),
+      B('habits', 'first-challenge', 'First Challenge', 'Primeiro Desafio', 'Solve your first exercise.', 'Resolva seu primeiro exercício.', f => f.anyDone),
+      B('habits', 'mission-completed', 'Mission Completed', 'Missão Concluída', 'Solve an exercise at the first try, with no hints.', 'Resolva um exercício de primeira, sem dicas.', f => f.cleanSolve),
+      B('habits', 'quick-delivery', 'Quick Delivery', 'Entrega Rápida', 'Solve 5 exercises in a row at the first try, with no hints.', 'Resolva 5 exercícios seguidos de primeira, sem dicas.', f => f.bestRun >= 5),
+      B('habits', 'consistent-study', 'Consistent Study', 'Estudo Consistente', 'Study on 3 different days.', 'Estude em 3 dias diferentes.', f => f.studyDays >= 3),
+      B('habits', 'study-streak', 'Study Streak', 'Sequência de Dias', 'Study 5 days in a row.', 'Estude 5 dias seguidos.', f => f.longestStreak >= 5),
+      B('habits', 'study-marathon', 'Study Marathon', 'Maratona de Estudos', 'Solve 10 exercises on the same day.', 'Resolva 10 exercícios no mesmo dia.', f => f.busiestDay >= 10),
+      B('habits', 'content-explorer', 'Content Explorer', 'Explorador(a) de Conteúdo', 'Open the glossary, the Shop Rulebook, the product catalog and the Git grimoire.', 'Abra o glossário, as Regras da Loja, o catálogo de produtos e o Grimório do Git.', f => ['glossary', 'rulebook', 'catalog', 'grimoire'].every(k => f.visited[k])),
+
+      B('topics', 'problem-solving', 'Problem Solving', 'Solução de Problemas', 'Finish the Start Track.', 'Termine a Trilha Inicial.', f => !!f.moduleDone.start),
+      B('topics', 'git', 'Git', 'Git', 'Finish a Git level, in any track.', 'Termine um nível de Git, em qualquer trilha.', f => f.gitLevels.some(id => f.levelDone[id])),
+      B('topics', 'javascript', 'JavaScript', 'JavaScript', 'Finish the DEV levels “Welcome to the Shop” and “Understanding the Magic”.', 'Termine os níveis da DEV “Bem-vindo à Loja” e “Entendendo a Magia”.', f => lv(f, [1, 2])),
+      B('topics', 'programming', 'Programming', 'Programação', 'Finish the first level of DEV’s algorithm challenges.', 'Termine o primeiro nível dos desafios de algoritmos da DEV.', f => lv(f, [201])),
+      B('topics', 'challenge-list', 'Challenge List', 'Lista de Desafios', 'Finish all 30 algorithm challenges of the DEV track.', 'Termine os 30 desafios de algoritmos da trilha DEV.', f => lv(f, [201, 202, 203, 204])),
+      B('topics', 'testing', 'Testing', 'Testes', 'Finish the QA level “The Quality Spell”.', 'Termine o nível da QA “O Feitiço da Qualidade”.', f => lv(f, [31])),
+      B('topics', 'bug-hunter', 'Bug Hunter', 'Caça-Bugs', 'Finish the QA level “Hunt the Bugs”.', 'Termine o nível da QA “Caça aos Bugs”.', f => lv(f, [32])),
+      B('topics', 'ai-prompts', 'AI (LLMs/Prompts)', 'IA (LLMs/Prompts)', 'Finish the AI levels “Ask the Oracle” and “Spot the Hallucination”.', 'Termine os níveis da IA “Consulte o Oráculo” e “Descubra a Alucinação”.', f => lv(f, [41, 42])),
+
+      soon('apis', 'APIs', 'APIs', 'Finish the API exercises (new exercises).', 'Termine os exercícios de API (exercícios novos).'),
+      soon('automation', 'Automation', 'Automação', 'Finish the test automation exercises (new exercises).', 'Termine os exercícios de automação de testes (exercícios novos).'),
+      soon('clean-code', 'Clean Code', 'Código Mágico', 'Have your code reviewed and approved by a mentor.', 'Tenha seu código revisado e aprovado por um mentor.'),
+      soon('creativity', 'Creativity', 'Criatividade', 'Build a project of your own with what you learned.', 'Crie um projeto seu com o que aprendeu.'),
+      soon('teamwork', 'Teamwork', 'Colaborador(a)', 'Solve a challenge with a classmate.', 'Resolva um desafio com um colega.'),
+      soon('team-spirit', 'Team Spirit', 'Espírito de Equipe', 'Take part in the class activities.', 'Participe das atividades da turma.'),
+      soon('mentor', 'Mentor (Helps Others)', 'Mentor(a)', 'Help classmates who are starting.', 'Ajude colegas que estão começando.'),
+      soon('epic-challenge', 'Epic Challenge', 'Desafio Épico', 'Win an epic challenge.', 'Vença um desafio épico.'),
+      soon('boss-challenge', 'Boss Challenge', 'Boss Challenge', 'Beat the boss at the end of a track.', 'Derrote o chefão do fim de uma trilha.'),
+      soon('special-event', 'Special Event', 'Evento Especial', 'Take part in a special event.', 'Participe de um evento especial.'),
+      soon('seasonal-challenge', 'Seasonal Challenge', 'Desafio Sazonal', 'Complete a seasonal challenge.', 'Complete um desafio de temporada.'),
+      soon('surprise-reward', 'Surprise Reward', 'Recompensa Surpresa', 'A surprise from Bruxa Maria.', 'Uma surpresa da Bruxa Maria.'),
+      soon('top-performer', 'Track Top Performer', 'Top da Trilha', 'Be among the best of a track.', 'Fique entre os melhores de uma trilha.', true),
+      soon('weekly-highlight', 'Weekly Highlight', 'Destaque da Semana', 'Be the highlight of the week.', 'Seja o destaque da semana.', true),
+    ],
+  };
+}
+// Day keys are 'YYYY-MM-DD' in the learner's own time zone.
+function dayKey(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function longestStreak(keys) {
+  let best = 0, run = 0, prev = null;
+  keys.slice().sort().forEach(k => {
+    const n = Date.UTC(+k.slice(0, 4), +k.slice(5, 7) - 1, +k.slice(8, 10)) / 864e5;
+    run = prev !== null && n - prev === 1 ? run + 1 : (prev === n ? run : 1);
+    prev = n; best = Math.max(best, run);
+  });
+  return best;
+}
+// d = { levels, exercises, modules (ids), state, unlocked: {dev, qa, ai}, xp, maxXp }
+function achievementFacts(d) {
+  const st = d.state || {}, done = st.done || {}, has = (o, id) => !!(o && o[id]);
+  const levelDone = {};
+  d.levels.forEach(l => { const ex = d.exercises.filter(e => e.level === l.id); levelDone[l.id] = ex.length > 0 && ex.every(e => done[e.id]); });
+  const moduleDone = {};
+  d.modules.forEach(m => { const ls = d.levels.filter(l => l.module === m); moduleDone[m] = ls.length > 0 && ls.every(l => levelDone[l.id]); });
+  const days = Object.keys(st.days || {}).filter(k => st.days[k] > 0);
+  return {
+    xpShare: d.maxXp ? d.xp / d.maxXp : 0,
+    levelDone, moduleDone,
+    gitLevels: d.levels.filter(l => l.git).map(l => l.id),
+    anyDone: d.exercises.some(e => done[e.id]),
+    cleanSolve: d.exercises.some(e => done[e.id] && !has(st.hints, e.id) && !has(st.fails, e.id) && !has(st.solutions, e.id) && !has(st.revealed, e.id)),
+    bestRun: st.bestRun || 0,
+    studyDays: days.length,
+    longestStreak: longestStreak(days),
+    busiestDay: days.reduce((m, k) => Math.max(m, st.days[k]), 0),
+    visited: st.visited || {},
+    unlocked: d.unlocked || {},
+  };
+}
+function earnedAchievements(list, facts) { return list.filter(a => !a.soon && a.test(facts)).map(a => a.id); }
+// The highest academy title earned, and the next one.
+function academyTitle(list, facts) {
+  const titles = list.filter(a => a.group === 'titles');
+  let i = 0; titles.forEach((a, k) => { if (a.test(facts)) i = k; });
+  return { title: titles[i], next: titles[i + 1] || null };
+}
+/* ACHIEVEMENTS:END */
 
 /* LOGIC-CHECK:BEGIN
    Answers of the Start Track exercises (start-track.js). Pure functions, tested in tests/start-track.test.mjs.
@@ -3568,7 +3738,7 @@ const STORE_KEY = CONFIG.storageKey;
 const emptyReport = () => '<span class="empty-rep">' + t('emptyReport') + '</span>';
 
 // hints[id]: how many hints were opened (old saves have true = 1). revealed[id]: the solution was seen at least once, so 0 XP for good.
-function freshState() { return { logic: {}, folds: {}, name: '', avatar: null, current: null, lastByModule: {}, done: {}, hints: {}, solutions: {}, revealed: {}, fails: {}, code: {}, term: {} }; }
+function freshState() { return { badges: {}, days: {}, visited: {}, run: 0, bestRun: 0, logic: {}, folds: {}, name: '', avatar: null, current: null, lastByModule: {}, done: {}, hints: {}, solutions: {}, revealed: {}, fails: {}, code: {}, term: {} }; }
 function loadState() {
   try {
     const raw = localStorage.getItem(STORE_KEY);
@@ -3648,6 +3818,7 @@ function renderHomeProgress() {
 }
 
 function renderHeader() {
+  renderAchLink();
   if (!activeModule) {
     // Home: the best rank earned in any module, and the XP of all modules together.
     let best = null;
@@ -4039,13 +4210,20 @@ function completeExercise(ex) {
   if (state.done[ex.id]) return;
   const levelWasDone = levelDone(ex.level);
   state.done[ex.id] = true;
+  // for the habit badges: study days and exercises solved in a row at the first try
+  const day = dayKey(new Date());
+  state.days = state.days || {}; state.days[day] = (state.days[day] || 0) + 1;
+  const clean = !state.fails[ex.id] && !hintsUsed(ex) && !state.solutions[ex.id] && !state.revealed[ex.id];
+  state.run = clean ? (state.run || 0) + 1 : 0;
+  state.bestRun = Math.max(state.bestRun || 0, state.run);
   saveState();
   const gained = earned(ex);
-  toast(gained > 0 ? '+' + gained + ' XP · ' + ex.title : t('solved') + ex.title);
+  toast(gained > 0 ? '+' + gained + ' XP · ' + ex.title : t('solved') + ex.title, gained > 0 ? 'assets/badges/xp.webp' : null);
   if (!levelWasDone && levelDone(ex.level)) {
     const l = LEVELS.find(x => x.id === ex.level);
-    setTimeout(() => toast(t('badgeUnlocked') + l.name), 1800);
+    toast(t('badgeUnlocked') + l.name);
   }
+  checkBadges();
   renderHeader();
   renderTrack();
   renderWin();
@@ -4062,13 +4240,23 @@ function selectExercise(id) {
   $('panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-let toastTimer;
-function toast(msg) {
-  const t = $('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+// Toasts wait in line, so a new badge doesn't hide the XP message. img: an optional small picture.
+const toastQueue = [];
+function toast(msg, img) {
+  if (toastQueue.some(x => x.msg === msg)) return;
+  toastQueue.push({ msg, img });
+  if (toastQueue.length === 1) nextToast();
+}
+function nextToast() {
+  const item = toastQueue[0];
+  if (!item) return;
+  const el = $('toast');
+  el.innerHTML = (item.img ? '<img src="' + esc(item.img) + '" alt="">' : '') + '<span>' + esc(item.msg) + '</span>';
+  el.classList.add('show');
+  setTimeout(() => {
+    el.classList.remove('show');
+    setTimeout(() => { toastQueue.shift(); nextToast(); }, 260);
+  }, toastQueue.length > 1 ? 2400 : 3200);
 }
 
 /* ---------- Code test runner ---------- */
@@ -4220,6 +4408,18 @@ bindResetAll();
 function showView() {
   $('locked-view').hidden = true;
   const hash = (location.hash || '').replace('#', '');
+  if (['glossary', 'rulebook', 'catalog', 'grimoire'].includes(hash) && !(state.visited && state.visited[hash])) {
+    state.visited = state.visited || {}; state.visited[hash] = 1; saveState(); checkBadges();
+  }
+  $('achievements-view').hidden = hash !== 'achievements';
+  if (hash === 'achievements') {
+    activeModule = null;
+    ['home-view', 'rulebook-view', 'howto-view', 'module-view', 'catalog-view', 'grimoire-view', 'glossary-view'].forEach(id => { $(id).hidden = true; });
+    renderHeader(); renderAchievements();
+    document.title = CONFIG.name + ': ' + t('achLink');
+    window.scrollTo(0, 0);
+    return;
+  }
   $('glossary-view').hidden = hash !== 'glossary';
   if (hash === 'glossary') {
     activeModule = null;
@@ -4361,6 +4561,65 @@ $('avatar-grid').addEventListener('click', e => {
 $('avatar-close').addEventListener('click', closeAvatars);
 $('avatar-dialog').addEventListener('click', e => { if (e.target === $('avatar-dialog')) closeAvatars(); }); // click on the backdrop
 $('avatar-dialog').addEventListener('close', () => { const b = $('avatar-open'); if (b) b.focus(); });
+
+/* ---------- Achievements page ---------- */
+function badgeImg(a) { return 'assets/badges/' + (a.shared ? '' : LANG + '/') + a.id + '.webp'; }
+function academyXp() { return { xp: MODULES.reduce((s, m) => s + moduleXp(m.id), 0), max: MODULES.reduce((s, m) => s + moduleMax(m.id), 0) }; }
+function badgeFacts() {
+  const { xp, max } = academyXp();
+  return achievementFacts({
+    levels: LEVELS, exercises: EXERCISES, modules: MODULES.map(m => m.id), state, xp, maxXp: max,
+    unlocked: { dev: trackOpen('dev'), qa: trackOpen('qa'), ai: trackOpen('ai') },
+  });
+}
+// Saves the badges earned since the last check (with the date) and announces them.
+function checkBadges() {
+  const ids = earnedAchievements(ACH.list, badgeFacts());
+  state.badges = state.badges || {};
+  const fresh = ids.filter(id => !state.badges[id]);
+  if (!fresh.length) return;
+  const today = dayKey(new Date());
+  fresh.forEach(id => { state.badges[id] = today; });
+  saveState();
+  renderAchLink();
+  if (!$('achievements-view').hidden) renderAchievements(); // show the new dates
+  if (fresh.length > 2) { toast(t('achMany', { n: fresh.length }), 'assets/badges/star-premium.webp'); return; }
+  fresh.forEach(id => { const a = ACH.list.find(x => x.id === id); toast(t('achNew', { b: a.name }), badgeImg(a)); });
+}
+function renderAchLink() {
+  const link = $('ach-link'); if (!link) return;
+  const total = ACH.list.filter(a => !a.soon).length;
+  const n = ACH.list.filter(a => !a.soon && state.badges && state.badges[a.id]).length;
+  link.innerHTML = '<img src="assets/badges/star-standard.webp" width="24" height="24" alt=""><span>' + esc(t('achLink')) + '</span><b>' + n + '/' + total + '</b>';
+  link.setAttribute('aria-label', t('achLinkAria', { n, t: total }));
+}
+function renderAchievements() {
+  const facts = badgeFacts();
+  const got = new Set(earnedAchievements(ACH.list, facts));
+  const countable = ACH.list.filter(a => !a.soon);
+  $('ach-stats').textContent = t('achCount', { n: countable.filter(a => got.has(a.id)).length, t: countable.length });
+  const { xp, max } = academyXp();
+  const { title, next } = academyTitle(ACH.list, facts);
+  const nextText = next ? t('achNext', { n: Math.max(1, Math.ceil(next.at * max) - xp), r: next.name }) : t('achTop');
+  $('ach-hero').innerHTML = '<img src="' + badgeImg(title) + '" alt="">' +
+    '<div class="ach-hero-body"><div class="label">' + esc(t('achAcademyTitle')) + '</div><strong>' + esc(title.name) + '</strong>' +
+    '<div class="ach-hero-xp"><img src="assets/badges/progress.webp" alt=""><span>' + esc(t('achXp', { x: xp, m: max })) + ' · ' + esc(nextText) + '</span></div>' +
+    '<div class="bar"><span style="width:' + (max ? Math.round(xp * 100 / max) : 0) + '%"></span></div></div>';
+  const fmt = k => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString(LANG === 'pt' ? 'pt-BR' : 'en-GB'); };
+  $('ach-groups').innerHTML = ACH.groups.map(g => {
+    const items = ACH.list.filter(a => a.group === g.id);
+    return '<section class="ach-group" aria-labelledby="ach-g-' + g.id + '"><h3 id="ach-g-' + g.id + '">' + esc(g.name) + '</h3>' + (g.note ? '<p>' + esc(g.note) + '</p>' : '') +
+      '<ul class="ach-grid">' + items.map(a => {
+        const on = got.has(a.id);
+        const cls = on ? 'earned' : a.soon ? 'soon' : 'locked';
+        const img = on ? badgeImg(a) : 'assets/badges/star-monochrome.webp';
+        const status = on ? (state.badges && state.badges[a.id] ? '<span class="ach-date">' + esc(t('achEarnedOn', { d: fmt(state.badges[a.id]) })) + '</span>' : '')
+          : '<span class="ach-chip">' + esc(a.soon ? t('achSoon') : t('achLocked')) + '</span>';
+        return '<li class="ach ' + cls + '" data-badge="' + a.id + '"><div class="ach-img"><img src="' + img + '" alt="" loading="lazy"></div><strong>' + esc(a.name) + '</strong>' +
+          '<span class="ach-rule">' + esc(a.rule) + '</span>' + status + '</li>';
+      }).join('') + '</ul></section>';
+  }).join('');
+}
 
 function renderName() {
   const box = $('qa-name');
@@ -5067,6 +5326,7 @@ applyStaticI18n();
 window.addEventListener('hashchange', showView);
 renderName();
 showView();
+checkBadges();
 
 </script>
 

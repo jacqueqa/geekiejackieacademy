@@ -38,6 +38,13 @@ Na página inicial, a seção **Comece por aqui** tem o cartão do guia (imagem 
 - **Limitação atual:** a academia não tem servidor. A regra de acesso fica em funções isoladas (bloco `ACCESS-RULES` do `index.html`) e roda no navegador, então quem mexer no `localStorage` consegue burlar, e as respostas ficam visíveis no código-fonte. A ideia é mover isso para o backend (Supabase) depois.
 - Regras novas da loja criadas para os enunciados: BR-ORD-06 (hora em 24 h), BR-LOY-01 (pontos de fidelidade) e BR-RES-01 (taxa de reserva atrasada).
 
+### Conquistas (medalhas)
+
+- A página **Conquistas** (`#achievements`, link embaixo do XP) mostra todas as medalhas: as conquistadas coloridas e com a data, as bloqueadas com a regra para ganhar, e as **em breve**, que dependem de contas de aluno ou de exercícios novos.
+- **Títulos da academia** pelo XP de todas as trilhas juntas: Estagiário(a) 0%, Aprendiz 10%, Assistente 25%, Especialista 50%, Mestre 75% e Arquimago(a) 95%. Os títulos de cada trilha continuam iguais.
+- As regras ficam no bloco `ACHIEVEMENTS` do `index.html` (função `buildAchievements`), testadas em `tests/achievements.test.mjs`. O progresso guarda também os dias de estudo, os exercícios seguidos de primeira e as páginas de recursos abertas.
+- Imagens: `assets/badges/pt/` e `assets/badges/en/` (medalhas com texto) e `assets/badges/` (as sem texto, iguais nas duas línguas).
+
 ### O que tem na academia
 
 - **Exercícios de código** com editor e botão "Rodar testes", com resultado em verde ou vermelho como num test runner de verdade.
@@ -114,6 +121,13 @@ On the home page, the **Start here** section has the guide card (the magic shop 
 - **The 30 JavaScript exercises** (inspired by classic HackerRank problems, with original statements) are now the DEV track’s **Algorithm challenges**.
 - **Current limitation:** there is no server. The access rule lives in isolated functions (the `ACCESS-RULES` block in `index.html`) and runs in the browser, so editing `localStorage` bypasses it and the answers can be read in the page source. The plan is to move this to the backend (Supabase) later.
 - New shop rules written for the statements: BR-ORD-06 (24-hour time), BR-LOY-01 (loyalty points) and BR-RES-01 (late reservation fee).
+
+### Achievements (badges)
+
+- The **Achievements** page (`#achievements`, linked under the XP) shows every badge: earned ones in colour with the date, locked ones with the rule to earn them, and **coming soon** ones that need student accounts or new exercises.
+- **Academy titles** by the XP of all tracks together: Intern 0%, Apprentice 10%, Assistant 25%, Specialist 50%, Master 75% and Archmage 95%. Each track keeps its own ranks.
+- The rules live in the `ACHIEVEMENTS` block of `index.html` (`buildAchievements`), tested in `tests/achievements.test.mjs`. Progress now also keeps study days, exercises solved in a row at the first try and the resource pages opened.
+- Images: `assets/badges/pt/` and `assets/badges/en/` (badges with text) and `assets/badges/` (the ones without text, shared by both languages).
 
 ### What’s inside
 
