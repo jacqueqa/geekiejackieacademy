@@ -2032,12 +2032,19 @@ RANKS = {
   ],
 };
 
-/* ---------- 4. Git conventions per track (fictional repos of the shop) ---------- */
+/* ---------- 4. Git conventions per track ----------
+   Every track works on the learner's own fork of the academy repository: they fork it on GitHub and clone the fork.
+   The clone exercise accepts any user name in the URL (urlPattern). */
+const ACADEMY_REPO = 'https://github.com/jacqueqa/geekiejackieacademy';
+const FORK_URL = 'https://github.com/' + L('<your-username>', '<seu-usuario>') + '/geekiejackieacademy';
+const FORK_PATTERN = 'https://github\\.com/[^\\s/]+/geekiejackieacademy(\\.git)?/?';
+const FORK_NOTE = L('Before cloning, fork <a href="' + ACADEMY_REPO + '" target="_blank" rel="noopener">jacqueqa/geekiejackieacademy</a> on GitHub (the <b>Fork</b> button): you get your own copy, in your account, where you can push.',
+  'Antes de clonar, faça um fork de <a href="' + ACADEMY_REPO + '" target="_blank" rel="noopener">jacqueqa/geekiejackieacademy</a> no GitHub (botão <b>Fork</b>): você ganha uma cópia sua, na sua conta, onde pode fazer push.');
 GIT_CONTEXT = {
   dev: {
-    repo: 'witch-shop-app', tool: L('shop', 'da loja'),
-    url: 'https://github.com/bruxa-maria/witch-shop-app',
-    folder: 'witch-shop-app',
+    repo: 'geekiejackieacademy', tool: L('shop', 'da loja'),
+    url: FORK_URL, urlPattern: FORK_PATTERN, forkNote: FORK_NOTE,
+    folder: 'geekiejackieacademy',
     pullWhy: L('For example, a teammate changed the product validation yesterday. Without <code>git pull</code> you would write your code on top of the old version and create a conflict.',
       'Por exemplo, alguém do time mudou a validação de produtos ontem. Sem <code>git pull</code> você escreveria seu código em cima da versão antiga e criaria um conflito.'),
     pullFile: 'src/products/validate-product.js',
@@ -2051,9 +2058,9 @@ GIT_CONTEXT = {
       'A loja usa <b>conventional commits</b>: um tipo, dois-pontos e o que mudou, como <code>fix: round the order total</code>. As mensagens de commit são escritas em inglês.'),
   },
   qa: {
-    repo: 'witch-shop-tests', tool: 'Cypress',
-    url: 'https://github.com/bruxa-maria/witch-shop-tests',
-    folder: 'witch-shop-tests',
+    repo: 'geekiejackieacademy', tool: 'Cypress',
+    url: FORK_URL, urlPattern: FORK_PATTERN, forkNote: FORK_NOTE,
+    folder: 'geekiejackieacademy',
     pullWhy: L('For example, someone merged new order tests this week. Without <code>git pull</code> you wouldn’t have them, and you could write a test that already exists.',
       'Por exemplo, alguém fez merge de novos testes de pedidos esta semana. Sem <code>git pull</code> você não teria esses testes e poderia escrever um que já existe.'),
     pullFile: 'cypress/e2e/orders/create-order.cy.js',
@@ -2067,9 +2074,9 @@ GIT_CONTEXT = {
       'Commits de teste começam com <code>test:</code>, como <code>test: cover expired coupons</code>. As mensagens de commit são escritas em inglês.'),
   },
   ai: {
-    repo: 'witch-shop-ai-lab', tool: L('AI', 'de IA'),
-    url: 'https://github.com/bruxa-maria/witch-shop-ai-lab',
-    folder: 'witch-shop-ai-lab',
+    repo: 'geekiejackieacademy', tool: L('AI', 'de IA'),
+    url: FORK_URL, urlPattern: FORK_PATTERN, forkNote: FORK_NOTE,
+    folder: 'geekiejackieacademy',
     pullWhy: L('For example, the prompt for product descriptions was improved yesterday. Without <code>git pull</code> you would test the old prompt and report problems that are already fixed.',
       'Por exemplo, o prompt de descrição de produtos foi melhorado ontem. Sem <code>git pull</code> você testaria o prompt antigo e reportaria problemas que já foram resolvidos.'),
     pullFile: 'prompts/product-description.md',
@@ -2913,7 +2920,7 @@ GRIMOIRE = {
 function makeGitExercises(mod, levelId) {
   const c = GIT_CONTEXT[mod];
   const re = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const urlPattern = re(c.url) + '(\\.git)?/?';
+  const urlPattern = c.urlPattern || re(c.url) + '(\\.git)?/?';
   const branchRe = re(c.branch);
   const fileRe = re(c.file);
   const hasSpace = c.folder.includes(' ');
@@ -2937,7 +2944,8 @@ function makeGitExercises(mod, levelId) {
           ['git clone &lt;url&gt;', L('Downloads the repository into a new folder', 'Baixa o repositório para uma pasta nova'), L('Command Palette (⌘⇧P / Ctrl+Shift+P) → <b>Git: Clone</b> → paste the URL', 'Command Palette (⌘⇧P / Ctrl+Shift+P) → <b>Git: Clone</b> → cole a URL')],
           ['cd &lt;folder&gt;', L('Enters that folder in the terminal', 'Entra nessa pasta no terminal'), '<b>File → Open Folder…</b>'],
         ]),
-      why: L('<p>The shop’s ' + c.tool + ' code lives on <b>' + host + '</b>, in the <code>' + c.repo + '</code> repo. You clone it once per computer. After that you only pull updates (next exercise).</p>',
+      why: (c.forkNote ? '<p>' + c.forkNote + '</p>' : '') +
+        L('<p>The shop’s ' + c.tool + ' code lives on <b>' + host + '</b>, in the <code>' + c.repo + '</code> repo. You clone it once per computer. After that you only pull updates (next exercise).</p>',
         '<p>O código ' + c.tool + ' fica no <b>' + host + '</b>, no repo <code>' + c.repo + '</code>. Você clona uma vez por computador. Depois disso, só puxa as atualizações (próximo exercício).</p>'),
       task: L('<p>Open the terminal in VS Code (<b>Terminal → New Terminal</b>). Clone the <code>' + c.repo + '</code> repo and enter its folder.</p>',
         '<p>Abra o terminal no VS Code (<b>Terminal → New Terminal</b>). Clone o repo <code>' + c.repo + '</code> e entre na pasta dele.</p>'),
@@ -2957,7 +2965,8 @@ function makeGitExercises(mod, levelId) {
           vscode: L('After cloning, VS Code asks “Open cloned repository?” → <b>Open</b>.', 'Depois de clonar, o VS Code pergunta “Open cloned repository?” → <b>Open</b>.'),
         },
       ],
-      hint: L('Type <code>git clone</code>, a space, and the full URL. ', 'Digite <code>git clone</code>, um espaço e a URL completa. ') + cdHint,
+      hint: L('Type <code>git clone</code>, a space, and the full URL of your fork, with your GitHub user name in place of <code>&lt;your-username&gt;</code>. ',
+        'Digite <code>git clone</code>, um espaço e a URL completa do seu fork, com o seu usuário do GitHub no lugar de <code>&lt;seu-usuario&gt;</code>. ') + cdHint,
       solution: ['git clone ' + c.url, cdSolution],
     },
     {
@@ -4241,7 +4250,7 @@ function renderGrimoire() {
     '<div class="gr-conv"><div><span class="rb-sub">' + t('repository') + '</span><code>' + esc(c.url) + '</code></div>' +
     '<div><span class="rb-sub">' + t('branchEx') + '</span><code>' + esc(c.branch) + '</code></div>' +
     '<div><span class="rb-sub">' + t('commitEx') + '</span><code>' + esc(c.commitMsg) + '</code></div></div>' +
-    '<p class="gr-note">' + c.branchNote + ' ' + c.commitNote + '</p></section>';
+    '<p class="gr-note">' + (c.forkNote ? c.forkNote + ' ' : '') + c.branchNote + ' ' + c.commitNote + '</p></section>';
   h += '<section class="rb-area"><div class="rb-area-head"><div class="rb-icon" aria-hidden="true">🗺️</div><div><h3>' + t('ritual') + '</h3><p>' + t('ritualSub') + '</p></div></div><div class="gr-flow">' +
     G.flow.map((s, i) => '<div class="gr-step' + (s.web ? ' web' : '') + '"><small>' + (i + 1) + ' · ' + esc(s.where) + '</small><b>' + esc(s.step) + '</b><span>' + esc(s.label) + '</span></div>').join('') + '</div></section>';
   h += G.chapters.map(ch =>
