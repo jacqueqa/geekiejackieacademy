@@ -31,7 +31,7 @@ Na página inicial, a seção **Comece por aqui** tem o cartão do guia (imagem 
 - **9 níveis:** Pensar como o computador · Guardar informação · Decidir · Repetir · Organizar · Conferir · A caixa de ferramentas (pastas, terminal, Git, API, JSON) · Ponte para o código · Reforço. Cada exercício de reforço indica qual exercício ele reforça.
 - **Tipos de exercício**, todos corrigidos automaticamente: ordenar os passos, escolher a pergunta do losango e prever os casos de teste, rastrear uma variável numa tabela, prever o resultado, completar a caixinha vazia, achar o passo com bug, ligar pares e marcar os casos certos.
 - **Ponte para o código:** quase todo exercício tem **👀 Ver em JavaScript**, com o mesmo algoritmo em código, só para ler. O nível "Ponte para o código" pede para reconhecer qual código faz o que as caixinhas dizem.
-- **DEV, QA e IA só abrem com 32 dos 40 exercícios concluídos (80%)**. Os de reforço contam. Até lá, os cartões delas não aparecem na página inicial, o cartão da Trilha Inicial mostra quanto falta, e um link direto para a trilha abre uma página de bloqueio.
+- **DEV, QA e IA só abrem com 32 dos 40 exercícios concluídos (80%)**. Os de reforço contam. Até lá, os cartões delas aparecem apagados, com um cadeado e quanto falta, o cartão da Trilha Inicial mostra o progresso, e um link direto para a trilha abre uma página de bloqueio.
 - **Solução revelada não conta:** depois de 2 tentativas o aluno pode ver a solução, mas aí o exercício dá 0 XP e não conta para os 80%. O botão "Resolver de novo sozinho" recomeça o exercício; resolvido assim, ele passa a contar (continua com 0 XP).
 - Cada exercício tem de 1 a 3 dicas progressivas (3 XP cada).
 - **Os 30 exercícios em JavaScript** (inspirados em problemas clássicos do HackerRank, com enunciados originais) agora são os **Desafios de algoritmos** da trilha DEV.
@@ -108,7 +108,7 @@ On the home page, the **Start here** section has the guide card (the magic shop 
 - **9 levels:** Think like a computer · Store information · Decide · Repeat · Organise · Check · The toolbox (folders, terminal, Git, API, JSON) · Bridge to code · Reinforcement. Each reinforcement exercise names the one it reinforces.
 - **Exercise kinds**, all checked automatically: put the steps in order, pick the diamond’s question and predict the test cases, trace a variable in a table, predict the result, fill the empty box, find the step with the bug, match pairs and mark the right cases.
 - **Bridge to code:** almost every exercise has **👀 See it in JavaScript**, the same algorithm in code, just to read. The “Bridge to code” level asks which code does what the boxes say.
-- **DEV, QA and AI open with 32 of the 40 exercises done (80%)**, reinforcement included. Until then their cards are hidden on the home page, the Start Track card shows what is missing, and a direct link opens a locked page.
+- **DEV, QA and AI open with 32 of the 40 exercises done (80%)**, reinforcement included. Until then their cards show faded, with a lock and what is missing, the Start Track card shows the progress, and a direct link opens a locked page.
 - **A revealed solution does not count:** after 2 attempts the learner may see the solution, but the exercise then gives 0 XP and does not count toward the 80%. “Solve it again on my own” restarts it; solved that way it counts (still 0 XP).
 - Every exercise has 1 to 3 progressive hints (3 XP each).
 - **The 30 JavaScript exercises** (inspired by classic HackerRank problems, with original statements) are now the DEV track’s **Algorithm challenges**.
