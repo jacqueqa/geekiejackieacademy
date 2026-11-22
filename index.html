@@ -513,8 +513,8 @@ pre.cat-json { margin: 0; background: var(--code-bg); color: var(--code-ink); bo
 /* Header, top to bottom: 1) the banner (home page only)  2) learner name (left) and rank/XP (right)  3) logo and tagline */
 .top .hero { grid-column: 1 / -1; grid-row: 1; max-width: none; width: 100%; height: auto; margin: 0; aspect-ratio: 2172 / 724; object-fit: cover; }
 .wrap:has(> #home-view[hidden]) .top .hero { display: none; }
-/* The home banner already shows the logo, the name and the tagline: the brand block below stays only for screen readers there. */
-.wrap:has(> #home-view:not([hidden])) .top .brand { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; margin: 0; }
+/* The logo block (logo, name, tagline) is only seen on the home page, inside the banner. Everywhere it stays for screen readers: it holds the page's h1. */
+.top .brand { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; margin: 0; }
 .top .qa-name { grid-column: 1; grid-row: 2; padding-top: 0; }
 .top .player { grid-column: 3; grid-row: 2; padding-top: 0; }
 .top .brand { grid-column: 1 / -1; grid-row: 3; justify-self: center; margin-top: 0; }
@@ -571,6 +571,7 @@ dl.io dd { margin: 0; }
 .guide-title { font-family: var(--font-display); font-size: clamp(22px, 2.6vw, 28px); font-weight: 800; letter-spacing: -0.01em; }
 .guide-lead { color: var(--ink); }
 .guide-text { color: var(--muted); }
+.guide-pill.track-pill { color: var(--xp); background: rgba(246, 200, 95, .12); border-color: rgba(246, 200, 95, .45); }
 .guide-tags { display: flex; flex-wrap: wrap; gap: 6px; }
 .guide-tags span { font-size: 12.5px; color: var(--muted); border: 1px solid var(--line); border-radius: 8px; padding: 2px 9px; }
 .howto-hero { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; max-height: 420px; object-fit: cover; border-radius: 20px; border: 1px solid var(--line); }
@@ -677,7 +678,7 @@ body { zoom: var(--ui-scale, 1); }
   </section>
 
   <section class="howto" id="howto-view" hidden data-test="howto-view">
-    <a class="back-link" href="#" data-i18n="allTracks">← All tracks</a>
+    <a class="back-link" href="#" data-i18n="allTracks">← Homepage</a>
     <img class="howto-hero" src="assets/magic-shop.webp" width="1536" height="1024" alt="Bruxa Maria’s tarot shop" data-i18n-alt="shopAlt">
     <h2 data-i18n="howTitle">How to play</h2>
     <p class="howto-intro" data-i18n="howIntro"></p>
@@ -686,7 +687,7 @@ body { zoom: var(--ui-scale, 1); }
   </section>
 
   <section class="rulebook" id="grimoire-view" hidden>
-    <a class="back-link" href="#" data-i18n="allTracks">← All tracks</a>
+    <a class="back-link" href="#" data-i18n="allTracks">← Homepage</a>
     <div class="rb-head">
       <div class="rb-stats" id="gr-stats"></div>
       <h2 data-i18n="grTitle">📖 The Git Grimoire</h2>
@@ -700,7 +701,7 @@ body { zoom: var(--ui-scale, 1); }
   </section>
 
   <section class="rulebook glossary" id="glossary-view" hidden data-test="glossary-view">
-    <a class="back-link" href="#" data-i18n="allTracks">← All tracks</a>
+    <a class="back-link" href="#" data-i18n="allTracks">← Homepage</a>
     <div class="rb-head">
       <div class="rb-stats" id="gl-stats"></div>
       <h2 data-i18n="glTitle">📚 Programming glossary</h2>
@@ -718,7 +719,7 @@ body { zoom: var(--ui-scale, 1); }
   </section>
 
   <section class="catalog" id="catalog-view" hidden>
-    <a class="back-link" href="#" data-i18n="allTracks">← All tracks</a>
+    <a class="back-link" href="#" data-i18n="allTracks">← Homepage</a>
     <div class="rb-head">
       <div class="rb-stats" id="cat-stats"></div>
       <h2 data-i18n="catTitle">🛍️ Product catalog</h2>
@@ -748,7 +749,7 @@ body { zoom: var(--ui-scale, 1); }
   </section>
 
   <section class="rulebook" id="rulebook-view" hidden>
-    <a class="back-link" href="#" data-i18n="allTracks">← All tracks</a>
+    <a class="back-link" href="#" data-i18n="allTracks">← Homepage</a>
     <div class="rb-head">
       <div class="rb-stats" id="rb-stats"></div>
       <h2 data-i18n="rbTitle">📜 The Shop Rulebook</h2>
@@ -762,7 +763,7 @@ body { zoom: var(--ui-scale, 1); }
   </section>
 
   <section class="locked-view" id="locked-view" hidden data-test="locked-view">
-    <a class="back-link" href="#" data-i18n="allTracks">← All tracks</a>
+    <a class="back-link" href="#" data-i18n="allTracks">← Homepage</a>
     <div class="locked-card">
       <div class="locked-icon" aria-hidden="true">🔒</div>
       <h2 id="locked-title"></h2>
@@ -777,7 +778,7 @@ body { zoom: var(--ui-scale, 1); }
 
   <div id="module-view" hidden>
   <div class="module-bar">
-    <a class="back-link" href="#" data-i18n="allTracks">← All tracks</a>
+    <a class="back-link" href="#" data-i18n="allTracks">← Homepage</a>
     <h2 id="module-title"></h2>
     <span class="module-stack" id="module-stack"></span>
   </div>
@@ -3020,7 +3021,7 @@ const UI = {
   en: {
     rank: 'Rank', apprenticeName: '+ Add your name', changeName: 'Change your name', yourName: 'Your name', save: 'Save',
     chooseTrack: 'Choose your track', resources: 'Technical resources', welcomeWho: 'Bruxa Maria says', storyWho: 'Message from Bruxa Maria',
-    allTracks: '← All tracks', howTitle: 'How to play', heroAlt: 'Geekie Jackie Academy · Learn. Build. Test. Evolve. Geekie Jackie waves while walking to the academy with two cats, under banners for DEV, QA and AI',
+    allTracks: '← Homepage', howTitle: 'How to play', heroAlt: 'Geekie Jackie Academy · Learn. Build. Test. Evolve. Geekie Jackie waves while walking to the academy with two cats, under banners for DEV, QA and AI',
     fAction: 'The action', fWhat: 'What it is', fWhy: 'Why we do it at {c}', fTask: 'Your exercise', example: 'Example data',
     runKeys: 'Ctrl/⌘ + Enter to run', termHead: 'Terminal · VS Code', termTip: 'Type the command and press Enter', enter: 'Enter',
     run: 'Run tests', hint: 'Show hint', solution: 'Show solution', reset: 'Reset code', startOver: 'Start over', results: 'Test results',
@@ -3074,6 +3075,7 @@ const UI = {
     guideText: 'Start with the Start Track. When you complete 80% of it, the DEV, QA and AI tracks appear here.',
     guideTags: ['Start Track', 'Unlock at 80%', 'Hints and solutions', 'Glossary', 'The mock shop'], guideCta: 'Read the guide →',
     shopAlt: 'Pixel art of Bruxa Maria’s tarot shop, with the witch, Geekie Jackie, a friend and two cats at the door',
+    startAlt: 'Pixel art: Bruxa Maria and Geekie Jackie in the shop, with a blackboard about algorithms and a step-by-step customer order',
     howIntro: 'Everything you need to know before your first exercise at Bruxa Maria’s shop.', howGo: 'Start the Start Track →',
     glossaryLink: 'Glossary', glTitle: '📚 Programming glossary', glSearchLbl: 'Search the glossary',
     glIntro: 'Programming words explained simply, with examples from the shop. Search, jump to a letter or filter by category and track.',
@@ -3107,7 +3109,7 @@ const UI = {
   pt: {
     rank: 'Título', apprenticeName: '+ Adicione seu nome', changeName: 'Mudar seu nome', yourName: 'Seu nome', save: 'Salvar',
     chooseTrack: 'Escolha sua trilha', resources: 'Recursos técnicos', welcomeWho: 'A Bruxa Maria diz', storyWho: 'Mensagem da Bruxa Maria',
-    allTracks: '← Todas as trilhas', howTitle: 'Como jogar', heroAlt: 'Geekie Jackie Academy · Learn. Build. Test. Evolve. A Geekie Jackie acena a caminho da academia com dois gatos, sob bandeiras de DEV, QA e IA',
+    allTracks: '← Homepage', howTitle: 'Como jogar', heroAlt: 'Geekie Jackie Academy · Learn. Build. Test. Evolve. A Geekie Jackie acena a caminho da academia com dois gatos, sob bandeiras de DEV, QA e IA',
     fAction: 'A ação', fWhat: 'O que é', fWhy: 'Por que fazemos isso {c}', fTask: 'Seu exercício', example: 'Dados de exemplo',
     runKeys: 'Ctrl/⌘ + Enter para rodar', termHead: 'Terminal · VS Code', termTip: 'Digite o comando e aperte Enter', enter: 'Enter',
     run: 'Rodar testes', hint: 'Ver dica', solution: 'Ver solução', reset: 'Resetar código', startOver: 'Recomeçar', results: 'Resultado dos testes',
@@ -3161,6 +3163,7 @@ const UI = {
     guideText: 'Comece pela Trilha Inicial. Quando você completar 80% dela, as trilhas DEV, QA e IA aparecem aqui.',
     guideTags: ['Trilha Inicial', 'Desbloqueio com 80%', 'Dicas e soluções', 'Glossário', 'A lojinha'], guideCta: 'Ler o guia →',
     shopAlt: 'Pixel art da loja de tarot A Bruxa Maria, com a bruxa, a Geekie Jackie, um amigo e dois gatos na porta',
+    startAlt: 'Pixel art: a Bruxa Maria e a Geekie Jackie na loja, com um quadro sobre algoritmos e um pedido de cliente passo a passo',
     howIntro: 'Tudo o que você precisa saber antes do primeiro exercício na lojinha da Bruxa Maria.', howGo: 'Começar a Trilha Inicial →',
     glossaryLink: 'Glossário', glTitle: '📚 Glossário de programação', glSearchLbl: 'Buscar no glossário',
     glIntro: 'Palavras de programação explicadas de um jeito simples, com exemplos da lojinha. Busque, pule para uma letra ou filtre por categoria e trilha.',
@@ -4111,11 +4114,14 @@ function renderShell() {
     '<span class="mod-cta">' + esc(t('guideCta')) + '</span></div></a>';
   $('home-cards').innerHTML = guide + MODULES.map(m =>
     '<a class="mod-card' + (m.id === START_TRACK_ID ? ' is-start' : '') + '" id="mod-card-' + m.id + '" style="--card:' + m.color + '" href="#' + m.id + '">' +
-    '<div class="mod-card-media">' + cardArt(m.name, m.stack, m.art, m.color) +
-    (m.requires ? '<span class="lock-badge" id="lock-badge-' + m.id + '" hidden>🔒 ' + esc(t('lockedBadge')) + '</span>' : '') + '</div>' +
-    '<div class="mod-card-body">' +
     (m.id === START_TRACK_ID
-      ? '<div class="unlock" data-test="unlock-meter"><div class="mod-progress"><span id="unlock-count"></span><span class="mod-rank" id="unlock-percent"></span></div>' +
+      ? '<div class="mod-card-media guide-media"><img src="assets/start-track.webp" width="1536" height="1024" loading="lazy" alt="' + esc(t('startAlt')) + '" data-i18n-alt="startAlt"></div>'
+      : '<div class="mod-card-media">' + cardArt(m.name, m.stack, m.art, m.color) +
+        (m.requires ? '<span class="lock-badge" id="lock-badge-' + m.id + '" hidden>🔒 ' + esc(t('lockedBadge')) + '</span>' : '') + '</div>') +
+    '<div class="mod-card-body' + (m.id === START_TRACK_ID ? ' guide-body' : '') + '">' +
+    (m.id === START_TRACK_ID
+      ? '<span class="guide-pill track-pill">' + esc(m.stack) + '</span><h3 class="guide-title">' + esc(t('moduleTitle', { m: m.name })) + '</h3>' +
+        '<div class="unlock" data-test="unlock-meter"><div class="mod-progress"><span id="unlock-count"></span><span class="mod-rank" id="unlock-percent"></span></div>' +
         '<div class="bar unlock-bar"><span id="unlock-bar" style="width:0%"></span><i class="unlock-mark" style="left:' + UNLOCK_PERCENT + '%" title="' + UNLOCK_PERCENT + '%"></i></div>' +
         '<p class="unlock-text" id="unlock-text"></p></div>'
       : '') +
