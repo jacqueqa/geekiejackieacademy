@@ -784,9 +784,12 @@ pre.cat-json { margin: 0; background: var(--code-bg); color: var(--code-ink); bo
 .mod-card.is-locked .mod-cta { color: var(--muted); }
 .lock-note { font-size: 13.5px; color: var(--ink); background: var(--bg); border: 1px dashed var(--fail); border-radius: 10px; padding: 8px 10px; }
 .locked-view { width: 100%; max-width: 1000px; margin: 0 auto; padding-top: 16px; display: flex; flex-direction: column; gap: 14px; }
+/* the whole scene fits the screen height (header and back link take ~300px), so the question is never below the fold */
+.gj-scene { width: 100%; max-width: calc((100dvh / var(--ui-scale, 1) - 300px) * 1.78); margin-inline: auto; }
 .gj-scene { position: relative; container-type: inline-size; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
 .gj-art img { display: block; width: 100%; height: auto; }
-.gj-box { position: absolute; left: 25.2%; top: 76%; width: 70.4%; height: 17.6%; display: flex; flex-direction: column; justify-content: space-between; color: #3A2150; text-align: left; }
+/* --bx/--by/--bw/--bh: where the empty dialog box is in the art (defaults: geekie-desk.webp) */
+.gj-box { position: absolute; left: var(--bx, 25.2%); top: var(--by, 76%); width: var(--bw, 70.4%); height: var(--bh, 17.6%); display: flex; flex-direction: column; justify-content: space-between; color: #3A2150; text-align: left; }
 .gj-name { display: none; }
 .gj-box p { margin: 0; font-size: 1.45cqw; line-height: 1.38; color: #3A2150; }
 .gj-box p b { color: #7A2E8E; }
@@ -799,8 +802,8 @@ pre.cat-json { margin: 0; background: var(--code-bg); color: var(--code-ink); bo
 .locked-progress { max-width: 640px; width: 100%; margin: 4px auto 0; }
 @media (max-width: 720px) {
   /* the art is too small for text here: crop it above its dialog box and draw the box under it */
-  .gj-scene { container-type: normal; overflow: visible; box-shadow: none; }
-  .gj-art { aspect-ratio: 1672 / 716; overflow: hidden; border-radius: 14px 14px 0 0; } /* keeps the art's own name plate */
+  .gj-scene { container-type: normal; overflow: visible; box-shadow: none; max-width: none; }
+  .gj-art { aspect-ratio: var(--gj-crop, 1672 / 716); overflow: hidden; border-radius: 14px 14px 0 0; } /* keeps the art's own name plate */
   .gj-box { position: static; width: auto; height: auto; gap: 12px; background: #FDEBD6; border: 3px solid #E8A33D; border-top: 0; box-shadow: 0 0 0 3px #4B2378 inset; border-radius: 0 0 14px 14px; padding: 14px 16px 16px; }
   .gj-box p { font-size: 15px; }
   .gj-choices { flex-direction: column-reverse; gap: 8px; }
@@ -1075,8 +1078,21 @@ body { zoom: var(--ui-scale, 1); }
 
   <section class="rulebook design" id="design-view" hidden data-test="design-view">
     <a class="back-link" href="#" data-i18n="allTracks">← Homepage</a>
+    <!-- Before the page: Geekie Jackie asks if the learner wants this extra content (assets/geekie-loading.webp) -->
+    <div class="gj-scene dp-gate" id="dp-gate" hidden style="--bx: 15.4%; --by: 80.6%; --bw: 71.4%; --bh: 14.2%; --gj-crop: 1671 / 748">
+      <div class="gj-art"><img src="assets/geekie-loading.webp" width="1671" height="941" alt="" data-i18n-alt="gjLoadAlt"></div>
+      <div class="gj-box" role="group" aria-labelledby="dp-gate-text">
+        <p id="dp-gate-text" data-i18n="dpGateText">This extra content is ideal for those already on the DEV track or who already know some code. Do you want to continue?</p>
+        <div class="gj-choices">
+          <a class="gj-btn" href="#" id="dp-gate-no" data-i18n="gateNo">No</a>
+          <button class="gj-btn yes" type="button" id="dp-gate-yes" data-i18n="gateYes">Yes</button>
+        </div>
+      </div>
+    </div>
+    <div id="dp-content">
     <p class="dp-intro" data-i18n="dpIntro">Four ideas that make code easier to read, test and change. Open a card to see each one with an example from the shop.</p>
     <div class="dp-map" id="dp-map"></div>
+    </div>
   </section>
 
   <section class="rulebook achievements" id="achievements-view" hidden data-test="achievements-view">
@@ -3516,6 +3532,8 @@ buildContent();
 const UI = {
   en: {
     rank: 'Rank', apprenticeName: '+ Add your name', changeName: 'Change your name', yourName: 'Your name', save: 'Save',
+    dpGateText: 'This extra content is ideal for those already on the DEV track or who already know some code. Do you want to continue?', gateYes: 'Yes', gateNo: 'No',
+    gjLoadAlt: 'Pixel art: Geekie Jackie smiles with a mug of coffee at her desk, on a rainy night, while the computer loads',
     dpTitle: 'Code design principles', dpLink: 'Code design principles', dpIntro: 'Four ideas that make code easier to read, test and change. Open a card to see each one with an example from the shop.',
     dpHeroAlt: 'Pixel art: Geekie Jackie holds a glowing grimoire, next to books named Clean code, Better apps and Happier devs', dpOpen: 'Open the {n} window', dpKicker: 'Design principle', dpWhat: 'What it is', dpWhy: 'Why it matters', dpSmell: 'Warning sign',
     dpShop: 'In the shop', dpBefore: '❌ Before', dpAfter: '✅ After', dpTracks: 'Tracks', dpRules: 'Shop rules', dpLetters: 'The five letters', dpPrev: '← {n}', dpNext: '{n} →', dpNoData: 'The design principles file (design-principles.js) did not load.',
@@ -3622,6 +3640,8 @@ const UI = {
   },
   pt: {
     rank: 'Título', apprenticeName: '+ Adicione seu nome', changeName: 'Mudar seu nome', yourName: 'Seu nome', save: 'Salvar',
+    dpGateText: 'Este conteúdo de reforço é ideal para quem já está na trilha DEV ou já tem algum conhecimento de código. Quer continuar?', gateYes: 'Sim', gateNo: 'Não',
+    gjLoadAlt: 'Pixel art: a Geekie Jackie sorri com uma caneca de café na mesa dela, numa noite de chuva, enquanto o computador carrega',
     dpTitle: 'Princípios de design de código', dpLink: 'Princípios de design de código', dpIntro: 'Quatro ideias que deixam o código mais fácil de ler, testar e mudar. Abra um cartão para ver cada uma com um exemplo da lojinha.',
     dpHeroAlt: 'Pixel art: a Geekie Jackie segura um grimório brilhante, ao lado de livros chamados Clean code, Better apps e Happier devs', dpOpen: 'Abrir a janela do {n}', dpKicker: 'Princípio de design', dpWhat: 'O que é', dpWhy: 'Por que importa', dpSmell: 'Sinal de alerta',
     dpShop: 'Na lojinha', dpBefore: '❌ Antes', dpAfter: '✅ Depois', dpTracks: 'Trilhas', dpRules: 'Regras da loja', dpLetters: 'As cinco letras', dpPrev: '← {n}', dpNext: '{n} →', dpNoData: 'O arquivo dos princípios de design (design-principles.js) não carregou.',
@@ -4747,11 +4767,16 @@ function showView() {
   if (isDesign) {
     activeModule = null;
     ['home-view', 'rulebook-view', 'howto-view', 'module-view', 'catalog-view', 'grimoire-view', 'glossary-view', 'achievements-view'].forEach(id => { $(id).hidden = true; });
-    renderHeader(); renderDesign();
+    const ok = designGateOk();
+    $('dp-gate').hidden = ok;
+    $('dp-content').hidden = !ok;
+    renderHeader();
+    if (ok) renderDesign();
     document.title = CONFIG.name + ': ' + t('dpTitle');
     window.scrollTo(0, 0);
     const pid = hash.slice('design/'.length);
-    if (pid) openDesign(pid, false);
+    if (pid && ok) openDesign(pid, false);
+    pendingDesign = ok ? null : pid || null; // a #design/<id> link opens its window after "Yes"
     return;
   }
   if ($('dp-dialog').open) $('dp-dialog').close();
@@ -5525,6 +5550,20 @@ document.querySelectorAll('.fold-toggle').forEach(btn => btn.addEventListener('c
 }));
 
 /* ---------- Code design principles (data in design-principles.js) ---------- */
+// Before the page, Geekie Jackie asks if the learner wants this extra content. "Yes" is kept for the
+// browser session, so moving around the site doesn't ask again; "No" goes back to the home page.
+const DESIGN_GATE_KEY = 'geekie-jackie-design-ok';
+let pendingDesign = null;
+function designGateOk() { try { return sessionStorage.getItem(DESIGN_GATE_KEY) === '1'; } catch (e) { return false; } }
+$('dp-gate-yes').addEventListener('click', () => {
+  try { sessionStorage.setItem(DESIGN_GATE_KEY, '1'); } catch (e) {}
+  $('dp-gate').hidden = true;
+  $('dp-content').hidden = false;
+  renderDesign();
+  const pid = pendingDesign; pendingDesign = null;
+  if (pid) openDesign(pid, false);
+  else { const first = $('dp-map').querySelector('[data-principle]'); if (first) first.focus({ preventScroll: true }); }
+});
 function designData() { return typeof DESIGN_PRINCIPLES !== 'undefined' && Array.isArray(DESIGN_PRINCIPLES) ? DESIGN_PRINCIPLES : []; }
 // The text of a principle (or of one SOLID letter) in the current language.
 function dpT(x, field) { return LANG === 'en' && x.en && x.en[field] != null ? x.en[field] : x[field]; }
